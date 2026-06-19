@@ -7,6 +7,11 @@ description: Generate comprehensive Product Requirement Documents (PRDs) contain
 
 Use this skill when generating new module specifications or refining existing product requirements.
 
+> **Differentiation**:
+> - **teknovo-prd-generator** (this skill) — *generates* and *drafts* module PRDs from template
+> - **teknovo-chief-product-designer** — *reviews*, *aligns*, and *approves* PRDs against master PRD, journeys, and IA (Pillar 1 gate)
+> - After draft complete → hand off to **teknovo-chief-product-designer** for PRD alignment before **teknovo-chief-architect**
+
 **Reference**: `docs/prd/master/master-prd.md`, domain PRDs in `docs/prd/` and `docs/domain/`
 
 ---
@@ -154,3 +159,14 @@ New permissions required:
 | Vague requirements ("should be fast") | Specific metrics (< 2s, 500 users) |
 | Missing out-of-scope section | Explicit YAGNI boundaries |
 | Table owned by wrong domain | Check data-ownership-matrix first |
+
+---
+
+## Skill Transitions
+
+| After This Skill... | Invoke |
+|---------------------|--------|
+| PRD draft complete | teknovo-chief-product-designer (PRD alignment) |
+| PRD gaps from alignment | Revise PRD, then re-run chief-product-designer |
+| PRD approved | teknovo-chief-architect (Architecture Impact Analysis) |
+| Strategic blocker | gstack-office-hours |

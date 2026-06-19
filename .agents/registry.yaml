@@ -1,7 +1,15 @@
 # Teknovo AI SuperStack — Agent Skill Registry
 # Load autoload skills at session start; match triggers for on-demand skills.
 
-version: "1.0"
+version: "1.1"
+
+# =============================================================================
+# THREE PILLARS — Primary Role Gates
+# =============================================================================
+# Pillar 1: teknovo-chief-product-designer  → Planning/UI (PRD, UX, IA, Nav)
+# Pillar 2: teknovo-chief-architect           → Architecture (DB, API, RBAC, Folders)
+# Pillar 3: teknovo-devops-engineer           → Ship/Deploy (CI, Cloudflare, Monitoring)
+# =============================================================================
 
 # =============================================================================
 # AUTO-LOAD SKILLS — loaded at every session start
@@ -28,6 +36,8 @@ autoload:
 
 # =============================================================================
 # PLANNING SKILLS — requirements, design, consultation
+# Pillar 1 gate: teknovo-chief-product-designer
+# Pillar 2 gate: teknovo-chief-architect
 # =============================================================================
 planning:
   superpowers-brainstorming:
@@ -62,22 +72,12 @@ planning:
       - "product requirements"
       - "module requirements"
       - "write spec"
-
-  teknovo-ui-ux-specialist:
-    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
-    trigger:
-      - "UX review"
-      - "design review"
-      - "navigation planning"
-      - "information architecture"
-      - "user flow"
-      - "dashboard planning"
-      - "form planning"
-      - "UX audit"
-      - "UX review session"
+      - "draft PRD"
+      - "generate PRD"
 
   teknovo-chief-product-designer:
     path: .agents/skills/teknovo-chief-product-designer/SKILL.md
+    role: pillar-1
     trigger:
       - "product design review"
       - "product strategy"
@@ -92,9 +92,49 @@ planning:
       - "before UI implementation"
       - "product design analysis"
       - "IA review"
+      - "PRD alignment"
+      - "PRD review"
+      - "PRD gap analysis"
+      - "master PRD review"
+      - "module PRD review"
+      - "requirements alignment"
+      - "information architecture"
+      - "navigation planning"
+
+  teknovo-chief-architect:
+    path: .agents/skills/teknovo-chief-architect/SKILL.md
+    role: pillar-2
+    trigger:
+      - "architecture impact"
+      - "architecture gate"
+      - "chief architect"
+      - "architecture review before implementation"
+      - "schema impact analysis"
+      - "API contract review"
+      - "RBAC impact analysis"
+      - "folder structure review"
+      - "monorepo layout review"
+      - "before backend implementation"
+      - "before database migration"
+      - "cross-domain architecture"
+      - "architecture impact analysis"
+
+  teknovo-ui-ux-specialist:
+    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+    trigger:
+      - "UX review"
+      - "design review"
+      - "navigation planning"
+      - "information architecture"
+      - "user flow"
+      - "dashboard planning"
+      - "form planning"
+      - "UX audit"
+      - "UX review session"
 
 # =============================================================================
 # IMPLEMENTATION SKILLS — coding, TDD, orchestration
+# Specialist skills invoked by teknovo-chief-architect during/after architecture gate
 # =============================================================================
 implementation:
   superpowers-executing-plans:
@@ -215,6 +255,7 @@ implementation:
 
 # =============================================================================
 # REVIEW SKILLS — quality gates, security, shipping
+# Pillar 3 gate: teknovo-devops-engineer
 # =============================================================================
 review:
   superpowers-verification-before-completion:
@@ -278,6 +319,30 @@ review:
       - "ship"
       - "merge to staging"
 
+  teknovo-devops-engineer:
+    path: .agents/skills/teknovo-devops-engineer/SKILL.md
+    role: pillar-3
+    trigger:
+      - "devops"
+      - "CI/CD"
+      - "GitHub Actions"
+      - "GitHub workflow"
+      - "cloudflare deploy"
+      - "cloudflare tunnel"
+      - "subdomain routing"
+      - "workers deploy"
+      - "D1 migration"
+      - "R2 bucket"
+      - "monitoring setup"
+      - "observability"
+      - "release to staging"
+      - "release to production"
+      - "ship to production"
+      - "infrastructure change"
+      - "DNS change"
+      - "edge configuration"
+      - "deployment impact"
+
   gstack-retro:
     path: .agents/skills/gstack/retro/SKILL.md
     trigger:
@@ -333,6 +398,24 @@ review:
       - "template design"
       - "conversion funnel review"
       - "ERP dashboard philosophy"
+      - "PRD alignment"
+      - "PRD review"
+
+  teknovo-chief-architect:
+    path: .agents/skills/teknovo-chief-architect/SKILL.md
+    trigger:
+      - "architecture review"
+      - "layer audit"
+      - "pre-implementation architecture"
+      - "architecture gate review"
+
+  teknovo-devops-engineer:
+    path: .agents/skills/teknovo-devops-engineer/SKILL.md
+    trigger:
+      - "deploy review"
+      - "pre-production checklist"
+      - "infra review"
+      - "release readiness"
 
 # =============================================================================
 # TROUBLESHOOTING SKILLS — debugging and root cause analysis
@@ -511,4 +594,17 @@ skills:
   teknovo-chief-product-designer:
     path: .agents/skills/teknovo-chief-product-designer/SKILL.md
     category: planning
+    role: pillar-1
+    autoload: false
+
+  teknovo-chief-architect:
+    path: .agents/skills/teknovo-chief-architect/SKILL.md
+    category: planning
+    role: pillar-2
+    autoload: false
+
+  teknovo-devops-engineer:
+    path: .agents/skills/teknovo-devops-engineer/SKILL.md
+    category: review
+    role: pillar-3
     autoload: false

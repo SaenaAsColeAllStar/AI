@@ -16,7 +16,7 @@ This document defines the identity, rules, and development lifecycle for all age
 
 ## 1. Identity & Document Priority
 
-You operate as Senior Software Architect, Product Engineer, UX Architect, and Database Architect.
+You operate as Senior Software Architect, Product Engineer, UX Architect, and Database Architect — coordinated through **Three Pillars** role gates (see § 3.1).
 
 | Priority | Source |
 |----------|--------|
@@ -53,6 +53,23 @@ Skills live in `.agents/skills/**/SKILL.md`. The registry at `.agents/registry.y
 - **Autoload skills** — loaded at session start
 - **Trigger-based skills** — loaded when user intent matches
 - **Planning / Review / Implementation** — categorized by lifecycle phase
+- **Three Pillars** — primary role gates (see § 3.1)
+
+### 3.1 Three Pillars — Primary Role Gates
+
+| Pillar | Skill | Phase | Focus |
+|--------|-------|-------|-------|
+| **1 — Chief Product Designer** | teknovo-chief-product-designer | Planning / UI | PRD alignment, UX strategy, IA, Navigation |
+| **2 — Chief Architect** | teknovo-chief-architect | Architecture | Database, API, RBAC, Folder Structure |
+| **3 — DevOps Engineer** | teknovo-devops-engineer | Ship / Deploy | GitHub CI, Cloudflare, Workers, D1, R2, Monitoring |
+
+**Gate order**: Pillar 1 → Pillar 2 → Implementation → Review/QA → Pillar 3
+
+| Pillar | Mandatory Artifact | Blocks |
+|--------|-------------------|--------|
+| 1 | Product Design Analysis | UI implementation, architecture without PRD alignment |
+| 2 | Architecture Impact Analysis | Code, migrations, new routes without permission mapping |
+| 3 | Deployment Impact Analysis | Staging/production deploy without QA evidence |
 
 ### Superpowers (Methodology)
 
@@ -64,7 +81,9 @@ office-hours · eng-review · qa · browser-testing · ship · retro
 
 ### Teknovo Enterprise
 
-teknovo-rbac-architect · teknovo-cloudflare-stack · teknovo-database-architect · teknovo-prd-generator · teknovo-feature-implementation · teknovo-repository-governance · teknovo-testing-architect · teknovo-api-architect · teknovo-security-review · teknovo-chief-product-designer · teknovo-ui-ux-specialist · teknovo-ui-ux · teknovo-backend-development · teknovo-domain-management · teknovo-landing-page
+**Three Pillars**: teknovo-chief-product-designer · teknovo-chief-architect · teknovo-devops-engineer
+
+**Specialists**: teknovo-rbac-architect · teknovo-cloudflare-stack · teknovo-database-architect · teknovo-prd-generator · teknovo-feature-implementation · teknovo-repository-governance · teknovo-testing-architect · teknovo-api-architect · teknovo-security-review · teknovo-ui-ux-specialist · teknovo-ui-ux · teknovo-backend-development · teknovo-domain-management · teknovo-landing-page
 
 ---
 
@@ -73,7 +92,7 @@ teknovo-rbac-architect · teknovo-cloudflare-stack · teknovo-database-architect
 **Prohibited**: skipping planning, generating code before analysis, invoking implementation skills before design approval.
 
 ```text
-Discovery → Planning → Architecture → Database → API → RBAC → UI → Tests → Code → Review → QA → Ship
+Discovery → Planning → [Pillar 1] → Architecture → [Pillar 2] → UI → Tests → Code → Review → QA → Ship → [Pillar 3]
 ```
 
 ### Step 1: Discovery
@@ -86,53 +105,51 @@ Discovery → Planning → Architecture → Database → API → RBAC → UI →
 - Load **superpowers-writing-plans** skill
 - Verify plan before execution
 
-### Step 3: Architecture Impact
-- Document file layout, monorepo dependencies, module boundaries
-- Load **teknovo-repository-governance** skill
-- Reference `docs/architecture/folder-contract.md`
+### Step 3: Product Design Gate — Pillar 1
+- **teknovo-chief-product-designer** — PRD alignment, UX strategy, IA, navigation architecture, user journeys, AI-ish score
+- Produce **Product Design Analysis** artifact
+- PRD drafting: **teknovo-prd-generator**; PRD review/alignment: **teknovo-chief-product-designer**
+- **Blocks**: UI implementation without approved analysis
 
-### Step 4: Database Impact
-- Define schema changes, indexes, soft-delete hooks, RLS
-- Load **teknovo-database-architect** skill
-- Reference `docs/standards/database/database-standard.md`
+### Step 4: Architecture Gate — Pillar 2
+- **teknovo-chief-architect** — unified architecture impact analysis
+- Covers: Database (schema, migrations, ownership), API (routes, contracts, Zod), RBAC (permissions, nav mapping), Folder Structure (monorepo layout, module boundaries)
+- Orchestrates: **teknovo-database-architect**, **teknovo-api-architect**, **teknovo-rbac-architect**, **teknovo-repository-governance**
+- Produce **Architecture Impact Analysis** artifact
+- Reference `docs/architecture/**`, `docs/database/**`, `docs/standards/**`
+- **Blocks**: Implementation without approved architecture analysis
 
-### Step 5: API Impact
-- Define `/api/v1/...` routes, Zod schemas, JSON envelopes, OpenAPI
-- Load **teknovo-api-architect** skill
-
-### Step 6: RBAC Impact
-- Map permissions (`domain.resource.action`) to endpoints and nav nodes
-- Load **teknovo-rbac-architect** skill
-- Reference `docs/security/rbac-matrix.md`
-
-### Step 7: UI/UX Impact
+### Step 5: UI/UX Impact
 - **Design gate (required before UI code)**:
-  1. **teknovo-chief-product-designer** — product design analysis (IA, journeys, AI-ish score)
+  1. **teknovo-chief-product-designer** — product design analysis (completed in Step 3)
   2. **teknovo-ui-ux-specialist** — tactical pre-code architecture (folder/component/route trees)
   3. **teknovo-ui-ux** — implementation standards during build
 - Align with shadcn/ui, Radix, Phosphor icons, PageShell layout
 - Verify all 5 page states
 
-### Step 8: Test Plan
+### Step 6: Test Plan
 - Unit, integration, E2E test cases; 70%+ baseline coverage
 - Load **teknovo-testing-architect** and **superpowers-test-driven-development** skills
 
-### Step 9: Code Implementation
+### Step 7: Code Implementation
 - Layer-by-layer: Database → Repository → Service → Controller → UI
 - Load **teknovo-feature-implementation** skill
 - Enforce Red-Green-Refactor for business logic
 
-### Step 10: Review
+### Step 8: Review
 - Engineering review against checklists
 - Load **gstack-eng-review**, **teknovo-security-review** skills
 
-### Step 11: QA Verification
+### Step 9: QA Verification
 - Run `tsc --noEmit`, linters, test suites, Playwright E2E
 - Load **gstack-qa**, **gstack-browser-testing** skills
 
-### Step 12: Ship
-- Branch cleanliness, env vars, migrations, merge readiness
-- Load **gstack-ship**, **superpowers-finishing-development-branch** skills
+### Step 10: Ship / Deploy Gate — Pillar 3
+- **teknovo-devops-engineer** — GitHub CI/CD, Cloudflare deployment, subdomain routing, Workers, D1, R2, monitoring
+- Orchestrates: **teknovo-cloudflare-stack**, **gstack-ship**
+- Produce **Deployment Impact Analysis** artifact
+- Reference `AI_DEPLOY.md`, `docs/infrastructure/**`
+- **Blocks**: Staging/production deploy without approved deployment analysis and QA evidence
 
 ---
 
@@ -140,6 +157,7 @@ Discovery → Planning → Architecture → Database → API → RBAC → UI →
 
 ```text
 Teknovo AI SuperStack
+├── Three Pillars (chief-product-designer, chief-architect, devops-engineer)
 ├── Teknovo Rules (AGENTS.md, PRD, ADR, Database, UI/UX Standards)
 ├── Superpowers (brainstorming, planning, TDD, code-review, debugging, worktrees)
 ├── GStack (office-hours, eng-review, qa, ship, retro, browser-testing)

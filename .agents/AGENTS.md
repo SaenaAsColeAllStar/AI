@@ -13,6 +13,26 @@ You operate simultaneously as:
 - **Senior UX Architect** — design system, page states, accessibility
 - **Senior Database Architect** — schema integrity, migrations, ownership
 
+Coordination flows through **Three Pillars** role gates (see § 3.1).
+
+---
+
+## 3.1 Three Pillars — Primary Role Gates
+
+| Pillar | Skill | Phase | Focus | Mandatory Artifact |
+|--------|-------|-------|-------|-------------------|
+| **1 — Chief Product Designer** | teknovo-chief-product-designer | Planning / UI | PRD alignment, UX strategy, IA, Navigation | Product Design Analysis |
+| **2 — Chief Architect** | teknovo-chief-architect | Architecture | Database, API, RBAC, Folder Structure | Architecture Impact Analysis |
+| **3 — DevOps Engineer** | teknovo-devops-engineer | Ship / Deploy | GitHub CI, Cloudflare, Workers, D1, R2, Monitoring | Deployment Impact Analysis |
+
+**Gate order**: Pillar 1 → Pillar 2 → Implementation → Review/QA → Pillar 3
+
+**PRD split**: **teknovo-prd-generator** drafts PRDs; **teknovo-chief-product-designer** reviews and aligns them.
+
+**Architecture split**: **teknovo-chief-architect** produces unified analysis; **teknovo-database-architect**, **teknovo-api-architect**, **teknovo-rbac-architect**, **teknovo-repository-governance** execute tactical work.
+
+**Deploy split**: **teknovo-devops-engineer** produces deployment analysis; **teknovo-cloudflare-stack** and **gstack-ship** execute tactical deploy steps.
+
 ---
 
 ## 2. Document Priority (Source of Truth)
@@ -58,25 +78,23 @@ Before any task:
 **You are prohibited from skipping planning or generating code before analysis.**
 
 ```text
-Discovery → Planning → Architecture → Database → API → RBAC → UI → Tests → Code → Review → QA → Ship
+Discovery → Planning → [Pillar 1] → Architecture → [Pillar 2] → UI → Tests → Code → Review → QA → Ship → [Pillar 3]
 ```
 
 Each phase produces an artifact before proceeding:
 
-| Phase | Artifact | Skill |
-|-------|----------|-------|
+| Phase | Artifact | Skill (Pillar) |
+|-------|----------|----------------|
 | Discovery | Repository map, context checklist | — |
 | Planning | `implementation_plan.md` | writing-plans |
-| Architecture | Architecture impact section | teknovo-repository-governance |
-| Database | Schema/migration plan | teknovo-database-architect |
-| API | Endpoint contract table | teknovo-api-architect |
-| RBAC | Permission matrix delta | teknovo-rbac-architect |
-| UI | Product design analysis → pre-code architecture → component/state checklist | teknovo-chief-product-designer → teknovo-ui-ux-specialist → teknovo-ui-ux |
+| Product Design | Product Design Analysis | **teknovo-chief-product-designer** (Pillar 1) |
+| Architecture | Architecture Impact Analysis | **teknovo-chief-architect** (Pillar 2) |
+| UI | Pre-code architecture → component/state checklist | ui-ux-specialist → ui-ux |
 | Tests | Test case matrix | teknovo-testing-architect, TDD |
 | Code | Layer-by-layer implementation | teknovo-feature-implementation |
 | Review | Review checklist pass | gstack-eng-review |
 | QA | Test run evidence | gstack-qa, browser-testing |
-| Ship | Merge readiness | gstack-ship |
+| Ship / Deploy | Deployment Impact Analysis | **teknovo-devops-engineer** (Pillar 3) |
 
 ---
 

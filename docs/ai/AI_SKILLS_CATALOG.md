@@ -2,7 +2,32 @@
 
 Complete index of all skills in the **Teknovo AI SuperStack Workstation**.
 
-**Registry**: `.agents/registry.yaml` · **Total skills**: 32
+**Registry**: `.agents/registry.yaml` · **Total skills**: 34
+
+---
+
+## 0. Three Pillars — Primary Role Gates
+
+| Pillar | Skill ID | Phase | Focus | Mandatory Artifact |
+|--------|----------|-------|-------|-------------------|
+| **1** | teknovo-chief-product-designer | Planning / UI | PRD alignment, UX strategy, IA, Navigation | Product Design Analysis |
+| **2** | teknovo-chief-architect | Architecture | Database, API, RBAC, Folder Structure | Architecture Impact Analysis |
+| **3** | teknovo-devops-engineer | Ship / Deploy | GitHub CI, Cloudflare, Workers, D1, R2, Monitoring | Deployment Impact Analysis |
+
+### Three Pillars Workflow Chain
+
+```text
+brainstorming → chief-product-designer → chief-architect → writing-plans → feature-implementation
+  → eng-review → qa → devops-engineer → ship
+```
+
+### Role Boundaries
+
+| Role | Owns | Delegates To |
+|------|------|--------------|
+| Chief Product Designer | PRD review/alignment, UX strategy, IA, nav architecture, journeys | teknovo-prd-generator (draft), teknovo-ui-ux-specialist (tactical UI) |
+| Chief Architect | Unified architecture gate before code | teknovo-database-architect, teknovo-api-architect, teknovo-rbac-architect, teknovo-repository-governance |
+| DevOps Engineer | Deploy/infra gate before release | teknovo-cloudflare-stack, gstack-ship, gstack-qa |
 
 ---
 
@@ -71,7 +96,9 @@ Domain-specific architectural extensions enforcing Teknovo V2 compliance. Refere
 | teknovo-security-review | ✅ | security audit, CORS, JWT, OWASP | Auth headers, rate limits, secret rotation |
 | teknovo-ui-ux | ✅ | UI, page layout, design system | PageShell, 5 page states, Phosphor icons, design tokens |
 | teknovo-ui-ux-specialist | ❌ | UX review, design review, build UI, accessibility audit | Principal UX Architect — tactical IA, review frameworks, pre-code architecture |
-| teknovo-chief-product-designer | ❌ | product design review, user journey, AI-ish design, before UI implementation | Chief Product Designer — strategic IA, journeys, conversion, AI-ish detection, planning gate |
+| teknovo-chief-product-designer | ❌ | product design review, PRD alignment, user journey, AI-ish design, before UI implementation | **Pillar 1** — PRD alignment/review, UX strategy, IA, navigation, journeys, conversion, AI-ish detection |
+| teknovo-chief-architect | ❌ | architecture gate, architecture impact, before backend implementation | **Pillar 2** — unified architecture gate: database, API, RBAC, folder structure impact analysis |
+| teknovo-devops-engineer | ❌ | deploy, CI/CD, cloudflare deploy, release to production | **Pillar 3** — deploy/infra gate: GitHub CI, Cloudflare, Workers, D1, R2, monitoring |
 | teknovo-backend-development | ✅ | backend, controller, repository | NestJS modules, BullMQ events, response contracts |
 | teknovo-domain-management | ✅ | domain event, cross-domain, DDD | Context mapping, data ownership, event catalog |
 | teknovo-landing-page | ✅ | landing page, SEO, Lighthouse | Marketing site, wireframes, performance limits |
@@ -86,6 +113,8 @@ Domain-specific architectural extensions enforcing Teknovo V2 compliance. Refere
 | teknovo-ui-ux | `docs/standards/design-system/design-system-contract.md` |
 | teknovo-ui-ux-specialist | `docs/standards/design-system/navigation-architecture-standard.md`, `design-system-contract.md` |
 | teknovo-chief-product-designer | `docs/prd/master/master-prd.md`, `navigation-architecture-standard.md`, `domain-context-map.md` |
+| teknovo-chief-architect | `docs/architecture/folder-contract.md`, `docs/standards/database/database-standard.md`, `docs/standards/api/api-contract.md`, `docs/security/rbac-matrix.md` |
+| teknovo-devops-engineer | `AI_DEPLOY.md`, `docs/infrastructure/deployment-standard.md`, `docs/infrastructure/cloudflare-setup-guide.md` |
 | teknovo-backend-development | `docs/backend/module-contract.md`, `service-contract.md` |
 | teknovo-domain-management | `docs/architecture/domain-context-map.md`, `data-ownership-matrix.md` |
 | teknovo-landing-page | `docs/prd/ui-ux/landing-page-prd.md` |
@@ -102,12 +131,15 @@ Domain-specific architectural extensions enforcing Teknovo V2 compliance. Refere
 | User Intent | Skills Loaded |
 |-------------|---------------|
 | "Review dashboard UX" | ui-ux-specialist → ui-ux → browser-testing |
-| "Product design review before building attendance" | chief-product-designer → ui-ux-specialist → writing-plans → feature-implementation |
-| "Build a new student attendance feature" | brainstorming → chief-product-designer → writing-plans → feature-implementation → database-architect → rbac-architect → ui-ux-specialist → ui-ux → testing-architect |
+| "Product design review before building attendance" | chief-product-designer → chief-architect → ui-ux-specialist → writing-plans → feature-implementation |
+| "Build a new student attendance feature" | brainstorming → chief-product-designer → chief-architect → writing-plans → feature-implementation → ui-ux-specialist → ui-ux → testing-architect |
 | "Fix the login 500 error" | systematic-debugging → verification-before-completion |
 | "Review this PR" | eng-review → security-review → repository-governance |
-| "Deploy to staging" | ship → verification-before-completion |
-| "I'm blocked on the API design" | office-hours → api-architect |
+| "Deploy to staging" | devops-engineer → ship → verification-before-completion |
+| "Deploy to production" | devops-engineer → qa evidence → ship |
+| "I'm blocked on the API design" | office-hours → chief-architect → api-architect |
+| "Architecture review before implementation" | chief-architect → database-architect + api-architect + rbac-architect |
+| "PRD alignment check" | chief-product-designer → prd-generator (if gaps) |
 | "Run E2E tests on the portal" | browser-testing → qa |
 | "What did we learn this sprint?" | retro |
 

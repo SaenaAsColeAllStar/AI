@@ -1,7 +1,7 @@
 # Teknovo AI SuperStack — Agent Skill Registry
 # Load autoload skills at session start; match triggers for on-demand skills.
 
-version: "1.2"
+version: "1.3"
 
 # =============================================================================
 # THREE PILLARS — Primary Role Gates
@@ -159,6 +159,15 @@ implementation:
       - "parallel tasks"
       - "orchestrate agents"
       - "delegate task"
+
+  superpowers-dispatching-parallel-agents:
+    path: .agents/skills/superpowers/dispatching-parallel-agents/SKILL.md
+    trigger:
+      - "parallel agents"
+      - "sibling agents"
+      - "dispatch agents"
+      - "multitask"
+      - "split workstreams"
 
   superpowers-using-git-worktrees:
     path: .agents/skills/superpowers/using-git-worktrees/SKILL.md
@@ -608,6 +617,11 @@ skills:
   superpowers-subagent-driven-development:
     path: .agents/skills/superpowers/subagent-driven-development/SKILL.md
     category: implementation
+    autoload: false
+
+  superpowers-dispatching-parallel-agents:
+    path: .agents/skills/superpowers/dispatching-parallel-agents/SKILL.md
+    category: planning
     autoload: false
 
   superpowers-using-git-worktrees:

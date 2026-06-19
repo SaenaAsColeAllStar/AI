@@ -51,7 +51,7 @@ M5: Domain Module Skills ───────── ✅ Complete (skills)
 **New Skills**:
 - ~~`teknovo-finance-module`~~ → **`teknovo-finance`** ✅
 - ~~`teknovo-ppdb-module`~~ → **`teknovo-ppdb`** ✅
-- `superpowers-dispatching-parallel-agents` — concurrent subagent dispatch
+- ~~`superpowers-dispatching-parallel-agents`~~ — concurrent subagent dispatch ✅
 
 **Tasks**:
 - [ ] Docker Compose profile for Playwright + PostgreSQL test DB

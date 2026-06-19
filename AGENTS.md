@@ -77,13 +77,17 @@ brainstorming · writing-plans · executing-plans · systematic-debugging · ver
 
 ### GStack (Sprint Loop)
 
-office-hours · eng-review · qa · browser-testing · ship · retro
+office-hours · eng-review · qa · browser-testing · ship · retro · **cso** · **investigate**
 
 ### Teknovo Enterprise
 
 **Three Pillars**: teknovo-chief-product-designer · teknovo-chief-architect · teknovo-devops-engineer
 
 **Specialists**: teknovo-rbac-architect · teknovo-cloudflare-stack · teknovo-database-architect · teknovo-prd-generator · teknovo-feature-implementation · teknovo-repository-governance · teknovo-testing-architect · teknovo-api-architect · teknovo-security-review · teknovo-ui-ux-specialist · teknovo-ui-ux · teknovo-backend-development · teknovo-domain-management · teknovo-landing-page
+
+**Domain modules**: teknovo-finance · teknovo-ppdb · teknovo-cbt · teknovo-communication · teknovo-academic · teknovo-reporting
+
+**Cross-cutting**: teknovo-performance-engineer · teknovo-observability · teknovo-data-migration · teknovo-integration-architect · teknovo-incident-response
 
 ---
 
@@ -160,8 +164,8 @@ Teknovo AI SuperStack
 ├── Three Pillars (chief-product-designer, chief-architect, devops-engineer)
 ├── Teknovo Rules (AGENTS.md, PRD, ADR, Database, UI/UX Standards)
 ├── Superpowers (brainstorming, planning, TDD, code-review, debugging, worktrees)
-├── GStack (office-hours, eng-review, qa, ship, retro, browser-testing)
-├── Teknovo Skills (ui-ux, backend, domain, landing, rbac, database, api, security)
+├── GStack (office-hours, eng-review, qa, ship, retro, browser-testing, cso, investigate)
+├── Teknovo Skills (ui-ux, backend, domain modules, landing, rbac, database, api, security, cross-cutting)
 └── Runtime (Ollama, OpenCode, Qwen 32B, Repository Awareness)
 ```
 

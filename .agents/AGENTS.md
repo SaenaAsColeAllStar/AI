@@ -69,7 +69,9 @@ Before any task:
 | **Planning** | Requirements, design, plans | brainstorming, writing-plans, office-hours |
 | **Implementation** | Layer-by-layer delivery | feature-implementation, TDD, executing-plans |
 | **Review** | Quality gates | eng-review, verification, security-review |
-| **Troubleshooting** | Evidence-based fixes | systematic-debugging |
+| **Troubleshooting** | Evidence-based fixes | systematic-debugging, gstack-investigate, teknovo-incident-response |
+| **Domain** | Subdomain business rules | teknovo-finance, teknovo-ppdb, teknovo-cbt, teknovo-communication, teknovo-academic, teknovo-reporting |
+| **Cross-cutting** | Production excellence | teknovo-performance-engineer, teknovo-observability, teknovo-data-migration, teknovo-integration-architect, teknovo-incident-response |
 
 ---
 

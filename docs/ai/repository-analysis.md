@@ -169,7 +169,7 @@ PageShell → PageHeader → PageContent → PageFooter
 | using-git-worktrees | Isolated parallel branch workspaces |
 | finishing-development-branch | Merge readiness and cleanup |
 
-### GStack (6 skills) — `.agents/skills/gstack/`
+### GStack (8 skills) — `.agents/skills/gstack/`
 
 | Skill | Purpose |
 |-------|---------|
@@ -179,8 +179,10 @@ PageShell → PageHeader → PageContent → PageFooter
 | browser-testing | Playwright E2E automation |
 | ship | Release, migration, and merge checklists |
 | retro | Post-sprint retrospective |
+| cso | Customer success — stakeholder comms, release notes, rollout |
+| investigate | Production incident investigation and root cause analysis |
 
-### Teknovo Enterprise (13 skills) — `.agents/skills/teknovo-*/`
+### Teknovo Enterprise (19 skills) — `.agents/skills/teknovo-*/`
 
 | Skill | Purpose |
 |-------|---------|
@@ -198,28 +200,58 @@ PageShell → PageHeader → PageContent → PageFooter
 | teknovo-domain-management | DDD boundaries, domain events |
 | teknovo-landing-page | Marketing site, SEO, performance |
 
-**Total: 30 skills**
+### Teknovo Domain Module Skills (6) — `.agents/skills/teknovo-*/`
+
+| Skill | Purpose |
+|-------|---------|
+| teknovo-finance | Billing, payments, receipts, cash books, finance RBAC |
+| teknovo-ppdb | Student admission, verification, selection, re-registration |
+| teknovo-cbt | Question banks, exams, attempts, proctoring, results |
+| teknovo-communication | WhatsApp templates, campaigns, delivery logs |
+| teknovo-academic | Classes, schedules, attendance, grades, report cards |
+| teknovo-reporting | Read models, dashboards, exports (no write-back) |
+
+### Teknovo Cross-Cutting Skills (5)
+
+| Skill | Purpose |
+|-------|---------|
+| teknovo-performance-engineer | Query optimization, caching, bundle size, Core Web Vitals |
+| teknovo-observability | Logging, tracing, alerting, SLOs |
+| teknovo-data-migration | Seed data, legacy import, data integrity |
+| teknovo-integration-architect | Third-party APIs, webhooks, payment gateways |
+| teknovo-incident-response | Outage command, rollback, postmortem facilitation |
+
+**Total: 47 skills**
 
 ---
 
 ## 6. Missing Skills Inventory
 
-### Completed (this SuperStack build)
+### Completed (2026-06-20 — Ultimate AI Skill Pack)
 
-All planned Superpowers, GStack, and Teknovo Enterprise skills are implemented.
+| Skill | Category | Status |
+|-------|----------|--------|
+| gstack-cso | GStack | ✅ Implemented |
+| gstack-investigate | GStack | ✅ Implemented |
+| teknovo-finance | Domain | ✅ Implemented |
+| teknovo-ppdb | Domain | ✅ Implemented |
+| teknovo-cbt | Domain | ✅ Implemented |
+| teknovo-communication | Domain | ✅ Implemented |
+| teknovo-academic | Domain | ✅ Implemented |
+| teknovo-reporting | Domain | ✅ Implemented |
+| teknovo-performance-engineer | Cross-cutting | ✅ Implemented |
+| teknovo-observability | Cross-cutting | ✅ Implemented |
+| teknovo-data-migration | Cross-cutting | ✅ Implemented |
+| teknovo-integration-architect | Cross-cutting | ✅ Implemented |
+| teknovo-incident-response | Cross-cutting | ✅ Implemented |
 
-### Future Enhancements (Roadmap)
+**Gap analysis summary**: Three Pillars were complete. Roadmap M2–M5 domain and GStack extension skills were missing. Cross-cutting skills (observability, performance, migration, integration, incident response) were identified as gaps for production-grade AI workstation coverage.
+
+### Remaining Future Enhancements
 
 | Skill | Rationale | Milestone |
 |-------|-----------|-----------|
-| teknovo-finance-module | Specialized billing/payment workflows | M2 |
-| teknovo-ppdb-module | Admission-specific domain rules | M2 |
-| teknovo-cbt-module | Exam engine and proctoring rules | M3 |
-| teknovo-wa-module | WhatsApp campaign and template rules | M3 |
-| teknovo-reporting | Report generation and export standards | M3 |
-| superpowers-dispatching-parallel-agents | Concurrent subagent dispatch (from Superpowers upstream) | M2 |
-| gstack-cso | Chief Security Officer OWASP/STRIDE audit (from GStack upstream) | M4 |
-| gstack-investigate | Root cause investigation methodology | M4 |
+| superpowers-dispatching-parallel-agents | Concurrent subagent dispatch (Superpowers upstream) | M2 |
 
 ### Integration Gaps
 

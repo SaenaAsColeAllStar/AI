@@ -1,7 +1,7 @@
 # Teknovo AI SuperStack — Agent Skill Registry
 # Load autoload skills at session start; match triggers for on-demand skills.
 
-version: "1.1"
+version: "1.2"
 
 # =============================================================================
 # THREE PILLARS — Primary Role Gates
@@ -244,6 +244,98 @@ implementation:
       - "SEO"
       - "Lighthouse"
 
+  teknovo-finance:
+    path: .agents/skills/teknovo-finance/SKILL.md
+    trigger:
+      - "finance"
+      - "billing"
+      - "payment"
+      - "tagihan"
+      - "pembayaran"
+      - "kuitansi"
+      - "tunggakan"
+      - "cash book"
+
+  teknovo-ppdb:
+    path: .agents/skills/teknovo-ppdb/SKILL.md
+    trigger:
+      - "PPDB"
+      - "admission"
+      - "pendaftaran"
+      - "calon siswa"
+      - "seleksi"
+      - "registrasi ulang"
+
+  teknovo-cbt:
+    path: .agents/skills/teknovo-cbt/SKILL.md
+    trigger:
+      - "CBT"
+      - "ujian online"
+      - "bank soal"
+      - "exam"
+      - "proctoring"
+      - "hasil ujian"
+
+  teknovo-communication:
+    path: .agents/skills/teknovo-communication/SKILL.md
+    trigger:
+      - "WhatsApp"
+      - "WA template"
+      - "campaign"
+      - "notifikasi"
+      - "broadcast"
+      - "pesan WA"
+
+  teknovo-academic:
+    path: .agents/skills/teknovo-academic/SKILL.md
+    trigger:
+      - "academic"
+      - "akademik"
+      - "kelas"
+      - "absensi"
+      - "nilai"
+      - "rapor"
+      - "jadwal"
+      - "guru"
+
+  teknovo-reporting:
+    path: .agents/skills/teknovo-reporting/SKILL.md
+    trigger:
+      - "report"
+      - "dashboard"
+      - "analytics"
+      - "export PDF"
+      - "laporan"
+      - "read model"
+
+  teknovo-integration-architect:
+    path: .agents/skills/teknovo-integration-architect/SKILL.md
+    trigger:
+      - "integration"
+      - "webhook"
+      - "payment gateway"
+      - "third-party API"
+      - "external system"
+
+  teknovo-data-migration:
+    path: .agents/skills/teknovo-data-migration/SKILL.md
+    trigger:
+      - "data migration"
+      - "import legacy"
+      - "seed data"
+      - "ETL"
+      - "bulk import"
+
+  teknovo-performance-engineer:
+    path: .agents/skills/teknovo-performance-engineer/SKILL.md
+    trigger:
+      - "slow query"
+      - "optimize performance"
+      - "Lighthouse"
+      - "Core Web Vitals"
+      - "cache"
+      - "bundle size"
+
   teknovo-cloudflare-stack:
     path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
     trigger:
@@ -351,6 +443,24 @@ review:
       - "sprint review"
       - "lessons learned"
 
+  gstack-cso:
+    path: .agents/skills/gstack/cso/SKILL.md
+    trigger:
+      - "stakeholder update"
+      - "release notes"
+      - "school admin email"
+      - "rollout communication"
+      - "customer success"
+
+  teknovo-observability:
+    path: .agents/skills/teknovo-observability/SKILL.md
+    trigger:
+      - "logging"
+      - "tracing"
+      - "alerting"
+      - "SLO"
+      - "metrics dashboard"
+
   teknovo-repository-governance:
     path: .agents/skills/teknovo-repository-governance/SKILL.md
     trigger:
@@ -431,6 +541,25 @@ troubleshooting:
       - "crash"
       - "exception"
       - "debug"
+
+  gstack-investigate:
+    path: .agents/skills/gstack/investigate/SKILL.md
+    trigger:
+      - "investigate production"
+      - "root cause"
+      - "incident timeline"
+      - "production anomaly"
+      - "queue stuck"
+
+  teknovo-incident-response:
+    path: .agents/skills/teknovo-incident-response/SKILL.md
+    trigger:
+      - "incident"
+      - "outage"
+      - "rollback"
+      - "production down"
+      - "SEV-1"
+      - "emergency deploy"
 
 # =============================================================================
 # FLAT SKILL INDEX — backward-compatible lookup
@@ -607,4 +736,69 @@ skills:
     path: .agents/skills/teknovo-devops-engineer/SKILL.md
     category: review
     role: pillar-3
+    autoload: false
+
+  gstack-cso:
+    path: .agents/skills/gstack/cso/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-investigate:
+    path: .agents/skills/gstack/investigate/SKILL.md
+    category: troubleshooting
+    autoload: false
+
+  teknovo-finance:
+    path: .agents/skills/teknovo-finance/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-ppdb:
+    path: .agents/skills/teknovo-ppdb/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-cbt:
+    path: .agents/skills/teknovo-cbt/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-communication:
+    path: .agents/skills/teknovo-communication/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-academic:
+    path: .agents/skills/teknovo-academic/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-reporting:
+    path: .agents/skills/teknovo-reporting/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-performance-engineer:
+    path: .agents/skills/teknovo-performance-engineer/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-observability:
+    path: .agents/skills/teknovo-observability/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-data-migration:
+    path: .agents/skills/teknovo-data-migration/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-integration-architect:
+    path: .agents/skills/teknovo-integration-architect/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-incident-response:
+    path: .agents/skills/teknovo-incident-response/SKILL.md
+    category: cross-cutting
     autoload: false

@@ -17,7 +17,7 @@ M3: Local LLM Integration ──────── 🔲 Planned
     │
 M4: Production Deployment ──────── 🔲 Planned
     │
-M5: Domain Module Skills ───────── 🔲 Future
+M5: Domain Module Skills ───────── ✅ Complete (skills)
 ```
 
 ---
@@ -49,9 +49,9 @@ M5: Domain Module Skills ───────── 🔲 Future
 - CI integration: run skill-triggered QA on every PR
 
 **New Skills**:
+- ~~`teknovo-finance-module`~~ → **`teknovo-finance`** ✅
+- ~~`teknovo-ppdb-module`~~ → **`teknovo-ppdb`** ✅
 - `superpowers-dispatching-parallel-agents` — concurrent subagent dispatch
-- `teknovo-finance-module` — billing/payment domain rules
-- `teknovo-ppdb-module` — admission domain rules
 
 **Tasks**:
 - [ ] Docker Compose profile for Playwright + PostgreSQL test DB
@@ -89,8 +89,9 @@ M5: Domain Module Skills ───────── 🔲 Future
 - 99.9% uptime compliance for workstation services
 
 **New Skills**:
-- `gstack-cso` — Chief Security Officer OWASP/STRIDE audit
-- `gstack-investigate` — Root cause investigation methodology
+- ~~`gstack-cso`~~ → **`gstack-cso`** (customer success / stakeholder comms) ✅
+- ~~`gstack-investigate`~~ → **`gstack-investigate`** (production RCA) ✅
+- **`teknovo-incident-response`**, **`teknovo-observability`** ✅ (cross-cutting)
 
 **Tasks**:
 - [ ] Cloudflare Tunnel config for staging access
@@ -100,19 +101,24 @@ M5: Domain Module Skills ───────── 🔲 Future
 
 ---
 
-## M5: Domain Module Skills
+## M5: Domain Module Skills ✅
 
 **Target**: Q2 2027
+
+**Status**: Skills complete (2026-06-20); deep PRD integration ongoing in Teknovo-V2
 
 **Goals**:
 - Specialized skills for each Teknovo subdomain
 - Deep integration with domain PRDs and data dictionaries
 
-**New Skills**:
-- `teknovo-cbt-module` — exam engine, proctoring, question banks
-- `teknovo-wa-module` — WhatsApp templates, campaigns, delivery logs
-- `teknovo-reporting` — report generation, PDF export, scheduling
-- `teknovo-academic-module` — classes, grading, scheduling, attendance
+**Skills Delivered**:
+- [x] **`teknovo-cbt`** — exam engine, proctoring, question banks
+- [x] **`teknovo-communication`** — WhatsApp templates, campaigns, delivery logs
+- [x] **`teknovo-reporting`** — report generation, PDF export, read models
+- [x] **`teknovo-academic`** — classes, grading, scheduling, attendance
+- [x] **`teknovo-finance`** — billing, payments, finance RBAC
+- [x] **`teknovo-ppdb`** — admission workflows
+- [x] **`teknovo-performance-engineer`**, **`teknovo-data-migration`**, **`teknovo-integration-architect`** — cross-cutting
 
 ---
 
@@ -120,7 +126,7 @@ M5: Domain Module Skills ───────── 🔲 Future
 
 | Metric | M1 Baseline | M2 Target | M4 Target |
 |--------|-------------|-----------|-----------|
-| Skills available | 30 | 33 | 38 |
+| Skills available | 47 | 48 | 50 |
 | Autoload skills | 18 | 18 | 20 |
 | PRs passing QA first try | — | 70% | 90% |
 | Agent sessions skipping planning | — | 0% | 0% |

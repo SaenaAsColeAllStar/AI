@@ -2,7 +2,7 @@
 
 Complete index of all skills in the **Teknovo AI SuperStack Workstation**.
 
-**Registry**: `.agents/registry.yaml` · **Total skills**: 34
+**Registry**: `.agents/registry.yaml` · **Total skills**: 47
 
 ---
 
@@ -70,11 +70,14 @@ Adapted from [garrytan/gstack](https://github.com/garrytan/gstack). Model a virt
 | gstack-browser-testing | ❌ | E2E, Playwright, browser test | Real browser automation for user flow validation |
 | gstack-ship | ❌ | deploy, release, ship | Migration checks, env vars, merge readiness |
 | gstack-retro | ❌ | retrospective, post-mortem, sprint review | Weekly engineering retrospective and pattern improvement |
+| gstack-cso | ❌ | stakeholder update, release notes, customer success | School-facing comms, release notes, rollout briefings |
+| gstack-investigate | ❌ | investigate production, root cause, incident timeline | Production RCA with logs, traces, queues, timeline |
 
 ### GStack Sprint Loop
 
 ```text
 office-hours → eng-review → qa → browser-testing → ship → retro
+cso (stakeholder comms) · investigate (production RCA)
 ```
 
 ---
@@ -126,7 +129,54 @@ Domain-specific architectural extensions enforcing Teknovo V2 compliance. Refere
 
 ---
 
-## 4. Trigger Mapping Quick Reference
+## 4. Teknovo Domain Module Skills
+
+Deep domain expertise aligned with `docs/domain/**` and Teknovo-V2 subdomain architecture.
+
+| Skill ID | Autoload | Trigger Examples | Purpose |
+|----------|----------|------------------|---------|
+| teknovo-finance | ❌ | billing, tagihan, pembayaran, tunggakan | Fee types, bills, payments, receipts, cash books, finance RBAC |
+| teknovo-ppdb | ❌ | PPDB, pendaftaran, seleksi, admission | Applicants, verification, selection, re-registration → Student |
+| teknovo-cbt | ❌ | CBT, ujian online, bank soal, proctoring | Question banks, exams, attempts, immutable results |
+| teknovo-communication | ❌ | WhatsApp, WA template, campaign, notifikasi | Event-driven WA: templates, campaigns, delivery logs |
+| teknovo-academic | ❌ | akademik, kelas, absensi, nilai, rapor | Teachers, classes, schedules, attendance, grades |
+| teknovo-reporting | ❌ | report, dashboard, laporan, export PDF | Read-only dashboards, analytics, async exports |
+
+### Domain Document References
+
+| Skill | Primary Doc Reference |
+|-------|----------------------|
+| teknovo-finance | `docs/domain/finance-domain.md` |
+| teknovo-ppdb | `docs/domain/ppdb-domain.md` |
+| teknovo-cbt | `docs/domain/cbt-domain.md` |
+| teknovo-communication | `docs/domain/wa-domain.md` |
+| teknovo-academic | `docs/domain/academic-domain.md` |
+| teknovo-reporting | `docs/domain/reporting-domain.md` |
+
+---
+
+## 5. Teknovo Cross-Cutting Skills
+
+Production-grade capabilities complementing Three Pillars and GStack.
+
+| Skill ID | Autoload | Trigger Examples | Purpose |
+|----------|----------|------------------|---------|
+| teknovo-performance-engineer | ❌ | slow query, Lighthouse, Core Web Vitals | Query optimization, caching, bundle size, queue throughput |
+| teknovo-observability | ❌ | logging, tracing, alerting, SLO | Structured logs, metrics, alerts, SLOs (complements devops-engineer) |
+| teknovo-data-migration | ❌ | data migration, seed data, bulk import | Legacy import, seed scripts, integrity validation |
+| teknovo-integration-architect | ❌ | webhook, payment gateway, third-party API | External adapters, idempotent callbacks, resilience |
+| teknovo-incident-response | ❌ | incident, outage, rollback, SEV-1 | Outage command, rollback decisions, postmortem |
+
+### Cross-Cutting Handoff Chain
+
+```text
+incident-response → investigate → [domain skill fix] → observability (alerts)
+                  → cso (external comms) → retro (postmortem)
+```
+
+---
+
+## 6. Trigger Mapping Quick Reference
 
 | User Intent | Skills Loaded |
 |-------------|---------------|
@@ -142,17 +192,16 @@ Domain-specific architectural extensions enforcing Teknovo V2 compliance. Refere
 | "PRD alignment check" | chief-product-designer → prd-generator (if gaps) |
 | "Run E2E tests on the portal" | browser-testing → qa |
 | "What did we learn this sprint?" | retro |
+| "Production payment failures" | investigate → teknovo-finance → incident-response |
+| "Release notes for school admin" | cso |
+| "Import legacy student data" | data-migration → chief-architect |
+| "Payment gateway webhook" | integration-architect → teknovo-finance → security-review |
+| "Finance billing feature" | chief-product-designer → chief-architect → teknovo-finance → feature-implementation |
 
 ---
 
-## 5. Future Skills (Roadmap)
+## 7. Future Skills (Roadmap)
 
 | Skill | Category | Milestone |
 |-------|----------|-----------|
-| teknovo-finance-module | Enterprise | M2 |
-| teknovo-ppdb-module | Enterprise | M2 |
-| teknovo-cbt-module | Enterprise | M3 |
-| teknovo-wa-module | Enterprise | M3 |
-| gstack-cso | GStack | M4 |
-| gstack-investigate | GStack | M4 |
 | superpowers-dispatching-parallel-agents | Superpowers | M2 |

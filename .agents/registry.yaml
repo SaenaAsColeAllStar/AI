@@ -1,0 +1,514 @@
+# Teknovo AI SuperStack — Agent Skill Registry
+# Load autoload skills at session start; match triggers for on-demand skills.
+
+version: "1.0"
+
+# =============================================================================
+# AUTO-LOAD SKILLS — loaded at every session start
+# =============================================================================
+autoload:
+  - superpowers-brainstorming
+  - superpowers-writing-plans
+  - superpowers-executing-plans
+  - superpowers-verification-before-completion
+  - superpowers-test-driven-development
+  - gstack-eng-review
+  - gstack-qa
+  - teknovo-rbac-architect
+  - teknovo-database-architect
+  - teknovo-feature-implementation
+  - teknovo-repository-governance
+  - teknovo-testing-architect
+  - teknovo-api-architect
+  - teknovo-security-review
+  - teknovo-ui-ux
+  - teknovo-backend-development
+  - teknovo-domain-management
+  - teknovo-landing-page
+
+# =============================================================================
+# PLANNING SKILLS — requirements, design, consultation
+# =============================================================================
+planning:
+  superpowers-brainstorming:
+    path: .agents/skills/superpowers/brainstorming/SKILL.md
+    trigger:
+      - "new feature"
+      - "design"
+      - "requirements"
+      - "brainstorm"
+      - "starting task"
+
+  superpowers-writing-plans:
+    path: .agents/skills/superpowers/writing-plans/SKILL.md
+    trigger:
+      - "implementation plan"
+      - "create plan"
+      - "draft roadmap"
+      - "plan feature"
+
+  gstack-office-hours:
+    path: .agents/skills/gstack/office-hours/SKILL.md
+    trigger:
+      - "blocker"
+      - "consultation"
+      - "unclear requirements"
+      - "architectural question"
+
+  teknovo-prd-generator:
+    path: .agents/skills/teknovo-prd-generator/SKILL.md
+    trigger:
+      - "create PRD"
+      - "product requirements"
+      - "module requirements"
+      - "write spec"
+
+  teknovo-ui-ux-specialist:
+    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+    trigger:
+      - "UX review"
+      - "design review"
+      - "navigation planning"
+      - "information architecture"
+      - "user flow"
+      - "dashboard planning"
+      - "form planning"
+      - "UX audit"
+      - "UX review session"
+
+  teknovo-chief-product-designer:
+    path: .agents/skills/teknovo-chief-product-designer/SKILL.md
+    trigger:
+      - "product design review"
+      - "product strategy"
+      - "UX strategy"
+      - "user journey"
+      - "navigation architecture"
+      - "landing page review"
+      - "dashboard strategy"
+      - "AI-ish design"
+      - "AI-ish design detection"
+      - "conversion optimization"
+      - "before UI implementation"
+      - "product design analysis"
+      - "IA review"
+
+# =============================================================================
+# IMPLEMENTATION SKILLS — coding, TDD, orchestration
+# =============================================================================
+implementation:
+  superpowers-executing-plans:
+    path: .agents/skills/superpowers/executing-plans/SKILL.md
+    trigger:
+      - "execute plan"
+      - "implement checklist"
+      - "build from plan"
+
+  superpowers-test-driven-development:
+    path: .agents/skills/superpowers/test-driven-development/SKILL.md
+    trigger:
+      - "write tests"
+      - "TDD"
+      - "red green refactor"
+      - "coverage"
+
+  superpowers-subagent-driven-development:
+    path: .agents/skills/superpowers/subagent-driven-development/SKILL.md
+    trigger:
+      - "subagent"
+      - "parallel tasks"
+      - "orchestrate agents"
+      - "delegate task"
+
+  superpowers-using-git-worktrees:
+    path: .agents/skills/superpowers/using-git-worktrees/SKILL.md
+    trigger:
+      - "worktree"
+      - "parallel branch"
+      - "isolated workspace"
+
+  teknovo-feature-implementation:
+    path: .agents/skills/teknovo-feature-implementation/SKILL.md
+    trigger:
+      - "implement feature"
+      - "build feature"
+      - "create endpoint"
+      - "write service"
+
+  teknovo-backend-development:
+    path: .agents/skills/teknovo-backend-development/SKILL.md
+    trigger:
+      - "backend"
+      - "controller"
+      - "repository"
+      - "module definition"
+
+  teknovo-database-architect:
+    path: .agents/skills/teknovo-database-architect/SKILL.md
+    trigger:
+      - "schema"
+      - "migration"
+      - "drizzle"
+      - "postgresql"
+      - "UUID v7"
+
+  teknovo-api-architect:
+    path: .agents/skills/teknovo-api-architect/SKILL.md
+    trigger:
+      - "REST API"
+      - "endpoint"
+      - "swagger"
+      - "openapi"
+      - "DTO"
+
+  teknovo-rbac-architect:
+    path: .agents/skills/teknovo-rbac-architect/SKILL.md
+    trigger:
+      - "permission"
+      - "role"
+      - "RBAC"
+      - "route guard"
+      - "access control"
+
+  teknovo-ui-ux:
+    path: .agents/skills/teknovo-ui-ux/SKILL.md
+    trigger:
+      - "UI"
+      - "page layout"
+      - "component"
+      - "design system"
+      - "Phosphor icons"
+
+  teknovo-ui-ux-specialist:
+    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+    trigger:
+      - "build UI"
+      - "create page"
+      - "design dashboard"
+      - "frontend architecture"
+      - "page layout plan"
+
+  teknovo-domain-management:
+    path: .agents/skills/teknovo-domain-management/SKILL.md
+    trigger:
+      - "domain event"
+      - "cross-domain"
+      - "data ownership"
+      - "DDD"
+
+  teknovo-landing-page:
+    path: .agents/skills/teknovo-landing-page/SKILL.md
+    trigger:
+      - "landing page"
+      - "marketing site"
+      - "SEO"
+      - "Lighthouse"
+
+  teknovo-cloudflare-stack:
+    path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+    trigger:
+      - "cloudflare"
+      - "tunnel"
+      - "R2"
+      - "DNS"
+      - "edge config"
+
+# =============================================================================
+# REVIEW SKILLS — quality gates, security, shipping
+# =============================================================================
+review:
+  superpowers-verification-before-completion:
+    path: .agents/skills/superpowers/verification-before-completion/SKILL.md
+    trigger:
+      - "done"
+      - "complete"
+      - "finish task"
+      - "verify"
+
+  superpowers-requesting-code-review:
+    path: .agents/skills/superpowers/requesting-code-review/SKILL.md
+    trigger:
+      - "pull request"
+      - "PR"
+      - "code review"
+      - "merge request"
+
+  superpowers-receiving-code-review:
+    path: .agents/skills/superpowers/receiving-code-review/SKILL.md
+    trigger:
+      - "review feedback"
+      - "address comments"
+      - "review changes"
+
+  superpowers-finishing-development-branch:
+    path: .agents/skills/superpowers/finishing-development-branch/SKILL.md
+    trigger:
+      - "merge branch"
+      - "finish branch"
+      - "cleanup worktree"
+
+  gstack-eng-review:
+    path: .agents/skills/gstack/eng-review/SKILL.md
+    trigger:
+      - "engineering review"
+      - "layer audit"
+      - "architecture review"
+
+  gstack-qa:
+    path: .agents/skills/gstack/qa/SKILL.md
+    trigger:
+      - "QA"
+      - "functional test"
+      - "user flow"
+      - "validate feature"
+
+  gstack-browser-testing:
+    path: .agents/skills/gstack/browser-testing/SKILL.md
+    trigger:
+      - "E2E"
+      - "Playwright"
+      - "browser test"
+      - "page interaction"
+
+  gstack-ship:
+    path: .agents/skills/gstack/ship/SKILL.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "merge to staging"
+
+  gstack-retro:
+    path: .agents/skills/gstack/retro/SKILL.md
+    trigger:
+      - "retrospective"
+      - "post-mortem"
+      - "sprint review"
+      - "lessons learned"
+
+  teknovo-repository-governance:
+    path: .agents/skills/teknovo-repository-governance/SKILL.md
+    trigger:
+      - "folder structure"
+      - "naming convention"
+      - "monorepo"
+      - "kebab-case"
+
+  teknovo-testing-architect:
+    path: .agents/skills/teknovo-testing-architect/SKILL.md
+    trigger:
+      - "test plan"
+      - "vitest"
+      - "coverage audit"
+      - "integration test"
+
+  teknovo-security-review:
+    path: .agents/skills/teknovo-security-review/SKILL.md
+    trigger:
+      - "security audit"
+      - "CORS"
+      - "JWT"
+      - "rate limit"
+      - "OWASP"
+
+  teknovo-ui-ux-specialist:
+    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+    trigger:
+      - "dashboard review"
+      - "form audit"
+      - "table audit"
+      - "accessibility audit"
+      - "a11y review"
+      - "mobile UX review"
+      - "design QA"
+      - "pre-release UX"
+      - "UX score"
+
+  teknovo-chief-product-designer:
+    path: .agents/skills/teknovo-chief-product-designer/SKILL.md
+    trigger:
+      - "product design review"
+      - "AI-ish design detection"
+      - "generic dashboard"
+      - "template design"
+      - "conversion funnel review"
+      - "ERP dashboard philosophy"
+
+# =============================================================================
+# TROUBLESHOOTING SKILLS — debugging and root cause analysis
+# =============================================================================
+troubleshooting:
+  superpowers-systematic-debugging:
+    path: .agents/skills/superpowers/systematic-debugging/SKILL.md
+    trigger:
+      - "bug"
+      - "error"
+      - "fail"
+      - "stacktrace"
+      - "crash"
+      - "exception"
+      - "debug"
+
+# =============================================================================
+# FLAT SKILL INDEX — backward-compatible lookup
+# =============================================================================
+skills:
+  superpowers-brainstorming:
+    path: .agents/skills/superpowers/brainstorming/SKILL.md
+    category: planning
+    autoload: true
+
+  superpowers-writing-plans:
+    path: .agents/skills/superpowers/writing-plans/SKILL.md
+    category: planning
+    autoload: true
+
+  superpowers-executing-plans:
+    path: .agents/skills/superpowers/executing-plans/SKILL.md
+    category: implementation
+    autoload: true
+
+  superpowers-systematic-debugging:
+    path: .agents/skills/superpowers/systematic-debugging/SKILL.md
+    category: troubleshooting
+    autoload: false
+
+  superpowers-verification-before-completion:
+    path: .agents/skills/superpowers/verification-before-completion/SKILL.md
+    category: review
+    autoload: true
+
+  superpowers-requesting-code-review:
+    path: .agents/skills/superpowers/requesting-code-review/SKILL.md
+    category: review
+    autoload: false
+
+  superpowers-receiving-code-review:
+    path: .agents/skills/superpowers/receiving-code-review/SKILL.md
+    category: review
+    autoload: false
+
+  superpowers-test-driven-development:
+    path: .agents/skills/superpowers/test-driven-development/SKILL.md
+    category: implementation
+    autoload: true
+
+  superpowers-subagent-driven-development:
+    path: .agents/skills/superpowers/subagent-driven-development/SKILL.md
+    category: implementation
+    autoload: false
+
+  superpowers-using-git-worktrees:
+    path: .agents/skills/superpowers/using-git-worktrees/SKILL.md
+    category: implementation
+    autoload: false
+
+  superpowers-finishing-development-branch:
+    path: .agents/skills/superpowers/finishing-development-branch/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-office-hours:
+    path: .agents/skills/gstack/office-hours/SKILL.md
+    category: planning
+    autoload: false
+
+  gstack-eng-review:
+    path: .agents/skills/gstack/eng-review/SKILL.md
+    category: review
+    autoload: true
+
+  gstack-qa:
+    path: .agents/skills/gstack/qa/SKILL.md
+    category: review
+    autoload: true
+
+  gstack-browser-testing:
+    path: .agents/skills/gstack/browser-testing/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-ship:
+    path: .agents/skills/gstack/ship/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-retro:
+    path: .agents/skills/gstack/retro/SKILL.md
+    category: review
+    autoload: false
+
+  teknovo-rbac-architect:
+    path: .agents/skills/teknovo-rbac-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-cloudflare-stack:
+    path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+    category: implementation
+    autoload: false
+
+  teknovo-database-architect:
+    path: .agents/skills/teknovo-database-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-prd-generator:
+    path: .agents/skills/teknovo-prd-generator/SKILL.md
+    category: planning
+    autoload: false
+
+  teknovo-feature-implementation:
+    path: .agents/skills/teknovo-feature-implementation/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-repository-governance:
+    path: .agents/skills/teknovo-repository-governance/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-testing-architect:
+    path: .agents/skills/teknovo-testing-architect/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-api-architect:
+    path: .agents/skills/teknovo-api-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-security-review:
+    path: .agents/skills/teknovo-security-review/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-ui-ux:
+    path: .agents/skills/teknovo-ui-ux/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-backend-development:
+    path: .agents/skills/teknovo-backend-development/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-domain-management:
+    path: .agents/skills/teknovo-domain-management/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-landing-page:
+    path: .agents/skills/teknovo-landing-page/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-ui-ux-specialist:
+    path: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+    category: review
+    autoload: false
+
+  teknovo-chief-product-designer:
+    path: .agents/skills/teknovo-chief-product-designer/SKILL.md
+    category: planning
+    autoload: false

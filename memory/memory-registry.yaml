@@ -9,6 +9,8 @@ last_updated: "2026-06-20"
 integrations:
   skill_registry: registry/skill-registry.yaml
   agent_registry: registry/agent-registry.yaml
+  platform_agent_registry: registry/agents.yaml
+  platform_mcp_registry: registry/mcp.yaml
   execution_registry: execution/execution-registry.yaml
   governance: docs/ai/skill-governance.md
   skill_loader: ai-agent/runtime/load-skills.py
@@ -101,6 +103,23 @@ artifacts:
     priority: 10
     autoload: false
     trigger: [execution, before implementation, deploy]
+
+  platform-architecture:
+    path: docs/ai/AI_PLATFORM.md
+    description: Multi-agent platform — orchestrator, specialists, registries, workflow
+    category: platform
+    refresh_policy: manual
+    priority: 11
+    autoload: false
+    trigger: [multi-agent, orchestrator, platform agent, dispatch]
+
+  platform-readme:
+    path: platform/README.md
+    description: Platform quick start and component index
+    category: platform
+    refresh_policy: manual
+    priority: 12
+    autoload: false
 
   # Taste Layer artifacts — full index in taste/taste-registry.yaml
   # Precedence: Taste > Quality. Loader layer=2 (after memory, before quality).
@@ -445,8 +464,12 @@ sources:
     - .agents/AGENTS.md
     - registry/skill-registry.yaml
     - registry/agent-registry.yaml
+    - registry/agents.yaml
+    - registry/mcp.yaml
     - .agents/registry.yaml
     - docs/ai/
+    - docs/ai/AI_PLATFORM.md
+    - platform/
     - taste/taste-registry.yaml
     - quality/quality-registry.yaml
     - security/security-registry.yaml

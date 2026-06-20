@@ -1,0 +1,52 @@
+id: platform-testing
+name: Platform Testing Agent
+type: platform
+priority: high
+path: agents/testing/AGENT.md
+
+skills:
+  required:
+    - teknovo-testing-architect
+    - gstack-qa
+    - superpowers-verification-before-completion
+    - agents-md
+  recommended:
+    - gstack-browser-testing
+    - superpowers-test-driven-development
+    - teknovo-performance-engineer
+    - teknovo-security-review
+
+mcps:
+  required:
+    - filesystem-mcp
+    - shell-mcp
+  recommended:
+    - git-mcp
+    - postgres-mcp
+
+triggers:
+  - test
+  - unit test
+  - integration test
+  - e2e
+  - playwright
+  - jest
+  - vitest
+  - lighthouse
+  - performance
+  - security scan
+  - coverage
+
+keywords:
+  - test
+  - testing
+  - jest
+  - vitest
+  - e2e
+  - playwright
+  - coverage
+  - lighthouse
+  - performance
+  - security
+  - qa
+  - verify

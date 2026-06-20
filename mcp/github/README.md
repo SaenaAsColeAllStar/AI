@@ -14,19 +14,34 @@ npm start
 
 ## Tools
 
+### Canonical (Platform)
+
+| Tool | Description |
+|------|-------------|
+| `create_repository` | Create repository |
+| `create_branch` | Create branch from existing branch |
+| `create_issue` | Create issue |
+| `create_pull_request` | Create pull request |
+| `list_pull_requests` | List pull requests |
+| `commit_changes` | Commit file changes via Git API |
+| `create_release` | Create release |
+| `repository_analysis` | Analyze repo metadata and activity |
+
+### Legacy
+
 | Tool | Description |
 |------|-------------|
 | `repo_list` | List repositories |
-| `repo_create` | Create repository |
-| `pr_list` | List pull requests |
-| `pr_create` | Create pull request |
+| `repo_create` | Create repository (alias) |
+| `pr_list` | List pull requests (alias) |
+| `pr_create` | Create pull request (alias) |
 | `pr_merge` | Merge pull request |
 | `issue_list` | List issues |
-| `issue_create` | Create issue |
+| `issue_create` | Create issue (alias) |
 | `workflow_list` | List workflows |
 | `workflow_dispatch` | Dispatch workflow |
 
-See [docs/API.md](docs/API.md) for schemas.
+Secrets load from Teknovo secret store (`github.env`). See [docs/API.md](docs/API.md) for schemas.
 
 ## Cursor Configuration
 

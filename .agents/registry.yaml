@@ -9,10 +9,37 @@ version: "1.6"
 orchestration:
   canonical: registry/skill-registry.yaml
   agents: registry/agent-registry.yaml
+  platform_agents: registry/agents.yaml
   mcp: registry/mcp-registry.yaml
+  platform_mcp: registry/mcp.yaml
+  platform_skills: registry/skills.yaml
+  orchestrator: agents/orchestrator/orchestrator.js
   governance: docs/ai/skill-governance.md
   inventory: docs/ai/skill-inventory.md
   skill_loader: ai-agent/runtime/load-skills.py
+  platform_doc: docs/ai/AI_PLATFORM.md
+
+# =============================================================================
+# MULTI-AGENT PLATFORM — Orchestrator + Specialist Agents
+# =============================================================================
+platform_agents:
+  orchestrator:
+    path: agents/orchestrator/AGENT.md
+    entry: agents/orchestrator/orchestrator.js
+    config: agents/orchestrator/config.yaml
+    autoload: true
+  platform-frontend:
+    path: agents/frontend/AGENT.md
+    config: agents/frontend/config.yaml
+  platform-backend:
+    path: agents/backend/AGENT.md
+    config: agents/backend/config.yaml
+  platform-devops:
+    path: agents/devops/AGENT.md
+    config: agents/devops/config.yaml
+  platform-testing:
+    path: agents/testing/AGENT.md
+    config: agents/testing/config.yaml
 
 # =============================================================================
 # THREE PILLARS — Primary Role Gates

@@ -15,10 +15,12 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { configureLogger, logger } from './lib/logger.js';
+import { loadGithubSecrets } from '../shared/secrets.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: join(__dirname, '.env') });
+loadGithubSecrets();
 configureLogger({});
 
 /**

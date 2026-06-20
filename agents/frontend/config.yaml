@@ -1,0 +1,50 @@
+id: platform-frontend
+name: Platform Frontend Agent
+type: platform
+priority: high
+path: agents/frontend/AGENT.md
+
+skills:
+  required:
+    - teknovo-ui-ux
+    - teknovo-ui-ux-specialist
+    - agents-md
+  recommended:
+    - teknovo-landing-page
+    - teknovo-chief-product-designer
+    - taste-ux-principles
+    - quality-ux-principles
+    - gstack-browser-testing
+
+mcps:
+  required:
+    - filesystem-mcp
+  recommended:
+    - git-mcp
+    - web-fetch-mcp
+
+triggers:
+  - next.js
+  - react
+  - tailwind
+  - ui
+  - frontend
+  - landing page
+  - seo
+  - accessibility
+  - a11y
+  - dashboard
+  - component
+
+keywords:
+  - next.js
+  - react
+  - tailwind
+  - ui
+  - ux
+  - seo
+  - a11y
+  - landing
+  - page
+  - component
+  - design

@@ -20,7 +20,34 @@ This document defines the identity, rules, and development lifecycle for all age
 9. **Load execution context when implementing or deploying** — `.agents/EXECUTION.md`, `execution/execution-registry.yaml` (see § 3.6); **branch safety before first edit**
 10. **Never skip planning** — no code before analysis completes (unless Principal Architect requests execution-only mode per § 3.6)
 
-> **Registry**: `registry/README.md` · **Inventory**: `docs/ai/skill-inventory.md` · **Governance**: `docs/ai/skill-governance.md` · **Agents**: `registry/agent-registry.yaml` · **MCP**: `registry/mcp-registry.yaml`
+> **Registry**: `registry/README.md` · **Inventory**: `docs/ai/skill-inventory.md` · **Governance**: `docs/ai/skill-governance.md` · **Agents**: `registry/agent-registry.yaml` · **MCP**: `registry/mcp-registry.yaml` · **Platform**: `registry/agents.yaml`, `docs/ai/AI_PLATFORM.md`
+
+---
+
+## Multi-Agent Platform
+
+The **Teknovo Multi-Agent Platform** (`agents/orchestrator/`, `platform/`) routes tasks to specialized agents with skill and MCP discovery.
+
+| Agent | Path | Domain |
+|-------|------|--------|
+| Orchestrator | `agents/orchestrator/` | Task routing, dispatch, parallel coordination |
+| Frontend | `agents/frontend/` | Next.js, React, Tailwind, UI, SEO, a11y |
+| Backend | `agents/backend/` | Node/TS, REST, DB, auth, RBAC |
+| DevOps | `agents/devops/` | Docker, CI/CD, Cloudflare, deploy verify |
+| Testing | `agents/testing/` | Unit, integration, E2E, Lighthouse |
+
+**Registries (split)**:
+- `registry/agents.yaml` — platform + reviewer agents
+- `registry/skills.yaml` — index to `skill-registry.yaml`
+- `registry/mcp.yaml` — MCP servers, secret paths, tools, risk levels
+
+**Shared libraries**: `shared/secret-store/`, `shared/logging/`, `shared/validation/`, `shared/workflow/`
+
+**Orchestrator API**: `agents/orchestrator/orchestrator.js` — `routeTask()`, `dispatchTask()`, `dispatchParallel()`
+
+**Failure recovery**: 10 retries via `shared/workflow` (aligned with `execution/execution-registry.yaml`)
+
+See `docs/ai/AI_PLATFORM.md` and `platform/ARCHITECTURE.md`.
 
 ---
 
@@ -317,6 +344,7 @@ Discovery → Planning → Taste → Assurance Review → [Pillar 1] → Archite
 
 ```text
 Teknovo AI SuperStack
+├── Multi-Agent Platform (orchestrator, frontend/backend/devops/testing agents, shared/workflow)
 ├── Execution Layer V2 (EXECUTION.md, branch-policy, failure-recovery, deployment-mode, qwen3:32b lock)
 ├── Taste Layer (taste-reviewer, taste-gates, design/product/ux/architecture/copy principles)
 ├── Assurance Layer (requirement-clarifier, context-builder, differential-reviewer, second-opinion)
@@ -353,4 +381,7 @@ Teknovo AI SuperStack
 | Skill Inventory | `docs/ai/skill-inventory.md` |
 | Skill Governance | `docs/ai/skill-governance.md` |
 | Agent Registry | `registry/agent-registry.yaml` |
+| Platform Agent Registry | `registry/agents.yaml` |
 | MCP Registry | `registry/mcp-registry.yaml` |
+| Platform MCP Registry | `registry/mcp.yaml` |
+| Multi-Agent Platform | `docs/ai/AI_PLATFORM.md` |

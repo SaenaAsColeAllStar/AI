@@ -1,0 +1,53 @@
+id: platform-backend
+name: Platform Backend Agent
+type: platform
+priority: high
+path: agents/backend/AGENT.md
+
+skills:
+  required:
+    - teknovo-backend-development
+    - teknovo-api-architect
+    - teknovo-database-architect
+    - teknovo-rbac-architect
+    - agents-md
+  recommended:
+    - teknovo-chief-architect
+    - teknovo-feature-implementation
+    - security-api-security
+    - security-database-security
+    - security-rbac-security
+
+mcps:
+  required:
+    - filesystem-mcp
+    - git-mcp
+  recommended:
+    - postgres-mcp
+    - github-mcp
+
+triggers:
+  - backend
+  - api
+  - rest
+  - database
+  - migration
+  - rbac
+  - auth
+  - nestjs
+  - drizzle
+  - codeigniter
+  - ci4
+
+keywords:
+  - backend
+  - api
+  - rest
+  - database
+  - migration
+  - rbac
+  - auth
+  - service
+  - repository
+  - controller
+  - postgres

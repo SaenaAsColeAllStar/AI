@@ -10,6 +10,7 @@ metadata:
   security_doc: security/ai-agent-security.md
   secret_store_doc: docs/SECRET_STORE.md
   skill_registry: registry/skill-registry.yaml
+  platform_registry: registry/mcp.yaml
   governance_doc: docs/ai/skill-governance.md
 
 secret_store:
@@ -152,6 +153,15 @@ integrations:
     depends_on_skills: [security-ai-agent-security, gstack-ship, teknovo-devops-engineer, teknovo-mcp-stack]
     teknovo_use: GitHub Actions CI/CD, PR automation, Bugbot integration
     tools:
+      - create_repository
+      - create_branch
+      - create_issue
+      - create_pull_request
+      - list_pull_requests
+      - commit_changes
+      - create_release
+      - repository_analysis
+      # legacy
       - repo_list
       - repo_create
       - pr_list
@@ -161,7 +171,13 @@ integrations:
       - issue_create
       - workflow_list
       - workflow_dispatch
-    notes: Requires GITHUB_TOKEN. Pair with gstack-ship and superpowers-requesting-code-review
+    secret_store:
+      loader: mcp/shared/secrets.js
+      file: github.env
+      path_linux: /root/.config/teknovo/secrets/github.env
+      path_windows: "%USERPROFILE%\\.config\\teknovo\\secrets\\github.env"
+      keys: [GITHUB_TOKEN]
+    notes: Requires GITHUB_TOKEN via Teknovo secret store. Pair with gstack-ship and superpowers-requesting-code-review
 
   cloudflare-mcp:
     id: cloudflare-mcp

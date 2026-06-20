@@ -4,6 +4,7 @@
 
 import { z } from 'zod';
 import { logger } from './logger.js';
+import { loadGithubSecrets, getGithubToken } from '../../shared/secrets.js';
 
 const envSchema = z.object({
   GITHUB_TOKEN: z.string().min(1, 'GITHUB_TOKEN is required'),
@@ -14,7 +15,10 @@ const envSchema = z.object({
  * @param {NodeJS.ProcessEnv} [env]
  */
 export function validateEnv(env = process.env) {
-  const result = envSchema.safeParse(env);
+  loadGithubSecrets();
+  const token = getGithubToken() ?? env.GITHUB_TOKEN;
+
+  const result = envSchema.safeParse({ ...env, GITHUB_TOKEN: token });
   if (result.success) {
     return {
       ok: true,
@@ -26,7 +30,7 @@ export function validateEnv(env = process.env) {
   }
 
   const missing = result.error.issues.map((i) => i.path.join('.'));
-  const error = `Missing or invalid GitHub credentials: ${missing.join(', ')}. Copy .env.example to .env and set GITHUB_TOKEN.`;
+  const error = `Missing or invalid GitHub credentials: ${missing.join(', ')}. Configure github.env in Teknovo secret store or set GITHUB_TOKEN.`;
   logger.warn('Environment validation failed', { missing });
   return { ok: false, error, missing };
 }
@@ -146,6 +150,44 @@ export const workflowDispatchSchema = z.object({
   workflow_id: z.union([z.string().min(1), z.number().int().positive()]),
   ref: z.string().min(1),
   inputs: z.record(z.string()).optional(),
+});
+
+export const branchCreateSchema = z.object({
+  owner: z.string().min(1).optional(),
+  repo: z.string().min(1),
+  branch: z.string().min(1),
+  from_branch: z.string().min(1).optional(),
+});
+
+export const commitChangesSchema = z.object({
+  owner: z.string().min(1).optional(),
+  repo: z.string().min(1),
+  branch: z.string().min(1),
+  message: z.string().min(1),
+  files: z
+    .array(
+      z.object({
+        path: z.string().min(1),
+        content: z.string(),
+      })
+    )
+    .min(1),
+});
+
+export const releaseCreateSchema = z.object({
+  owner: z.string().min(1).optional(),
+  repo: z.string().min(1),
+  tag_name: z.string().min(1),
+  name: z.string().optional(),
+  body: z.string().optional(),
+  draft: z.boolean().optional(),
+  prerelease: z.boolean().optional(),
+  target_commitish: z.string().optional(),
+});
+
+export const repositoryAnalysisSchema = z.object({
+  owner: z.string().min(1).optional(),
+  repo: z.string().min(1),
 });
 
 /**

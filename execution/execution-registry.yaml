@@ -192,6 +192,19 @@ bundles:
 integrations:
   agents_md: AGENTS.md
   skill_registry: registry/skill-registry.yaml
+  platform_skills: registry/skills.yaml
+  platform_agents: registry/agents.yaml
+  platform_mcp: registry/mcp.yaml
+  orchestrator: agents/orchestrator/orchestrator.js
+  workflow_engine: shared/workflow/index.js
   memory_registry: memory/memory-registry.yaml
   assurance: assurance/review-workflow.md
   quality: quality/quality-gates.md
+
+orchestrator:
+  entry: agents/orchestrator/orchestrator.js
+  registry_agents: registry/agents.yaml
+  registry_mcp: registry/mcp.yaml
+  shared_workflow: shared/workflow/index.js
+  max_retries: 10
+  doc: docs/ai/AI_PLATFORM.md

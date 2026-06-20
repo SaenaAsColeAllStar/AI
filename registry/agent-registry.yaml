@@ -9,6 +9,7 @@ metadata:
   name: Teknovo Agent Registry
   last_updated: "2026-06-20"
   skill_registry: registry/skill-registry.yaml
+  platform_registry: registry/agents.yaml
   governance_doc: docs/ai/skill-governance.md
 
 agent_types:

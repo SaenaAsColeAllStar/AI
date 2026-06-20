@@ -9,6 +9,9 @@ Central orchestration layer for the Teknovo AI SuperStack — skill discovery, a
 | `skill-registry.yaml` | **Single source of truth** — 97 skills with layer, priority, triggers, dependencies, conflicts |
 | `agent-registry.yaml` | Maps 20+ agents (Pillars, reviewers, GStack, Cursor runtime) to skill sets |
 | `mcp-registry.yaml` | MCP servers — permissions, risk levels, configured vs planned |
+| `agents.yaml` | **Platform split** — orchestrator + frontend/backend/devops/testing + reviewers |
+| `skills.yaml` | Platform skills index → `skill-registry.yaml` |
+| `mcp.yaml` | Platform MCP index — tools, secret paths, risk levels |
 
 ## Quick Start
 

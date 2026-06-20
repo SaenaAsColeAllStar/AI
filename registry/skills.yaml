@@ -1,0 +1,73 @@
+# Teknovo Skills Registry (Platform Split)
+# Pointer to canonical skill-registry.yaml — do not duplicate skill definitions.
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Platform Skills Index
+  canonical: registry/skill-registry.yaml
+  legacy: .agents/registry.yaml
+  loader: ai-agent/runtime/load-skills.py
+  governance: docs/ai/skill-governance.md
+
+canonical_registry:
+  path: registry/skill-registry.yaml
+  description: Single source of truth for all skill definitions, layers, bundles, triggers
+
+legacy_registry:
+  path: .agents/registry.yaml
+  description: Autoload and lifecycle compatibility index
+
+discovery:
+  skills_root: .agents/skills
+  pattern: "**/SKILL.md"
+  orchestrator_api: agents/orchestrator/orchestrator.js#discoverSkills
+
+platform_bundles:
+  platform-session:
+    description: Default bundle for multi-agent platform sessions
+    skills:
+      - agents-md
+      - superpowers-dispatching-parallel-agents
+      - superpowers-executing-plans
+      - superpowers-verification-before-completion
+      - teknovo-mcp-stack
+
+  platform-frontend:
+    description: Frontend agent skill bundle
+    skills:
+      - teknovo-ui-ux
+      - teknovo-ui-ux-specialist
+      - teknovo-landing-page
+      - taste-ux-principles
+
+  platform-backend:
+    description: Backend agent skill bundle
+    skills:
+      - teknovo-backend-development
+      - teknovo-api-architect
+      - teknovo-database-architect
+      - teknovo-rbac-architect
+      - teknovo-feature-implementation
+
+  platform-devops:
+    description: DevOps agent skill bundle
+    skills:
+      - teknovo-devops-engineer
+      - teknovo-cloudflare-stack
+      - gstack-ship
+      - security-cloudflare-security
+
+  platform-testing:
+    description: Testing agent skill bundle
+    skills:
+      - teknovo-testing-architect
+      - gstack-qa
+      - gstack-browser-testing
+      - superpowers-test-driven-development
+
+cross_reference:
+  agent_registry: registry/agents.yaml
+  mcp_registry: registry/mcp.yaml
+  memory_registry: memory/memory-registry.yaml

@@ -175,8 +175,11 @@ describe('tool handlers', () => {
 describe('server discovery', () => {
   it('discovers all github tools', async () => {
     const tools = await discoverTools();
-    expect(tools.size).toBe(9);
+    expect(tools.size).toBe(17);
     expect(tools.has('repo_list')).toBe(true);
+    expect(tools.has('create_repository')).toBe(true);
+    expect(tools.has('create_branch')).toBe(true);
+    expect(tools.has('repository_analysis')).toBe(true);
     expect(tools.has('workflow_dispatch')).toBe(true);
   });
 

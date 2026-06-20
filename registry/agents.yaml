@@ -1,0 +1,171 @@
+# Teknovo Agent Registry (Platform Split)
+# Canonical platform agents + cross-ref to legacy registry/agent-registry.yaml
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Platform Agent Registry
+  legacy_registry: registry/agent-registry.yaml
+  skill_registry: registry/skills.yaml
+  mcp_registry: registry/mcp.yaml
+  orchestrator: agents/orchestrator/orchestrator.js
+
+agent_types:
+  platform: Multi-agent platform specialists (orchestrator, frontend, backend, devops, testing)
+  pillar: Primary role gates
+  review: Quality, taste, security reviewers
+  assurance: Verification agents
+  operational: GStack sprint loop
+  specialist: Domain and technical skills
+  runtime: Cursor subagents
+
+agents:
+
+  # ─── PLATFORM AGENTS ──────────────────────────────────────────────────────
+  orchestrator:
+    id: orchestrator
+    type: platform
+    path: agents/orchestrator/AGENT.md
+    entry: agents/orchestrator/orchestrator.js
+    config: agents/orchestrator/config.yaml
+    priority: critical
+    activate_when: [orchestrate, route task, dispatch agent, multi-agent, parallel agents]
+    keywords: [orchestrator, routing, dispatch, workflow, coordination]
+    skills:
+      required: [agents-md, superpowers-dispatching-parallel-agents]
+      recommended: [teknovo-mcp-stack, context-builder]
+
+  platform-frontend:
+    id: platform-frontend
+    type: platform
+    path: agents/frontend/AGENT.md
+    entry: agents/frontend/index.js
+    config: agents/frontend/config.yaml
+    priority: high
+    activate_when: [next.js, react, tailwind, ui, frontend, landing page, seo, accessibility, a11y]
+    keywords: [next.js, react, tailwind, ui, ux, seo, a11y, landing, component, design]
+    skills:
+      required: [teknovo-ui-ux, teknovo-ui-ux-specialist]
+      recommended: [teknovo-landing-page, taste-ux-principles]
+
+  platform-backend:
+    id: platform-backend
+    type: platform
+    path: agents/backend/AGENT.md
+    entry: agents/backend/index.js
+    config: agents/backend/config.yaml
+    priority: high
+    activate_when: [backend, api, rest, database, migration, rbac, auth, nestjs, drizzle]
+    keywords: [backend, api, rest, database, migration, rbac, auth, service, repository, postgres]
+    skills:
+      required: [teknovo-backend-development, teknovo-api-architect, teknovo-database-architect, teknovo-rbac-architect]
+      recommended: [teknovo-chief-architect, teknovo-feature-implementation]
+
+  platform-devops:
+    id: platform-devops
+    type: platform
+    path: agents/devops/AGENT.md
+    entry: agents/devops/index.js
+    config: agents/devops/config.yaml
+    priority: high
+    activate_when: [deploy, docker, ci/cd, cloudflare, github actions, rollback, release, dns, pages]
+    keywords: [deploy, docker, ci, cd, cloudflare, github, release, rollback, dns, pages, pipeline]
+    skills:
+      required: [teknovo-devops-engineer, teknovo-cloudflare-stack, gstack-ship]
+      recommended: [security-cloudflare-security, teknovo-observability]
+
+  platform-testing:
+    id: platform-testing
+    type: platform
+    path: agents/testing/AGENT.md
+    entry: agents/testing/index.js
+    config: agents/testing/config.yaml
+    priority: high
+    activate_when: [test, unit test, integration test, e2e, playwright, jest, vitest, lighthouse, coverage]
+    keywords: [test, testing, jest, vitest, e2e, playwright, coverage, lighthouse, performance, qa, verify]
+    skills:
+      required: [teknovo-testing-architect, gstack-qa, superpowers-verification-before-completion]
+      recommended: [gstack-browser-testing, superpowers-test-driven-development]
+
+  # ─── REVIEW AGENTS (from agents/*.md) ─────────────────────────────────────
+  taste-reviewer:
+    id: taste-reviewer
+    type: review
+    path: agents/taste-reviewer.md
+    priority: high
+    activate_when: [taste review, simplify, remove feature, scope cut]
+    keywords: [taste, simplify, scope, remove]
+
+  impeccable-reviewer:
+    id: impeccable-reviewer
+    type: review
+    path: agents/impeccable-reviewer.md
+    priority: high
+    activate_when: [review, audit, quality check, code review, pre-release review]
+    keywords: [quality, review, audit, impeccable]
+
+  security-reviewer:
+    id: security-reviewer
+    type: review
+    path: agents/security-reviewer.md
+    priority: critical
+    activate_when: [security review, security audit, OWASP, pre-deploy security]
+    keywords: [security, owasp, rbac, vulnerability]
+
+  differential-reviewer:
+    id: differential-reviewer
+    type: assurance
+    path: agents/differential-reviewer.md
+    priority: high
+    activate_when: [diff review, PR diff, lockfile change, migration diff]
+    keywords: [diff, pr, migration, lockfile]
+
+  second-opinion-reviewer:
+    id: second-opinion-reviewer
+    type: assurance
+    path: agents/second-opinion-reviewer.md
+    priority: medium
+    activate_when: [second opinion, high risk, pre-deploy review]
+    keywords: [second opinion, high risk, challenge]
+
+  requirement-clarifier:
+    id: requirement-clarifier
+    type: assurance
+    path: agents/requirement-clarifier.md
+    priority: high
+    activate_when: [unclear requirements, clarify, ambiguous, before planning]
+    keywords: [requirements, clarify, ambiguous, scope]
+
+  context-builder:
+    id: context-builder
+    type: assurance
+    path: agents/context-builder.md
+    priority: high
+    activate_when: [context, read ADR, standards, before implementation]
+    keywords: [context, adr, standards, architecture]
+
+platform_chains:
+  feature_delivery:
+    description: Platform-routed feature delivery
+    sequence:
+      - orchestrator
+      - requirement-clarifier
+      - platform-frontend
+      - platform-backend
+      - platform-testing
+      - security-reviewer
+      - platform-devops
+
+  deploy:
+    description: Platform deploy chain
+    sequence:
+      - orchestrator
+      - platform-testing
+      - security-reviewer
+      - platform-devops
+
+cross_reference:
+  legacy: registry/agent-registry.yaml
+  pillars: [chief-product-designer, chief-architect, devops-engineer]
+  gstack: [gstack-office-hours, gstack-eng-review, gstack-qa, gstack-ship]

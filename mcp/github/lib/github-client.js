@@ -196,6 +196,217 @@ export class GitHubClient {
       }
     );
   }
+
+  /**
+   * @param {{ owner: string, repo: string }} params
+   */
+  async getRepository(params) {
+    return this.request('GET', `/repos/${params.owner}/${params.repo}`);
+  }
+
+  /**
+   * @param {{ owner: string, repo: string }} params
+   */
+  async listLanguages(params) {
+    return this.request('GET', `/repos/${params.owner}/${params.repo}/languages`);
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, ref: string }} params
+   */
+  async getRef(params) {
+    return this.request('GET', `/repos/${params.owner}/${params.repo}/git/ref/${encodeURIComponent(params.ref)}`);
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, ref: string, sha: string }} params
+   */
+  async createRef(params) {
+    return this.request('POST', `/repos/${params.owner}/${params.repo}/git/refs`, {
+      ref: params.ref,
+      sha: params.sha,
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, branch: string, from_branch?: string }} params
+   */
+  async createBranch(params) {
+    const sourceBranch = params.from_branch ?? 'main';
+    const normalizedSource = sourceBranch.startsWith('heads/')
+      ? sourceBranch
+      : `heads/${sourceBranch}`;
+    const ref = await this.getRef({
+      owner: params.owner,
+      repo: params.repo,
+      ref: normalizedSource,
+    });
+    const sha = ref.object?.sha;
+    if (!sha) {
+      throw new GitHubApiError('Could not resolve source branch SHA');
+    }
+    const branchRef = params.branch.startsWith('refs/heads/')
+      ? params.branch
+      : `refs/heads/${params.branch}`;
+    return this.createRef({
+      owner: params.owner,
+      repo: params.repo,
+      ref: branchRef,
+      sha,
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, content: string, encoding?: string }} params
+   */
+  async createBlob(params) {
+    return this.request('POST', `/repos/${params.owner}/${params.repo}/git/blobs`, {
+      content: params.content,
+      encoding: params.encoding ?? 'utf-8',
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, tree: object[], base_tree?: string }} params
+   */
+  async createTree(params) {
+    return this.request('POST', `/repos/${params.owner}/${params.repo}/git/trees`, {
+      base_tree: params.base_tree,
+      tree: params.tree,
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, message: string, tree: string, parents: string[] }} params
+   */
+  async createCommit(params) {
+    return this.request('POST', `/repos/${params.owner}/${params.repo}/git/commits`, {
+      message: params.message,
+      tree: params.tree,
+      parents: params.parents,
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, ref: string, sha: string, force?: boolean }} params
+   */
+  async updateRef(params) {
+    return this.request(
+      'PATCH',
+      `/repos/${params.owner}/${params.repo}/git/refs/${encodeURIComponent(params.ref)}`,
+      { sha: params.sha, force: params.force ?? false }
+    );
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, branch: string, message: string, files: Array<{ path: string, content: string }> }} params
+   */
+  async commitChanges(params) {
+    const branchRef = params.branch.startsWith('heads/') ? params.branch : `heads/${params.branch}`;
+    const ref = await this.getRef({ owner: params.owner, repo: params.repo, ref: branchRef });
+    const baseSha = ref.object?.sha;
+    if (!baseSha) {
+      throw new GitHubApiError('Could not resolve branch HEAD');
+    }
+
+    const commit = await this.request(
+      'GET',
+      `/repos/${params.owner}/${params.repo}/git/commits/${baseSha}`
+    );
+    const baseTree = commit.tree?.sha;
+    if (!baseTree) {
+      throw new GitHubApiError('Could not resolve base tree');
+    }
+
+    /** @type {object[]} */
+    const treeEntries = [];
+    for (const file of params.files) {
+      const blob = await this.createBlob({
+        owner: params.owner,
+        repo: params.repo,
+        content: file.content,
+      });
+      treeEntries.push({
+        path: file.path,
+        mode: '100644',
+        type: 'blob',
+        sha: blob.sha,
+      });
+    }
+
+    const tree = await this.createTree({
+      owner: params.owner,
+      repo: params.repo,
+      base_tree: baseTree,
+      tree: treeEntries,
+    });
+
+    const newCommit = await this.createCommit({
+      owner: params.owner,
+      repo: params.repo,
+      message: params.message,
+      tree: tree.sha,
+      parents: [baseSha],
+    });
+
+    await this.updateRef({
+      owner: params.owner,
+      repo: params.repo,
+      ref: branchRef,
+      sha: newCommit.sha,
+    });
+
+    return {
+      commit: newCommit,
+      branch: params.branch,
+      files_changed: params.files.length,
+    };
+  }
+
+  /**
+   * @param {{ owner: string, repo: string, tag_name: string, name?: string, body?: string, draft?: boolean, prerelease?: boolean, target_commitish?: string }} params
+   */
+  async createRelease(params) {
+    return this.request('POST', `/repos/${params.owner}/${params.repo}/releases`, {
+      tag_name: params.tag_name,
+      name: params.name ?? params.tag_name,
+      body: params.body,
+      draft: params.draft ?? false,
+      prerelease: params.prerelease ?? false,
+      target_commitish: params.target_commitish,
+    });
+  }
+
+  /**
+   * @param {{ owner: string, repo: string }} params
+   */
+  async analyzeRepository(params) {
+    const [repo, languages, pulls, issues] = await Promise.all([
+      this.getRepository(params),
+      this.listLanguages(params),
+      this.listPullRequests({ ...params, state: 'open', per_page: 5 }),
+      this.listIssues({ ...params, state: 'open', per_page: 5 }),
+    ]);
+
+    return {
+      repository: {
+        name: repo.name,
+        full_name: repo.full_name,
+        description: repo.description,
+        default_branch: repo.default_branch,
+        visibility: repo.private ? 'private' : 'public',
+        topics: repo.topics ?? [],
+        open_issues_count: repo.open_issues_count,
+        size_kb: repo.size,
+        pushed_at: repo.pushed_at,
+        created_at: repo.created_at,
+      },
+      languages,
+      open_pull_requests: Array.isArray(pulls) ? pulls.length : 0,
+      recent_pull_requests: pulls,
+      open_issues_sample: issues,
+    };
+  }
 }
 
 /**

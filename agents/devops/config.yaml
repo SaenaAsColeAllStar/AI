@@ -1,0 +1,51 @@
+id: platform-devops
+name: Platform DevOps Agent
+type: platform
+priority: high
+path: agents/devops/AGENT.md
+
+skills:
+  required:
+    - teknovo-devops-engineer
+    - teknovo-cloudflare-stack
+    - gstack-ship
+    - agents-md
+  recommended:
+    - security-cloudflare-security
+    - security-reviewer
+    - teknovo-observability
+    - gstack-investigate
+
+mcps:
+  required:
+    - filesystem-mcp
+    - git-mcp
+    - shell-mcp
+  recommended:
+    - cloudflare-mcp
+    - github-mcp
+
+triggers:
+  - deploy
+  - docker
+  - ci/cd
+  - cloudflare
+  - github actions
+  - rollback
+  - release
+  - dns
+  - pages
+  - workers
+
+keywords:
+  - deploy
+  - docker
+  - ci
+  - cd
+  - cloudflare
+  - github
+  - release
+  - rollback
+  - dns
+  - pages
+  - pipeline

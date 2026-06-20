@@ -6,6 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
+trap 'on_phase_error ${LINENO}' ERR
+
 REQUIRED_MEMORY_FILES=(
   "memory/project-context.md"
   "memory/repository-map.md"

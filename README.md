@@ -106,6 +106,12 @@ Dari root repo (`cd AI`):
 
 ```bash
 bash bootstrap/install.sh
+
+# Resume setelah gagal
+bash bootstrap/install.sh --recover
+
+# Opsional: browser dev (code-server + Open WebUI)
+INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
 ```
 
 **Apa yang dilakukan `install.sh`** (orchestrator idempotent):
@@ -113,7 +119,7 @@ bash bootstrap/install.sh
 | Phase | Script | Fungsi |
 |-------|--------|--------|
 | Banner | `bootstrap/banner.sh` | Tampilan **COLEALLSTAR × TEKNOVO** |
-| 0 | `bootstrap/compatibility.sh` | Cek OS, RAM (16 GB+), disk (50 GB+), GPU, Python, Node |
+| 0 | `bootstrap/preflight.sh` | Cek OS, RAM, disk, internet, container, GPU, Python, Node, Docker |
 | 1 | `bootstrap/install-runtime.sh` | Git, curl, Node 22, Python 3.10+, PyYAML |
 | 2 | `bootstrap/install-ollama.sh` | Ollama server + verifikasi API |
 | 3 | `bootstrap/install-model.sh` | Pull model `qwen2.5-coder:32b` (~20 GB) |
@@ -168,16 +174,23 @@ bash bootstrap/status.sh
 Layar status akhir yang diharapkan:
 
 ```text
-====================================
-COLEALLSTAR × TEKNOVO
-AI WORKSTATION
-====================================
-Environment: READY
-Ollama: READY
-Qwen2.5-Coder: READY
-OpenCode: READY
-...
-====================================
+=================================
+COLEALLSTAR
+          X
+TEKNOVO
+=================================
+✓ Runtime
+✓ Python
+✓ Node 22
+✓ Git
+✓ Ollama
+✓ Qwen2.5-Coder 32B
+✓ OpenCode
+✓ Registry
+✓ Skills
+✓ Memory
+✓ Validation
+AI WORKSTATION READY
 ```
 
 **Mulai coding agent**:

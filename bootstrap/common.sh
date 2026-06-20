@@ -8,6 +8,9 @@ BOOTSTRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${BOOTSTRAP_DIR}/.." && pwd)"
 export BOOTSTRAP_DIR REPO_ROOT
 
+# shellcheck source=lib/privilege.sh
+source "${BOOTSTRAP_DIR}/lib/privilege.sh"
+
 if [[ -z "${INSTALL_LOG:-}" ]]; then
   LOG_DIR="${REPO_ROOT}/.bootstrap/logs"
   mkdir -p "${LOG_DIR}"
@@ -15,6 +18,7 @@ if [[ -z "${INSTALL_LOG:-}" ]]; then
   export INSTALL_LOG LOG_DIR
 else
   LOG_DIR="${LOG_DIR:-${REPO_ROOT}/.bootstrap/logs}"
+  mkdir -p "${LOG_DIR}"
   export LOG_DIR
 fi
 
@@ -34,45 +38,55 @@ LOCK_OLLAMA=""
 LOCK_MODEL=""
 LOCK_OPENCODE_VERSION=""
 
+# shellcheck source=lib/yaml.sh
+source "${BOOTSTRAP_DIR}/lib/yaml.sh"
+# shellcheck source=lib/logging.sh
+source "${BOOTSTRAP_DIR}/lib/logging.sh"
+# shellcheck source=lib/prereqs.sh
+source "${BOOTSTRAP_DIR}/lib/prereqs.sh"
+# shellcheck source=lib/state.sh
+source "${BOOTSTRAP_DIR}/lib/state.sh"
+# shellcheck source=lib/gpu.sh
+source "${BOOTSTRAP_DIR}/lib/gpu.sh"
+# shellcheck source=lib/ollama.sh
+source "${BOOTSTRAP_DIR}/lib/ollama.sh"
+
+apply_env_overrides() {
+  # Priority: install.lock.yaml > env vars > defaults (lock applied in load_install_lock first)
+  if [[ -n "${TEKNOVO_NODE_MAJOR:-}" ]] && [[ -z "${LOCK_NODE}" ]]; then
+    MIN_NODE_MAJOR="${TEKNOVO_NODE_MAJOR}"
+  fi
+  if [[ -n "${TEKNOVO_PYTHON_VERSION:-}" ]] && [[ -z "${LOCK_PYTHON}" ]]; then
+    MIN_PYTHON_MAJOR="${TEKNOVO_PYTHON_VERSION%%.*}"
+    MIN_PYTHON_MINOR="${TEKNOVO_PYTHON_VERSION#*.}"
+    MIN_PYTHON_MINOR="${MIN_PYTHON_MINOR%%.*}"
+  fi
+  if [[ -n "${TEKNOVO_OLLAMA_MODEL:-}" ]] && [[ -z "${LOCK_MODEL}" ]]; then
+    OLLAMA_MODEL="${TEKNOVO_OLLAMA_MODEL}"
+  fi
+  if [[ -n "${TEKNOVO_OPENCODE_VERSION:-}" ]] && [[ -z "${LOCK_OPENCODE_VERSION}" ]]; then
+    LOCK_OPENCODE_VERSION="${TEKNOVO_OPENCODE_VERSION}"
+  fi
+}
+
 load_install_lock() {
   if [[ ! -f "${INSTALL_LOCK}" ]]; then
+    apply_env_overrides
     return 0
   fi
-  if ! validate_yaml "${INSTALL_LOCK}" 2>/dev/null; then
-    warn "Invalid ${INSTALL_LOCK} — using built-in defaults"
+
+  local rc=0
+  yaml_validate_file "${INSTALL_LOCK}" || rc=$?
+  if [[ ${rc} -eq 1 ]] || [[ ${rc} -eq 4 ]]; then
+    die "Invalid YAML in ${INSTALL_LOCK} — fix syntax before continuing"
+  elif [[ ${rc} -ne 0 ]]; then
+    warn "Cannot read ${INSTALL_LOCK} — using built-in defaults"
+    apply_env_overrides
     return 0
   fi
 
   local parsed
-  parsed="$(python3 - "${INSTALL_LOCK}" <<'PY'
-import sys
-import yaml
-from pathlib import Path
-
-data = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8")) or {}
-
-def emit(key, value):
-    if value is None:
-        return
-    escaped = str(value).replace("\\", "\\\\").replace('"', '\\"')
-    print(f'LOCK_{key}="{escaped}"')
-
-emit("OS", data.get("os"))
-emit("NODE", data.get("node"))
-emit("PYTHON", data.get("python"))
-emit("OLLAMA", data.get("ollama"))
-
-model = data.get("model")
-if isinstance(model, dict) and model:
-    emit("MODEL", next(iter(model)))
-elif isinstance(model, str):
-    emit("MODEL", model)
-
-opencode = data.get("opencode") or {}
-if isinstance(opencode, dict):
-    emit("OPENCODE_VERSION", opencode.get("version"))
-PY
-)" || return 0
+  parsed="$(yaml_parse_install_lock "${INSTALL_LOCK}")" || die "Failed to parse ${INSTALL_LOCK}"
 
   # shellcheck disable=SC2086
   eval "${parsed}"
@@ -88,6 +102,8 @@ PY
   if [[ -n "${LOCK_MODEL}" ]]; then
     OLLAMA_MODEL="${LOCK_MODEL}"
   fi
+
+  apply_env_overrides
 }
 
 # Colors (disabled when not a TTY)
@@ -110,10 +126,10 @@ log() {
   echo -e "${msg}" | tee -a "${INSTALL_LOG}"
 }
 
-info()    { log "INFO" "${BLUE}$*${NC}"; }
+info()    { log_info "$@"; }
 success() { log "OK"   "${GREEN}$*${NC}"; }
 warn()    { log "WARN" "${YELLOW}$*${NC}"; }
-error()   { log "ERROR" "${RED}$*${NC}" >&2; }
+error()   { log_error "$@"; }
 
 die() {
   error "$@"
@@ -121,8 +137,7 @@ die() {
 }
 
 step() {
-  echo ""
-  info "${BOLD}==> $*${NC}"
+  log_phase_start "$*"
 }
 
 require_linux() {
@@ -169,18 +184,6 @@ get_disk_free_gb() {
   df -BG "${path}" 2>/dev/null | awk 'NR==2 {gsub(/G/,"",$4); print $4}'
 }
 
-run_phase() {
-  local script="$1"
-  local name="$2"
-  if [[ ! -x "${BOOTSTRAP_DIR}/${script}" ]]; then
-    chmod +x "${BOOTSTRAP_DIR}/${script}" 2>/dev/null || true
-  fi
-  step "Phase: ${name}"
-  # shellcheck source=/dev/null
-  source "${BOOTSTRAP_DIR}/common.sh"
-  bash "${BOOTSTRAP_DIR}/${script}"
-}
-
 ensure_pip_package() {
   local pkg="$1"
   local import_name="${2:-${pkg//-/_}}"
@@ -197,14 +200,30 @@ ensure_pip_package() {
 }
 
 validate_yaml() {
-  local file="$1"
-  python3 -c "
-import sys
-try:
-    import yaml
-except ImportError:
-    sys.exit(2)
-with open('${file}', encoding='utf-8') as f:
-    yaml.safe_load(f)
-" 2>/dev/null
+  yaml_validate_file "$1"
+}
+
+run_phase_script() {
+  local script="$1"
+  local phase_id="$2"
+  local label="$3"
+
+  if should_skip_phase "${phase_id}"; then
+    log_recovery "Skipping completed phase: ${label} (${phase_id})"
+    return 0
+  fi
+
+  if [[ ! -f "${BOOTSTRAP_DIR}/${script}" ]]; then
+    die "Missing bootstrap script: ${script}"
+  fi
+  chmod +x "${BOOTSTRAP_DIR}/${script}" 2>/dev/null || true
+
+  log_phase_start "${label}"
+  if bash "${BOOTSTRAP_DIR}/${script}"; then
+    mark_phase_complete "${phase_id}"
+    log_phase_success "${label}"
+  else
+    log_phase_failure "${label}"
+    return 1
+  fi
 }

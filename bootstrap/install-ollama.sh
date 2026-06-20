@@ -6,18 +6,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-wait_for_ollama() {
-  local retries=30
-  local i=0
-  while [[ ${i} -lt ${retries} ]]; do
-    if curl -sf "${OLLAMA_HOST}/api/tags" >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep 2
-    i=$((i + 1))
-  done
-  return 1
-}
+OLLAMA_PID_FILE="${STATE_DIR}/ollama.pid"
+
+trap 'on_phase_error ${LINENO}' ERR
 
 install_ollama() {
   if command_exists ollama; then
@@ -26,8 +17,30 @@ install_ollama() {
   fi
 
   info "Installing Ollama..."
-  curl -fsSL https://ollama.com/install.sh | sh
+  run_bash_script "https://ollama.com/install.sh"
   success "Ollama installed"
+}
+
+start_ollama_systemd() {
+  ${SUDO} systemctl enable ollama 2>/dev/null || true
+  ${SUDO} systemctl start ollama 2>/dev/null || true
+}
+
+start_ollama_nohup() {
+  if [[ -f "${OLLAMA_PID_FILE}" ]]; then
+    local old_pid
+    old_pid="$(cat "${OLLAMA_PID_FILE}" 2>/dev/null || true)"
+    if [[ -n "${old_pid}" ]] && kill -0 "${old_pid}" 2>/dev/null; then
+      info "Ollama already running (PID ${old_pid})"
+      return 0
+    fi
+  fi
+
+  warn "systemd unavailable — starting ollama serve in background (nohup)"
+  nohup ollama serve > "${LOG_DIR}/ollama-serve.log" 2>&1 &
+  echo $! > "${OLLAMA_PID_FILE}"
+  info "Ollama serve PID: $(cat "${OLLAMA_PID_FILE}")"
+  sleep 3
 }
 
 start_ollama_service() {
@@ -37,25 +50,18 @@ start_ollama_service() {
   fi
 
   info "Starting Ollama service..."
-  if command_exists systemctl && systemctl list-unit-files ollama.service >/dev/null 2>&1; then
-    sudo systemctl enable ollama 2>/dev/null || true
-    sudo systemctl start ollama 2>/dev/null || true
+  if command_exists systemctl && [[ -d /run/systemd/system ]] && systemctl list-unit-files ollama.service >/dev/null 2>&1; then
+    start_ollama_systemd
   else
-    warn "systemd ollama unit not found — starting ollama serve in background"
-    nohup ollama serve > "${LOG_DIR}/ollama-serve.log" 2>&1 &
-    sleep 3
+    start_ollama_nohup
   fi
 
-  if wait_for_ollama; then
-    success "Ollama API ready at ${OLLAMA_HOST}"
-  else
-    die "Ollama failed to start. Check ${LOG_DIR}/ollama-serve.log or journalctl -u ollama"
-  fi
+  ensure_ollama_healthy
 }
 
 verify_ollama() {
   local response
-  response="$(curl -sf "${OLLAMA_HOST}/api/tags")" || die "Cannot reach Ollama API at ${OLLAMA_HOST}/api/tags"
+  response="$(ollama_api_tags)" || die "Cannot reach Ollama API at ${OLLAMA_HOST}/api/tags"
   success "Ollama /api/tags responded"
   info "Models currently loaded: $(echo "${response}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('models',[])))" 2>/dev/null || echo '?')"
 }
@@ -63,6 +69,7 @@ verify_ollama() {
 main() {
   step "Install Ollama (Phase 2)"
   require_linux
+  init_state
   install_ollama
   start_ollama_service
   verify_ollama

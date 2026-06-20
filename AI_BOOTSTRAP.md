@@ -1,6 +1,6 @@
 # AI Bootstrap — Teknovo Workstation Installer
 
-One-command install for the **COLEALLSTAR × TEKNOVO AI Workstation** on a fresh Linux GPU server (Clore Cloud).
+One-command install for the **COLEALLSTAR × TEKNOVO AI Workstation** on a fresh Linux GPU server (Clore Cloud, Vast.ai, RunPod, or Docker).
 
 ---
 
@@ -8,11 +8,24 @@ One-command install for the **COLEALLSTAR × TEKNOVO AI Workstation** on a fresh
 
 ```bash
 git clone <your-repo-url>
-cd <repo>
+cd AI
 bash bootstrap/install.sh
 ```
 
-No additional manual configuration is required for the core stack. The installer is **idempotent** — safe to re-run after failures or GPU instance replacement.
+No additional manual configuration is required for the core stack. The installer is **idempotent**, **self-healing**, and **container-aware** — safe to re-run after failures or GPU instance replacement.
+
+```bash
+# Resume after failure (uses .bootstrap/state.json checkpoint)
+bash bootstrap/recover.sh
+# or
+bash bootstrap/install.sh --recover
+
+# Force full reinstall (clears checkpoint)
+bash bootstrap/install.sh --reset
+
+# Optional browser dev mode (code-server + Open WebUI)
+INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
+```
 
 ---
 
@@ -20,19 +33,21 @@ No additional manual configuration is required for the core stack. The installer
 
 | Phase | Script | Purpose |
 |-------|--------|---------|
-| 0 | `bootstrap/compatibility.sh` | OS, RAM, disk, GPU, Python, Node checks |
-| 1 | `bootstrap/install-runtime.sh` | Git, curl, Node 18+, Python 3.10+, PyYAML |
-| 2 | `bootstrap/install-ollama.sh` | Ollama server + API verification |
-| 3 | `bootstrap/install-model.sh` | `qwen2.5-coder:32b` model pull |
-| 4 | `bootstrap/install-opencode.sh` | OpenCode CLI + Ollama provider config |
+| 0 | `bootstrap/preflight.sh` | OS, RAM, disk, internet, container, GPU, Python, Node, Docker — writes `docs/ai/compatibility-report.md` |
+| 1 | `bootstrap/install-runtime.sh` | Git, curl, wget, Node 22+, Python 3.10+, PyYAML |
+| 2 | `bootstrap/install-ollama.sh` | Ollama server (systemd or nohup fallback) + API health wait (360s) |
+| 3 | `bootstrap/install-model.sh` | `qwen2.5-coder:32b` pull + verify via `/api/tags` and `/v1/models` |
+| 4 | `bootstrap/install-opencode.sh` | OpenCode CLI + Ollama provider config + `opencode models` validation |
 | 5 | `bootstrap/install-skills.sh` | Verify skills, memory, taste, quality, security layers |
 | 6 | `bootstrap/build-memory.sh` | Refresh memory artifacts |
 | 7 | `bootstrap/build-registries.sh` | Generate/validate `registry/*.yaml` |
 | 8 | _(repo)_ | MCP templates under `mcp/` |
 | 9 | _(repo)_ | Documentation (this file and siblings) |
-| 10 | `bootstrap/verify.sh` | Full verification gate |
-| 11 | _(design)_ | Recovery via re-running `install.sh` |
-| 12 | `bootstrap/status.sh` | Final status screen |
+| 10 | `bootstrap/verify.sh` | Full verification gate + `.bootstrap/reports/final-report.md` |
+| 11 | `bootstrap/status.sh` | Final status screen |
+| _(opt)_ | `bootstrap/install-browser-dev.sh` | code-server + Open WebUI + Cloudflare tunnel templates |
+
+`bootstrap/compatibility.sh` delegates to `preflight.sh` for backward compatibility.
 
 ---
 
@@ -44,10 +59,36 @@ No additional manual configuration is required for the core stack. The installer
 | RAM | 16 GB | 32 GB+ for Qwen 32B |
 | Disk (free) | 50 GB | 80 GB+ |
 | Python | 3.10+ | 3.11+ |
-| Node.js | 18+ | 20 LTS |
+| Node.js | 22+ (from install.lock.yaml) | 22 LTS |
 | GPU | Optional | NVIDIA RTX 3090 or better |
 
-Compatibility report written to: `docs/ai/compatibility-report.md`
+**Version priority**: `bootstrap/install.lock.yaml` → environment variables → built-in defaults.
+
+Compatibility report written to: `docs/ai/compatibility-report.md` (generated at preflight, before install phases).
+
+---
+
+## GPU Detection
+
+Priority order (never fails install if tools missing):
+
+1. `nvidia-smi` (NVIDIA)
+2. `rocm-smi` (AMD)
+3. `lspci` (PCI scan — warns if missing, continues)
+4. `lshw` (fallback)
+
+CPU inference is used when no GPU is detected.
+
+---
+
+## Container / Cloud Providers
+
+Preflight detects:
+
+- Docker (`/.dockerenv`, cgroup)
+- Clore / Vast / RunPod environment hints
+- systemd absence → Ollama uses `nohup ollama serve`
+- root user → `${SUDO}` disabled (no broken `sudo -E | bash` pipes)
 
 ---
 
@@ -56,7 +97,7 @@ Compatibility report written to: `docs/ai/compatibility-report.md`
 Each script is independently runnable:
 
 ```bash
-bash bootstrap/compatibility.sh
+bash bootstrap/preflight.sh
 bash bootstrap/install-runtime.sh
 bash bootstrap/install-ollama.sh
 bash bootstrap/install-model.sh
@@ -66,13 +107,33 @@ bash bootstrap/build-memory.sh
 bash bootstrap/build-registries.sh
 bash bootstrap/verify.sh
 bash bootstrap/status.sh
+bash bootstrap/install-browser-dev.sh   # optional
 ```
 
 ---
 
-## Logs
+## Logs and Reports
 
-Install logs: `.bootstrap/logs/install-YYYYMMDD-HHMMSS.log`
+| Path | Purpose |
+|------|---------|
+| `.bootstrap/logs/install-YYYYMMDD-HHMMSS.log` | Timestamped install log (all phases) |
+| `.bootstrap/reports/final-report.md` | Verification results after Phase 10 |
+| `.bootstrap/state.json` | Checkpoint for recovery mode |
+| `docs/ai/compatibility-report.md` | Preflight compatibility report |
+
+Shared libraries: `bootstrap/lib/` (`privilege.sh`, `yaml.sh`, `logging.sh`, `prereqs.sh`, `state.sh`, `gpu.sh`, `ollama.sh`)
+
+---
+
+## Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `INSTALL_BROWSER_DEV=1` | Install optional browser dev stack after core install |
+| `INSTALL_FORCE_OPENCODE_CONFIG=1` | Overwrite `~/.config/opencode/opencode.jsonc` |
+| `TEKNOVO_NODE_MAJOR` | Override Node major (only if not pinned in lock file) |
+| `TEKNOVO_OLLAMA_MODEL` | Override model (only if not pinned in lock file) |
+| `OLLAMA_HOST` | Ollama API base URL (default `http://127.0.0.1:11434`) |
 
 ---
 
@@ -84,8 +145,30 @@ See `bootstrap/install.ps1` — full stack targets Linux. Use WSL2 or remote GPU
 
 ## After Install
 
+Expected status screen:
+
+```text
+=================================
+COLEALLSTAR
+          X
+TEKNOVO
+=================================
+✓ Runtime
+✓ Python
+✓ Node 22
+✓ Git
+✓ Ollama
+✓ Qwen2.5-Coder 32B
+✓ OpenCode
+✓ Registry
+✓ Skills
+✓ Memory
+✓ Validation
+AI WORKSTATION READY
+```
+
 ```bash
-cd <repo>
+cd AI
 opencode
 ```
 

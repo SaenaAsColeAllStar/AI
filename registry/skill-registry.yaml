@@ -151,6 +151,7 @@ autoload:
   - teknovo-domain-management
   - teknovo-landing-page
   - taste-reviewer
+  - teknovo-auto-orchestrator
 
 bundles:
   session-bootstrap:
@@ -180,6 +181,7 @@ bundles:
   pre-implementation:
     description: Before code — architecture + security + context assurance
     skills:
+      - teknovo-auto-orchestrator
       - teknovo-chief-architect
       - context-builder
       - security-reviewer
@@ -512,6 +514,35 @@ skills:
     conflicts: []
     description: Parallelize independent workstreams across sibling agents
     autoload: false
+
+  teknovo-auto-orchestrator:
+    id: teknovo-auto-orchestrator
+    layer: automation
+    priority: critical
+    source: teknovo
+    path: .agents/skills/teknovo-auto-orchestrator/SKILL.md
+    entry: .agents/skills/teknovo-auto-orchestrator/orchestrator.js
+    config: .agents/skills/teknovo-auto-orchestrator/routing.yaml
+    depends_on:
+      - agents-md
+      - superpowers-dispatching-parallel-agents
+      - superpowers-subagent-driven-development
+      - superpowers-verification-before-completion
+    activate_when:
+      - build
+      - implement
+      - create
+      - develop
+      - deploy
+      - orchestrate
+      - auto orchestrator
+      - implementation request
+      - build feature
+      - build system
+      - build landing page
+    conflicts: []
+    description: Autonomous intent routing, skill selection, parallel subagent dispatch, and deploy prep
+    autoload: true
 
   superpowers-using-git-worktrees:
     id: superpowers-using-git-worktrees

@@ -23,12 +23,14 @@ discovery:
   skills_root: .agents/skills
   pattern: "**/SKILL.md"
   orchestrator_api: agents/orchestrator/orchestrator.js#discoverSkills
+  auto_orchestrator_api: .agents/skills/teknovo-auto-orchestrator/orchestrator.js#orchestrate
 
 platform_bundles:
   platform-session:
     description: Default bundle for multi-agent platform sessions
     skills:
       - agents-md
+      - teknovo-auto-orchestrator
       - superpowers-dispatching-parallel-agents
       - superpowers-executing-plans
       - superpowers-verification-before-completion

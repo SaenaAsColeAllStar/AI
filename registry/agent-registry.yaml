@@ -342,6 +342,34 @@ agents:
       recommended: [assurance-insecure-defaults]
     activate_when: [security review subagent]
 
+  auto-orchestrator:
+    id: auto-orchestrator
+    type: meta
+    path: .agents/skills/teknovo-auto-orchestrator/SKILL.md
+    entry: .agents/skills/teknovo-auto-orchestrator/orchestrator.js
+    skill_id: teknovo-auto-orchestrator
+    layer: automation
+    priority: critical
+    phases: [discovery, planning, implementation, ship]
+    skills:
+      required:
+        - teknovo-auto-orchestrator
+        - superpowers-dispatching-parallel-agents
+        - superpowers-subagent-driven-development
+      recommended:
+        - superpowers-verification-before-completion
+        - teknovo-testing-architect
+        - teknovo-cloudflare-stack
+        - teknovo-chief-architect
+    activate_when:
+      - build
+      - implement
+      - create
+      - deploy
+      - orchestrate
+      - auto orchestrator
+      - implementation request
+
 agent_chains:
   feature_delivery:
     description: Standard feature from idea to ship

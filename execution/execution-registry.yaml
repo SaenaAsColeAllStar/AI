@@ -181,6 +181,8 @@ bundles:
       - bootstrap
       - branch_policy
       - failure_recovery
+    skills:
+      - teknovo-auto-orchestrator
 
   pre-deploy-execution:
     description: Deployment execution workflow
@@ -203,6 +205,9 @@ integrations:
 
 orchestrator:
   entry: agents/orchestrator/orchestrator.js
+  auto_orchestrator: .agents/skills/teknovo-auto-orchestrator/orchestrator.js
+  intent_map: .agents/skills/teknovo-auto-orchestrator/intent-map.yaml
+  routing_config: .agents/skills/teknovo-auto-orchestrator/routing.yaml
   registry_agents: registry/agents.yaml
   registry_mcp: registry/mcp.yaml
   shared_workflow: shared/workflow/index.js

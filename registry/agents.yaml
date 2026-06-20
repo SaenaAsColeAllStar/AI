@@ -51,8 +51,8 @@ agents:
     activate_when: [orchestrate, route task, dispatch agent, multi-agent, parallel agents, workflow]
     keywords: [orchestrator, routing, dispatch, workflow, coordination, decompose, aggregate]
     skills:
-      required: [agents-md, superpowers-dispatching-parallel-agents, teknovo-chief-architect]
-      recommended: [teknovo-mcp-stack, context-builder]
+      required: [agents-md, teknovo-auto-orchestrator, superpowers-dispatching-parallel-agents, teknovo-chief-architect]
+      recommended: [teknovo-mcp-stack, context-builder, superpowers-subagent-driven-development]
 
   platform-frontend:
     id: platform-frontend

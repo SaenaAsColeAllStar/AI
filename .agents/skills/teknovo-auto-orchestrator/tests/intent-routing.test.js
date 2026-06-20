@@ -1,4 +1,4 @@
-import { describe, it, beforeAll } from 'node:test';
+import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -28,7 +28,7 @@ function expectSkillsInclude(analysis, ...expectedSkillIds) {
 }
 
 describe('intent-routing', () => {
-  beforeAll(() => {
+  before(() => {
     assert.ok(existsSync(join(SKILL_ROOT, 'routing.yaml')));
     assert.ok(existsSync(join(SKILL_ROOT, 'intent-map.yaml')));
     assert.ok(existsSync(join(SKILL_ROOT, 'orchestrator.js')));
@@ -153,6 +153,3 @@ describe('intent-routing', () => {
     assert.ok(result.plan.workstreams.some((w) => w.id === 'deployment'));
   });
 });
-
-// Re-export for node --test compatibility when run directly
-describe.run?.();

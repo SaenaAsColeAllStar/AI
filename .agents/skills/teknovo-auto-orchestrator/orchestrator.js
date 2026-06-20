@@ -64,18 +64,32 @@ export function normalizeMessage(message) {
 
 /**
  * Check if normalized message contains a keyword phrase.
+ * Uses whole-word matching for short tokens to avoid false positives
+ * (e.g. "a" matching "finance" via substring).
  * @param {string} normalized
  * @param {string} keyword
  */
 export function matchesKeyword(normalized, keyword) {
   const kw = keyword.toLowerCase().trim();
   if (!kw) return false;
-  if (normalized.includes(kw)) return true;
-  const tokens = kw.split(/\s+/);
-  if (tokens.length === 1) {
-    return normalized.split(/\s+/).some((w) => w === kw || w.includes(kw) || kw.includes(w));
+
+  if (kw.includes(' ')) {
+    return normalized.includes(kw);
   }
-  return normalized.includes(kw);
+
+  const words = normalized.split(/\s+/);
+
+  for (const w of words) {
+    if (w === kw) return true;
+    if (kw.length >= 4 && w.startsWith(kw)) return true;
+    if (w.length >= 4 && w.includes(kw)) return true;
+  }
+
+  if (kw.length >= 4 && normalized.includes(kw)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

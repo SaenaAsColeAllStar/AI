@@ -73,6 +73,7 @@ autoload:
   - teknovo-domain-management
   - teknovo-landing-page
   - taste-reviewer
+  - teknovo-auto-orchestrator
 
 # =============================================================================
 # TASTE LAYER — judgement, restraint, removal (precedes quality)
@@ -654,6 +655,25 @@ implementation:
       - "SEO"
       - "Lighthouse"
 
+  teknovo-auto-orchestrator:
+    path: .agents/skills/teknovo-auto-orchestrator/SKILL.md
+    entry: .agents/skills/teknovo-auto-orchestrator/orchestrator.js
+    config: .agents/skills/teknovo-auto-orchestrator/routing.yaml
+    trigger:
+      - "build"
+      - "implement"
+      - "create"
+      - "develop"
+      - "deploy"
+      - "orchestrate"
+      - "auto orchestrator"
+      - "auto orchestration"
+      - "implementation request"
+      - "build feature"
+      - "build system"
+      - "make landing page"
+      - "build landing page"
+
   teknovo-finance:
     path: .agents/skills/teknovo-finance/SKILL.md
     trigger:
@@ -1128,6 +1148,12 @@ skills:
   teknovo-landing-page:
     path: .agents/skills/teknovo-landing-page/SKILL.md
     category: implementation
+    autoload: true
+
+  teknovo-auto-orchestrator:
+    path: .agents/skills/teknovo-auto-orchestrator/SKILL.md
+    entry: .agents/skills/teknovo-auto-orchestrator/orchestrator.js
+    category: automation
     autoload: true
 
   teknovo-ui-ux-specialist:

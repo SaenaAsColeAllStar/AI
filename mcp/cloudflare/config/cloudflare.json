@@ -1,0 +1,27 @@
+{
+  "apiBaseUrl": "https://api.cloudflare.com/client/v4",
+  "retry": {
+    "maxAttempts": 3,
+    "baseDelayMs": 1000,
+    "maxDelayMs": 10000
+  },
+  "rateLimit": {
+    "defaultRetryAfterMs": 5000
+  },
+  "pages": {
+    "defaultProductionBranch": "main",
+    "defaultBuildConfig": {
+      "build_command": "npm run build",
+      "destination_dir": ".next",
+      "root_dir": ""
+    }
+  },
+  "dns": {
+    "defaultTtl": 1,
+    "defaultProxied": true
+  },
+  "logging": {
+    "level": "info",
+    "maskSecrets": true
+  }
+}

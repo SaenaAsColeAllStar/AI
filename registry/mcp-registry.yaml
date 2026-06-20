@@ -104,15 +104,27 @@ integrations:
   cloudflare-mcp:
     id: cloudflare-mcp
     name: Cloudflare MCP
-    status: planned
-    provider: cloudflare
-    purpose: Workers, D1, R2, DNS, Tunnel management for Teknovo edge stack
+    status: configured
+    provider: teknovo
+    package: mcp/cloudflare
+    server_entry: mcp/cloudflare/server.js
+    purpose: Workers, D1, R2, DNS, Pages, Tunnel management for Teknovo edge stack
     required_permissions: [cloudflare_read, cloudflare_write, secrets_read]
     risk_level: critical
-    activation_conditions: [cloudflare deploy, DNS change, R2 bucket, tunnel, workers]
+    activation_conditions: [cloudflare deploy, DNS change, R2 bucket, tunnel, workers, pages deploy]
     depends_on_skills: [security-cloudflare-security, teknovo-cloudflare-stack, teknovo-devops-engineer, security-reviewer]
-    teknovo_use: Staging/production deploy, subdomain routing, edge config
-    notes: "[PLANNED] Requires security-reviewer APPROVE before write operations"
+    teknovo_use: Staging/production deploy, subdomain routing, edge config, Pages automation
+    tools:
+      - pages_create_project
+      - pages_deploy
+      - pages_list_projects
+      - pages_get_deployment
+      - dns_create_record
+      - dns_update_record
+      - dns_list_records
+      - domain_attach
+      - domain_verify
+    notes: Requires security-reviewer APPROVE before write operations. Env vars CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ZONE_ID.
 
   postgres-mcp:
     id: postgres-mcp

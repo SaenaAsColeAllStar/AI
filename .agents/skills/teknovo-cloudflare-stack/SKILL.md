@@ -1,13 +1,93 @@
 ---
 name: teknovo-cloudflare-stack
-description: Configure and manage Cloudflare Tunnels, DNS records, R2 Storage buckets, and edge security headers.
+description: Configure and manage Cloudflare Tunnels, DNS records, R2 Storage buckets, Pages deployments, and edge security headers via MCP automation.
 ---
 
 # Teknovo Cloudflare Stack Skill
 
-Use this skill when managing domain routing, tunnel configuration, asset storage, or edge security.
+Use this skill when managing domain routing, tunnel configuration, asset storage, Pages deployments, or edge security.
 
-**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`
+**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`, `mcp/cloudflare/README.md`
+
+**MCP Server**: `teknovo-cloudflare-mcp` at `mcp/cloudflare/` — invoke tools directly when credentials are available.
+
+---
+
+## MCP Deployment Workflow
+
+When `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_ZONE_ID` are set, **execute** this sequence (do not only document):
+
+```text
+build_nextjs → run_tests → pages_create_project → pages_deploy → domain_attach → domain_verify
+```
+
+| Step | Action | MCP Tool |
+|------|--------|----------|
+| 1 | Build Next.js app | Shell: `npm run build` |
+| 2 | Run test suite | Shell: `npm test` |
+| 3 | Create Pages project (if new) | `pages_create_project` |
+| 4 | Deploy to Cloudflare Pages | `pages_deploy` |
+| 5 | Attach school subdomain | `domain_attach` |
+| 6 | Verify DNS / domain status | `domain_verify` |
+
+### Example: Full ERP deploy
+
+```json
+// 1. Create project (skip if exists — use pages_list_projects first)
+{ "name": "pages_create_project", "arguments": {
+  "name": "teknovo-erp",
+  "build_command": "npm run build",
+  "destination_dir": ".next"
+}}
+
+// 2. Deploy
+{ "name": "pages_deploy", "arguments": { "project_name": "teknovo-erp", "branch": "main" }}
+
+// 3. Attach domain
+{ "name": "domain_attach", "arguments": {
+  "project_name": "teknovo-erp",
+  "domain": "erp.school.sch.id"
+}}
+
+// 4. Verify
+{ "name": "domain_verify", "arguments": {
+  "project_name": "teknovo-erp",
+  "domain": "erp.school.sch.id"
+}}
+```
+
+### DNS for Pages custom domain
+
+If Cloudflare requires CNAME for subdomain:
+
+```json
+{ "name": "dns_create_record", "arguments": {
+  "type": "CNAME",
+  "name": "erp",
+  "content": "teknovo-erp.pages.dev",
+  "proxied": true
+}}
+```
+
+---
+
+## MCP Tool Reference
+
+| Tool | Purpose |
+|------|---------|
+| `pages_create_project` | Create Cloudflare Pages project |
+| `pages_deploy` | Trigger deployment |
+| `pages_list_projects` | List existing projects |
+| `pages_get_deployment` | Check deployment status |
+| `dns_create_record` | Create DNS record |
+| `dns_update_record` | Update DNS record |
+| `dns_list_records` | List zone records |
+| `domain_attach` | Attach custom domain to Pages |
+| `domain_verify` | Verify domain status |
+
+Server: `node mcp/cloudflare/server.js` — see `mcp/cloudflare/docs/API.md`.
+
+**Security**: Requires `security-reviewer` APPROVE before write operations in deploy-session. Never hardcode tokens.
 
 ---
 

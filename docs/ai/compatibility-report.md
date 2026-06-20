@@ -34,6 +34,7 @@
 | Disk (free) | 50 GB | Model ~20GB + dependencies |
 | Python | 3.10+ | Memory loader, YAML validation |
 | Node.js | 18+ | OpenCode CLI |
+| Ollama model | qwen3:32b | Pinned in `bootstrap/install.lock.yaml` |
 | GPU | Optional | CPU fallback with performance warning |
 
 ## GPU Details

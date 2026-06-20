@@ -1,50 +1,48 @@
-# MCP — GitHub Server
+# Teknovo GitHub MCP
 
-Model Context Protocol server for GitHub API access (issues, PRs, repos).
+Model Context Protocol server for GitHub repository, PR, issue, and workflow automation.
 
-## Status
-
-**Placeholder** — configure credentials before use. No secrets are stored in this repository.
-
-## Setup
-
-1. Create a GitHub Personal Access Token (fine-grained or classic) with minimum scopes:
-   - `repo` (private repos) or `public_repo`
-   - `read:org` if needed for org repos
-
-2. Copy the config template:
+## Quick Start
 
 ```bash
-cp mcp/github/config.template.json ~/.config/mcp/github.json
+cd mcp/github
+cp .env.example .env
+npm install
+npm test
+npm start
 ```
 
-3. Set environment variable (never commit):
+## Tools
 
-```bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="ghp_xxxxxxxx"
+| Tool | Description |
+|------|-------------|
+| `repo_list` | List repositories |
+| `repo_create` | Create repository |
+| `pr_list` | List pull requests |
+| `pr_create` | Create pull request |
+| `pr_merge` | Merge pull request |
+| `issue_list` | List issues |
+| `issue_create` | Create issue |
+| `workflow_list` | List workflows |
+| `workflow_dispatch` | Dispatch workflow |
+
+See [docs/API.md](docs/API.md) for schemas.
+
+## Cursor Configuration
+
+```json
+{
+  "teknovo-github": {
+    "command": "node",
+    "args": ["c:/Users/fajar/Downloads/AI/mcp/github/server.js"],
+    "env": {
+      "GITHUB_TOKEN": "${env:GITHUB_TOKEN}",
+      "GITHUB_OWNER": "${env:GITHUB_OWNER}"
+    }
+  }
+}
 ```
 
-4. Wire into your MCP client (Cursor, OpenCode, etc.) per client documentation.
+## License
 
-## Architecture
-
-```text
-Agent (OpenCode/Cursor)
-        │
-        ▼
-  MCP GitHub Server
-        │
-        ▼
-  GitHub REST/GraphQL API
-```
-
-## Security
-
-- Use fine-grained tokens scoped to specific repositories
-- Rotate tokens regularly
-- See `security/ai-agent-security.md` for agent commit/deploy boundaries
-
-## [PLANNED]
-
-- Automated MCP server install via npm/npx in a future bootstrap phase
-- CI token injection via Cloudflare/GitHub Actions secrets
+MIT

@@ -1,44 +1,27 @@
-# MCP — Filesystem Server
+# Teknovo Filesystem MCP
 
-Local filesystem access for AI agents within allowed paths.
+Scoped filesystem operations within `TEKNOVO_WORKSPACE` with path traversal prevention.
 
-## Status
+## Tools
 
-**Ready (template)** — configure allowed directories before enabling in production agents.
+| Tool | Description |
+|------|-------------|
+| `read_file` | Read file contents |
+| `write_file` | Write file contents |
+| `list_directory` | List directory entries |
+| `search_files` | Search by glob-like pattern |
+| `file_info` | Get file metadata |
 
-## Setup
-
-1. Copy config template:
+## Quick Start
 
 ```bash
-cp mcp/filesystem/config.template.json ~/.config/mcp/filesystem.json
+cd mcp/filesystem
+cp .env.example .env
+npm install
+npm test
+npm start
 ```
 
-2. Edit `allowedDirectories` to restrict access to:
-   - Workstation repo root
-   - Cloned Teknovo V2 monorepo path (e.g. `/workspace/teknovo`)
+## License
 
-## Architecture
-
-```text
-Agent
-  │
-  ▼
-MCP Filesystem Server
-  │
-  ▼
-Allowed paths only (sandbox)
-```
-
-## Security
-
-- **Never** use `["/"]` in production
-- Align with `security/ai-agent-security.md` tool limits
-- Read-only mode for review agents when possible
-
-## Default allowed paths (example)
-
-| Path | Purpose |
-|------|---------|
-| `/workspace/AI` | This workstation repo |
-| `/workspace/teknovo` | Teknovo V2 target monorepo |
+MIT

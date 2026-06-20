@@ -3,6 +3,15 @@
  */
 
 import { z } from 'zod';
+import {
+  loadCloudflareSecrets,
+  getCloudflareApiEnv,
+} from '../../shared/secrets.js';
+import {
+  formatZodError,
+  toolError,
+  toolSuccess,
+} from '../../shared/validation.js';
 import { logger } from './logger.js';
 
 /** @typedef {{ apiToken: string, accountId: string, zoneId: string }} CloudflareEnv */
@@ -14,11 +23,18 @@ const envSchema = z.object({
 });
 
 /**
- * Validate required environment variables.
+ * Load credentials from Teknovo secret store, then validate process.env.
  * @param {NodeJS.ProcessEnv} [env]
- * @returns {{ ok: true, env: CloudflareEnv } | { ok: false, error: string, missing: string[] }}
+ * @returns {{ ok: true, env: CloudflareEnv, source: 'secret-store' | 'environment' } | { ok: false, error: string, missing: string[] }}
  */
 export function validateEnv(env = process.env) {
+  loadCloudflareSecrets();
+
+  const fromStore = getCloudflareApiEnv();
+  if (fromStore) {
+    return { ok: true, env: fromStore, source: 'secret-store' };
+  }
+
   const result = envSchema.safeParse(env);
   if (result.success) {
     return {
@@ -28,57 +44,21 @@ export function validateEnv(env = process.env) {
         accountId: result.data.CLOUDFLARE_ACCOUNT_ID,
         zoneId: result.data.CLOUDFLARE_ZONE_ID,
       },
+      source: 'environment',
     };
   }
 
   const missing = result.error.issues.map((i) => i.path.join('.'));
-  const error = `Missing or invalid Cloudflare credentials: ${missing.join(', ')}. Copy .env.example to .env and set values.`;
+  const secretStoreHint =
+    'Configure /root/.config/teknovo/secrets/cloudflare.env (Linux) or %USERPROFILE%\\.config\\teknovo\\secrets\\cloudflare.env (Windows).';
+  const error = `Missing or invalid Cloudflare credentials: ${missing.join(', ')}. ${secretStoreHint}`;
 
   logger.warn('Environment validation failed', { missing });
 
   return { ok: false, error, missing };
 }
 
-/**
- * Format Zod errors into a readable string.
- * @param {import('zod').ZodError} error
- * @returns {string}
- */
-export function formatZodError(error) {
-  return error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
-}
-
-/**
- * Safe MCP tool error response.
- * @param {string} message
- * @param {Record<string, unknown>} [details]
- */
-export function toolError(message, details = {}) {
-  return {
-    isError: true,
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify({ success: false, error: message, ...details }, null, 2),
-      },
-    ],
-  };
-}
-
-/**
- * Safe MCP tool success response.
- * @param {unknown} data
- */
-export function toolSuccess(data) {
-  return {
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify({ success: true, data }, null, 2),
-      },
-    ],
-  };
-}
+export { formatZodError, toolError, toolSuccess };
 
 export const dnsRecordTypes = z.enum([
   'A',

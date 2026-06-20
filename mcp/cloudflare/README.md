@@ -14,14 +14,18 @@ Model Context Protocol server for Cloudflare Pages, DNS, and custom domain autom
 
 ```bash
 cd mcp/cloudflare
-cp .env.example .env
-# Edit .env with your Cloudflare credentials
+# Configure Teknovo secret store (preferred):
+#   Linux:  /root/.config/teknovo/secrets/cloudflare.env
+#   Windows: %USERPROFILE%\.config\teknovo\secrets\cloudflare.env
+# Optional dev fallback: cp .env.example .env
 npm install
 npm test
 npm start
 ```
 
-## Environment Variables
+## Credentials
+
+**Preferred**: Teknovo secret store at `/root/.config/teknovo/secrets/cloudflare.env` (Linux) or `%USERPROFILE%\.config\teknovo\secrets\cloudflare.env` (Windows).
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -29,7 +33,7 @@ npm start
 | `CLOUDFLARE_ACCOUNT_ID` | Yes | Cloudflare account ID |
 | `CLOUDFLARE_ZONE_ID` | Yes | Zone ID for DNS operations |
 
-Never commit `.env`. See [docs/SECURITY.md](docs/SECURITY.md).
+Never commit secrets. See [docs/SECRET_STORE.md](docs/SECRET_STORE.md) and repository `docs/SECRET_STORE.md`.
 
 ## Cursor MCP Configuration
 
@@ -40,18 +44,16 @@ Add to `.cursor/mcp.json` (or Cursor Settings → MCP):
   "mcpServers": {
     "teknovo-cloudflare": {
       "command": "node",
-      "args": ["c:/Users/fajar/Downloads/AI/mcp/cloudflare/server.js"],
+      "args": ["mcp/cloudflare/server.js"],
       "env": {
-        "CLOUDFLARE_API_TOKEN": "${env:CLOUDFLARE_API_TOKEN}",
-        "CLOUDFLARE_ACCOUNT_ID": "${env:CLOUDFLARE_ACCOUNT_ID}",
-        "CLOUDFLARE_ZONE_ID": "${env:CLOUDFLARE_ZONE_ID}"
+        "TEKNOVO_SECRETS_DIR": "C:/Users/you/.config/teknovo/secrets"
       }
     }
   }
 }
 ```
 
-Adjust the path for your workstation.
+Credentials load from Teknovo secret store by default. Adjust path for your workstation.
 
 ## Architecture
 
@@ -68,6 +70,9 @@ Adjust the path for your workstation.
                     └─────────────────────────┼─────────────────────────┘
                                               ▼
                                    lib/cloudflare-client.js
+                                   lib/pages-api.js · dns-api.js · domain-api.js
+                                              │
+                              mcp/shared/secrets.js (credential loader)
                                               │
                                               ▼
                               Cloudflare REST API v4 (HTTPS)
@@ -190,7 +195,7 @@ npm run check   # lint + test
 
 - [docs/API.md](docs/API.md) — tool schemas and responses
 - [docs/SECURITY.md](docs/SECURITY.md) — threat model and token policy
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — production deployment
+- [docs/SECRET_STORE.md](docs/SECRET_STORE.md) — secret store integration
 - `security/cloudflare-security.md` — Teknovo security gates
 - `.agents/skills/teknovo-cloudflare-stack/SKILL.md` — skill integration
 

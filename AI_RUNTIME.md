@@ -8,8 +8,8 @@ How to use the Teknovo AI Workstation after bootstrap completes.
 
 ```text
 ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│  OpenCode   │────▶│    Ollama    │────▶│ qwen2.5-coder   │
-│  (CLI/IDE)  │     │  :11434      │     │ 32B             │
+│  OpenCode   │────▶│    Ollama    │────▶│ qwen3:32b       │
+│  (CLI/IDE)  │     │  :11434      │     │ (Qwen3 32B)     │
 └─────────────┘     └──────────────┘     └─────────────────┘
        │
        ▼
@@ -41,7 +41,7 @@ ollama serve
 
 ```bash
 curl http://127.0.0.1:11434/api/generate -d '{
-  "model": "qwen2.5-coder:32b",
+  "model": "qwen3:32b",
   "prompt": "Hello",
   "stream": false
 }'
@@ -62,7 +62,7 @@ Default config: `~/.config/opencode/opencode.jsonc`
 Created by `bootstrap/install-opencode.sh` with local Ollama provider:
 
 - Base URL: `http://127.0.0.1:11434/v1`
-- Model: `ollama-local/qwen2.5-coder:32b`
+- Model: `ollama-local/qwen3:32b` (from `bootstrap/install.lock.yaml`)
 
 ### Launch
 
@@ -158,4 +158,4 @@ Logs: `.bootstrap/logs/`
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Ollama API base |
-| `OLLAMA_MODEL` | `qwen2.5-coder:32b` | Default model tag |
+| `OLLAMA_MODEL` | `qwen3:32b` | Default model tag (overridden by lock file) |

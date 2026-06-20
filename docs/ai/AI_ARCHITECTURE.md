@@ -72,7 +72,7 @@ Teknovo AI SuperStack
 │
 └── Layer 5: Runtime
     ├── Ollama (local model server)
-    ├── Qwen2.5-Coder 32B (reasoning model)
+    ├── Qwen3 32B (reasoning model, `qwen3:32b`)
     ├── OpenCode (agent CLI)
     └── Cursor (IDE with skill autoload)
 ```
@@ -108,7 +108,7 @@ Markdown files with YAML frontmatter (`name`, `description`). Each skill encapsu
 |-----------|------|
 | **Cursor** | Primary IDE; loads skills via agent context |
 | **Ollama** | Local model execution on GPU workstation |
-| **Qwen2.5-Coder 32B** | Core reasoning and code generation model |
+| **Qwen3 32B** | Core reasoning and code generation model (`qwen3:32b`) |
 | **OpenCode** | Agent CLI for terminal-based autonomous sessions |
 
 ---

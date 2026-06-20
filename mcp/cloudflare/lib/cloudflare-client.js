@@ -6,6 +6,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { logger } from './logger.js';
+import { pagesApi } from './pages-api.js';
+import { dnsApi } from './dns-api.js';
+import { domainApi } from './domain-api.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -176,108 +179,9 @@ export class CloudflareClient {
       ? lastError
       : new CloudflareApiError('Cloudflare request failed after retries');
   }
-
-  // ─── Pages ───────────────────────────────────────────────────────────────
-
-  /**
-   * @param {Record<string, unknown>} projectConfig
-   */
-  async createPagesProject(projectConfig) {
-    return this.request('POST', `/accounts/${this.accountId}/pages/projects`, projectConfig);
-  }
-
-  /**
-   * @param {string} projectName
-   * @param {Record<string, unknown>} [deployBody]
-   */
-  async deployPagesProject(projectName, deployBody = {}) {
-    return this.request(
-      'POST',
-      `/accounts/${this.accountId}/pages/projects/${encodeURIComponent(projectName)}/deployments`,
-      deployBody
-    );
-  }
-
-  /**
-   * @param {{ page?: number, per_page?: number }} [params]
-   */
-  async listPagesProjects(params = {}) {
-    return this.request('GET', `/accounts/${this.accountId}/pages/projects`, undefined, params);
-  }
-
-  /**
-   * @param {string} projectName
-   * @param {string} deploymentId
-   */
-  async getPagesDeployment(projectName, deploymentId) {
-    return this.request(
-      'GET',
-      `/accounts/${this.accountId}/pages/projects/${encodeURIComponent(projectName)}/deployments/${encodeURIComponent(deploymentId)}`
-    );
-  }
-
-  // ─── DNS ─────────────────────────────────────────────────────────────────
-
-  /**
-   * @param {Record<string, unknown>} record
-   */
-  async createDnsRecord(record) {
-    return this.request('POST', `/zones/${this.zoneId}/dns_records`, record);
-  }
-
-  /**
-   * @param {string} recordId
-   * @param {Record<string, unknown>} record
-   */
-  async updateDnsRecord(recordId, record) {
-    return this.request('PUT', `/zones/${this.zoneId}/dns_records/${recordId}`, record);
-  }
-
-  /**
-   * @param {{ type?: string, name?: string, content?: string, page?: number, per_page?: number }} [params]
-   */
-  async listDnsRecords(params = {}) {
-    return this.request('GET', `/zones/${this.zoneId}/dns_records`, undefined, params);
-  }
-
-  // ─── Custom Domains ──────────────────────────────────────────────────────
-
-  /**
-   * @param {string} projectName
-   * @param {string} domain
-   */
-  async attachDomain(projectName, domain) {
-    return this.request(
-      'POST',
-      `/accounts/${this.accountId}/pages/projects/${encodeURIComponent(projectName)}/domains`,
-      { name: domain }
-    );
-  }
-
-  /**
-   * @param {string} projectName
-   * @param {string} domain
-   */
-  async getDomainStatus(projectName, domain) {
-    return this.request(
-      'GET',
-      `/accounts/${this.accountId}/pages/projects/${encodeURIComponent(projectName)}/domains/${encodeURIComponent(domain)}`
-    );
-  }
-
-  /**
-   * Trigger domain verification check.
-   * @param {string} projectName
-   * @param {string} domain
-   */
-  async verifyDomain(projectName, domain) {
-    return this.request(
-      'PATCH',
-      `/accounts/${this.accountId}/pages/projects/${encodeURIComponent(projectName)}/domains/${encodeURIComponent(domain)}`,
-      { status: 'active' }
-    );
-  }
 }
+
+Object.assign(CloudflareClient.prototype, pagesApi, dnsApi, domainApi);
 
 export class CloudflareApiError extends Error {
   /**

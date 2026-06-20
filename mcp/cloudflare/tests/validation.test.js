@@ -2,7 +2,7 @@
  * Tests for validation helpers and logger configuration.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, afterEach } from '@jest/globals';
 import { z } from 'zod';
 import {
   validateEnv,

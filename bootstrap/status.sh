@@ -51,7 +51,7 @@ print_status() {
 
   load_install_lock
   local node_label="Node ${MIN_NODE_MAJOR}"
-  local model_label="Qwen2.5-Coder 32B"
+  local model_label="Model ${OLLAMA_MODEL}"
   local all_ok=true
 
   echo ""

@@ -1,42 +1,19 @@
-# MCP — Git Server
+# Teknovo Git MCP
 
-Local git operations for repositories on the workstation (status, diff, log).
+Scoped git operations within `TEKNOVO_WORKSPACE`. Force push is blocked.
 
-## Status
+## Tools
 
-**Ready (template)** — no remote credentials required for local operations.
+| Tool | Description |
+|------|-------------|
+| `git_status` | Repository status |
+| `git_diff` | Show diff |
+| `git_log` | Commit log |
+| `git_commit` | Stage and commit |
+| `git_push` | Push (no force) |
+| `git_branch_list` | List branches |
+| `git_branch_create` | Create branch |
 
-## Setup
+## License
 
-1. Copy config template:
-
-```bash
-cp mcp/git/config.template.json ~/.config/mcp/git.json
-```
-
-2. Ensure SSH keys for GitHub are configured separately ([PLANNED] — see `AI_RECOVERY.md`).
-
-## Architecture
-
-```text
-Agent
-  │
-  ▼
-MCP Git Server
-  │
-  ▼
-Local .git repositories
-```
-
-## Scope
-
-| Operation | Local MCP | Remote push |
-|-----------|-------------|-------------|
-| status, diff, log | Yes | N/A |
-| commit | Agent policy | N/A |
-| push | N/A | SSH/HTTPS credentials |
-
-## Security
-
-- Agents must not force-push to `main`
-- See `security/ai-agent-security.md` for commit boundaries
+MIT

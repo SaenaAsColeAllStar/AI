@@ -143,4 +143,4 @@ See `AGENTS.md` for full workflow.
 
 **Workstation**: 1.0  
 **Bootstrap**: phases 0–12  
-**Model default**: `qwen2.5-coder:32b`
+**Model default**: `qwen3:32b`

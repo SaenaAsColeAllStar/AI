@@ -42,7 +42,7 @@ Panduan lengkap instalasi **COLEALLSTAR × TEKNOVO AI Workstation** dari nol —
    | Disk | 50 GB free | 80 GB+ |
    | GPU VRAM | ~20 GB | NVIDIA RTX 3090 / A5000 / A6000 atau lebih baik |
 
-   Model `qwen2.5-coder:32b` membutuhkan ~20 GB VRAM untuk inferensi GPU yang nyaman. Tanpa GPU, Ollama fallback ke CPU (jauh lebih lambat).
+   Model `qwen3:32b` (pinned in `bootstrap/install.lock.yaml`) membutuhkan ~20 GB VRAM untuk inferensi GPU yang nyaman. Tanpa GPU, Ollama fallback ke CPU (jauh lebih lambat).
 
 3. **Pilih image / Docker template**:
 
@@ -122,7 +122,7 @@ INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
 | 0 | `bootstrap/preflight.sh` | Cek OS, RAM, disk, internet, container, GPU, Python, Node, Docker |
 | 1 | `bootstrap/install-runtime.sh` | Git, curl, Node 22, Python 3.10+, PyYAML |
 | 2 | `bootstrap/install-ollama.sh` | Ollama server + verifikasi API |
-| 3 | `bootstrap/install-model.sh` | Pull model `qwen2.5-coder:32b` (~20 GB) |
+| 3 | `bootstrap/install-model.sh` | Pull model `qwen3:32b` (~20 GB; from lock file) |
 | 4 | `bootstrap/install-opencode.sh` | OpenCode CLI + konfigurasi provider Ollama |
 | 5 | `bootstrap/install-skills.sh` | Verifikasi skills, memory, taste, quality, security |
 | 6 | `bootstrap/build-memory.sh` | Refresh artefak memory |
@@ -138,8 +138,10 @@ os: ubuntu-22.04
 node: 22
 python: 3.10
 ollama: latest
-model: qwen2.5-coder:32b
-opencode: 1.17.8
+model:
+  qwen3:32b
+opencode:
+  version: 1.17.8
 ```
 
 - **Idempotent** — aman dijalankan ulang setelah gagal atau saat instance GPU diganti.
@@ -160,7 +162,7 @@ curl http://127.0.0.1:11434/api/tags
 
 # Model ter-pull
 ollama list
-# Expected: qwen2.5-coder:32b
+# Expected: qwen3:32b
 
 # OpenCode CLI
 opencode --version
@@ -184,7 +186,7 @@ TEKNOVO
 ✓ Node 22
 ✓ Git
 ✓ Ollama
-✓ Qwen2.5-Coder 32B
+✓ Model qwen3:32b
 ✓ OpenCode
 ✓ Registry
 ✓ Skills
@@ -206,7 +208,7 @@ Test prompt:
 Read AGENTS.md and summarize the 12-step workflow.
 ```
 
-Expected model: `qwen2.5-coder:32b` · Usage harian: **[AI_RUNTIME.md](AI_RUNTIME.md)**
+Expected model: `qwen3:32b` · Usage harian: **[AI_RUNTIME.md](AI_RUNTIME.md)**
 
 ---
 

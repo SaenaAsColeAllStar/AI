@@ -15,11 +15,13 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { configureLogger, logger } from './lib/logger.js';
+import { loadCloudflareSecrets } from '../shared/secrets.js';
 import { readFileSync } from 'node:fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: join(__dirname, '.env') });
+loadCloudflareSecrets();
 
 try {
   const config = JSON.parse(readFileSync(join(__dirname, 'config', 'cloudflare.json'), 'utf8'));

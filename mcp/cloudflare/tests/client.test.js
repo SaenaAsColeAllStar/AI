@@ -3,9 +3,12 @@
  */
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 import { CloudflareClient, CloudflareApiError } from '../lib/cloudflare-client.js';
 import { discoverTools, handleToolCall, createMcpServer } from '../server.js';
-import { join, dirname } from 'node:path';
+import { resetSecretsCache } from '../../shared/secrets.js';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -119,6 +122,41 @@ describe('CloudflareClient extended', () => {
 
     expect(fetchFn).toHaveBeenCalledTimes(8);
   });
+
+  it('throws after exhausting network retries', async () => {
+    const fetchFn = jest.fn().mockRejectedValue(new Error('network down'));
+    const client = new CloudflareClient(
+      { apiToken: 't', accountId: 'a', zoneId: 'z' },
+      { fetchFn }
+    );
+
+    await expect(client.listPagesProjects()).rejects.toThrow('network down');
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+  });
+
+  it('skips null query parameters', async () => {
+    const fetchFn = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      text: async () => JSON.stringify({ success: true, result: [] }),
+    });
+
+    const client = new CloudflareClient(
+      { apiToken: 't', accountId: 'a', zoneId: 'z' },
+      { fetchFn }
+    );
+
+    await client.request('GET', '/zones/z/dns_records', undefined, {
+      name: 'erp',
+      content: undefined,
+      page: '1',
+    });
+
+    const calledUrl = fetchFn.mock.calls[0][0];
+    expect(calledUrl).toContain('name=erp');
+    expect(calledUrl).not.toContain('content=');
+  });
 });
 
 describe('handleToolCall', () => {
@@ -174,8 +212,13 @@ describe('handleToolCall', () => {
 describe('Tool env failure coverage', () => {
   const ENV_KEYS = ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_ZONE_ID'];
   const saved = {};
+  /** @type {string | undefined} */
+  let emptySecretsDir;
 
   beforeEach(() => {
+    emptySecretsDir = mkdtempSync(join(tmpdir(), 'teknovo-empty-secrets-'));
+    resetSecretsCache();
+    process.env.TEKNOVO_SECRETS_DIR = emptySecretsDir;
     for (const key of ENV_KEYS) {
       saved[key] = process.env[key];
       delete process.env[key];
@@ -183,6 +226,8 @@ describe('Tool env failure coverage', () => {
   });
 
   afterEach(() => {
+    resetSecretsCache();
+    if (emptySecretsDir) rmSync(emptySecretsDir, { recursive: true, force: true });
     for (const key of ENV_KEYS) {
       if (saved[key] === undefined) delete process.env[key];
       else process.env[key] = saved[key];

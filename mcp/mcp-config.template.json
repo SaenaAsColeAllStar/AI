@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "teknovo-cloudflare": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/cloudflare/server.js"],
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "${env:CLOUDFLARE_API_TOKEN}",
+        "CLOUDFLARE_ACCOUNT_ID": "${env:CLOUDFLARE_ACCOUNT_ID}",
+        "CLOUDFLARE_ZONE_ID": "${env:CLOUDFLARE_ZONE_ID}"
+      }
+    },
+    "teknovo-github": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/github/server.js"],
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}",
+        "GITHUB_OWNER": "${env:GITHUB_OWNER}"
+      }
+    },
+    "teknovo-filesystem": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/filesystem/server.js"],
+      "env": {
+        "TEKNOVO_WORKSPACE": "C:/Users/fajar/Downloads/AI"
+      }
+    },
+    "teknovo-git": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/git/server.js"],
+      "env": {
+        "TEKNOVO_WORKSPACE": "C:/Users/fajar/Downloads/AI"
+      }
+    },
+    "teknovo-postgres": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/postgres/server.js"],
+      "env": {
+        "DATABASE_URL": "${env:DATABASE_URL}"
+      }
+    },
+    "teknovo-qdrant": {
+      "command": "node",
+      "args": ["C:/Users/fajar/Downloads/AI/mcp/qdrant/server.js"],
+      "env": {
+        "QDRANT_URL": "${env:QDRANT_URL}",
+        "QDRANT_API_KEY": "${env:QDRANT_API_KEY}"
+      }
+    }
+  }
+}

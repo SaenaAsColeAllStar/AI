@@ -147,7 +147,7 @@ TEKNOVO
 ✓ Node 22
 ✓ Git
 ✓ Ollama
-✓ Qwen2.5-Coder 32B
+✓ Model qwen3:32b
 ✓ OpenCode
 ✓ Registry
 ✓ Skills
@@ -163,10 +163,10 @@ AI WORKSTATION READY
 - [ ] `git clone` workstation repo
 - [ ] `bash bootstrap/install.sh` completes without error
 - [ ] `bootstrap/verify.sh` exits 0
-- [ ] `curl http://127.0.0.1:11434/api/tags` shows qwen2.5-coder:32b
-- [ ] `curl http://127.0.0.1:11434/v1/models` lists qwen2.5-coder:32b
+- [ ] `curl http://127.0.0.1:11434/api/tags` shows qwen3:32b
+- [ ] `curl http://127.0.0.1:11434/v1/models` lists qwen3:32b
 - [ ] `opencode --version` works
-- [ ] `opencode models` includes `ollama-local/qwen2.5-coder:32b`
+- [ ] `opencode models` includes `ollama-local/qwen3:32b`
 - [ ] [PLANNED] SSH key added to GitHub
 - [ ] [PLANNED] MCP tokens exported in shell profile
 - [ ] [PLANNED] Teknovo V2 repo cloned to `/workspace/teknovo`

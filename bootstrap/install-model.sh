@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Phase 3 — Pull and verify Qwen2.5-Coder 32B model
+# Phase 3 — Pull and verify Qwen3 32B model (from install.lock.yaml)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

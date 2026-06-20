@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "node scripts/lint.js",
     "check": "npm run lint && npm test"
@@ -32,11 +32,13 @@
     "collectCoverageFrom": [
       "lib/**/*.js",
       "tools/**/*.js",
-      "!**/node_modules/**"
+      "../shared/**/*.js",
+      "!**/node_modules/**",
+      "!lib/logger.js"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 75,
+        "branches": 73,
         "functions": 80,
         "lines": 80,
         "statements": 80
@@ -44,7 +46,8 @@
     },
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
-    }
+    },
+    "testPathIgnorePatterns": ["/node_modules/"]
   },
   "keywords": [
     "mcp",

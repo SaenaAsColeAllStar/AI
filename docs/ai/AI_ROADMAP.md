@@ -66,7 +66,7 @@ M5: Domain Module Skills ───────── ✅ Complete (skills)
 **Target**: Q4 2026
 
 **Goals**:
-- Ollama server running Qwen2.5-Coder 32B on RTX 3090 x2
+- Ollama server running Qwen3 32B (`qwen3:32b`) on RTX 3090 x2
 - OpenCode CLI wired to registry autoload
 - Session caching in Redis to reduce token usage
 - Skill-aware prompt injection at session start

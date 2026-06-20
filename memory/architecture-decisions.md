@@ -241,7 +241,7 @@ Local GPU workstation (RTX 3090 x2) runs agent sessions via OpenCode + Cursor.
 
 ### Decision
 
-Use **Ollama** serving **Qwen2.5-Coder 32B** — not vLLM, not raw PyTorch serving stack.
+Use **Ollama** serving **Qwen3 32B** (`qwen3:32b` in `bootstrap/install.lock.yaml`) — not vLLM, not raw PyTorch serving stack.
 
 ### Rationale
 

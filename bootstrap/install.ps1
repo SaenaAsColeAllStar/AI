@@ -46,7 +46,7 @@ GPU passthrough in WSL requires NVIDIA drivers on Windows host and CUDA in WSL.
 | Item | Status |
 |------|--------|
 | Ollama for Windows | Install from https://ollama.com if needed |
-| Qwen 32B model | `ollama pull qwen2.5-coder:32b` (~20GB) |
+| Qwen 32B model | `ollama pull qwen3:32b` (~20GB; see `bootstrap/install.lock.yaml`) |
 | OpenCode | `npm install -g opencode-ai` |
 | MCP GitHub token | Manual — see `mcp/github/README.md` |
 

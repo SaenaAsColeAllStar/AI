@@ -36,7 +36,7 @@ INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
 | 0 | `bootstrap/preflight.sh` | OS, RAM, disk, internet, container, GPU, Python, Node, Docker — writes `docs/ai/compatibility-report.md` |
 | 1 | `bootstrap/install-runtime.sh` | Git, curl, wget, Node 22+, Python 3.10+, PyYAML |
 | 2 | `bootstrap/install-ollama.sh` | Ollama server (systemd → tmux → screen → nohup) + API health wait (360s) |
-| 3 | `bootstrap/install-model.sh` | `qwen2.5-coder:32b` pull + verify via `/api/tags` and `/v1/models` |
+| 3 | `bootstrap/install-model.sh` | `qwen3:32b` pull + verify via `/api/tags` and `/v1/models` (from lock file) |
 | 4 | `bootstrap/install-opencode.sh` | OpenCode CLI + Ollama provider config + `opencode models` validation |
 | 5 | `bootstrap/install-skills.sh` | Verify skills, memory, taste, quality, security layers |
 | 6 | `bootstrap/build-memory.sh` | Refresh memory artifacts |
@@ -48,6 +48,23 @@ INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
 | _(opt)_ | `bootstrap/install-browser-dev.sh` | code-server + Open WebUI + Cloudflare tunnel templates |
 
 `bootstrap/compatibility.sh` delegates to `preflight.sh` for backward compatibility.
+
+---
+
+## Known Compatibility
+
+### OpenCode 1.17.8
+
+Tested Models:
+
+| Model                            | Status                                          |
+| -------------------------------- | ----------------------------------------------- |
+| qwen2.5-coder:32b                | Tool-call generation only, execution unreliable |
+| qwen3:32b                        | Fully compatible                                |
+| qwen3:32b + Ollama               | Recommended                                     |
+| qwen3:32b + OpenCode Build Agent | Production Ready                                |
+
+For local agent execution, use `qwen3:32b` as default model (pinned in `bootstrap/install.lock.yaml`).
 
 ---
 
@@ -161,7 +178,7 @@ TEKNOVO
 ✓ Node 22
 ✓ Git
 ✓ Ollama
-✓ Qwen2.5-Coder 32B
+✓ Model qwen3:32b
 ✓ OpenCode
 ✓ Registry
 ✓ Skills
@@ -181,7 +198,7 @@ Test prompt:
 Read AGENTS.md and summarize the 12-step workflow.
 ```
 
-Expected model indicator: `qwen2.5-coder:32b`
+Expected model indicator: `qwen3:32b`
 
 ---
 

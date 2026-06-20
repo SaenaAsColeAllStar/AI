@@ -14,7 +14,7 @@ The **Teknovo AI SuperStack** (`SaenaAsColeAllStar/AI`) is the **agent workstati
 |------|-------------|
 | **Purpose** | Skills, agent rules, registry, AI documentation, memory system |
 | **Deploys into** | Teknovo-V2 via copy, symlink, or git submodule of `.agents/` and `AGENTS.md` |
-| **Runtime** | Cursor IDE, Ollama (Qwen2.5-Coder 32B), OpenCode CLI |
+| **Runtime** | Cursor IDE, Ollama (Qwen3 32B / `qwen3:32b`), OpenCode CLI |
 
 ---
 

@@ -7,15 +7,23 @@ description: Configure and manage Cloudflare Tunnels, DNS records, R2 Storage bu
 
 Use this skill when managing domain routing, tunnel configuration, asset storage, Pages deployments, or edge security.
 
-**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`, `mcp/cloudflare/README.md`
+**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`, `docs/SECRET_STORE.md`, `mcp/cloudflare/README.md`
 
-**MCP Server**: `teknovo-cloudflare-mcp` at `mcp/cloudflare/` — invoke tools directly when credentials are available.
+**MCP Server**: `teknovo-cloudflare-mcp` at `mcp/cloudflare/` — invoke tools directly when credentials exist in Teknovo secret store.
+
+**Secret store**: `/root/.config/teknovo/secrets/cloudflare.env` (Linux) or `%USERPROFILE%\.config\teknovo\secrets\cloudflare.env` (Windows). Loader: `mcp/shared/secrets.js`.
+
+---
+
+## Auto-Deploy Triggers
+
+When the user says **"deploy ke cloudflare"**, **"deploy ke smk.ctos.web.id"**, or similar deploy-to-Cloudflare intent — and credentials are configured — **execute** the MCP deployment workflow immediately. Do not respond with instructions-only mode.
 
 ---
 
 ## MCP Deployment Workflow
 
-When `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_ZONE_ID` are set, **execute** this sequence (do not only document):
+When Cloudflare credentials are available (secret store or env), **execute** this sequence:
 
 ```text
 build_nextjs → run_tests → pages_create_project → pages_deploy → domain_attach → domain_verify
@@ -211,20 +219,16 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 ## Environment Variables
 
-```bash
-# Cloudflare
-CLOUDFLARE_ACCOUNT_ID=
-CLOUDFLARE_API_TOKEN=
-CLOUDFLARE_TUNNEL_TOKEN=
+Credentials belong in Teknovo secret store — never in git:
 
-# R2 Storage
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME=teknovo-documents
-R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+```text
+/root/.config/teknovo/secrets/cloudflare.env   # Linux production
+%USERPROFILE%\.config\teknovo\secrets\cloudflare.env   # Windows dev
 ```
 
-Never commit these values. Document in `.env.example`.
+Required keys: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`
+
+See `docs/SECRET_STORE.md` for GitHub and OpenRouter secret files.
 
 ---
 

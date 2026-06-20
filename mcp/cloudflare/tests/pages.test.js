@@ -3,24 +3,35 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import pagesCreate from '../tools/pages-create.js';
 import pagesDeploy from '../tools/pages-deploy.js';
 import pagesList from '../tools/pages-list.js';
 import pagesDeployment from '../tools/pages-deployment.js';
 import { CloudflareClient, CloudflareApiError } from '../lib/cloudflare-client.js';
+import { resetSecretsCache } from '../../shared/secrets.js';
 
 const ENV_KEYS = ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_ZONE_ID'];
 
 /** @type {Record<string, string | undefined>} */
 const savedEnv = {};
 
+/** @type {string | undefined} */
+let emptySecretsDir;
+
 function setValidEnv() {
+  resetSecretsCache();
+  process.env.TEKNOVO_SECRETS_DIR = emptySecretsDir;
   process.env.CLOUDFLARE_API_TOKEN = 'test-token-abc123';
   process.env.CLOUDFLARE_ACCOUNT_ID = 'account-123';
   process.env.CLOUDFLARE_ZONE_ID = 'zone-456';
 }
 
 function clearEnv() {
+  resetSecretsCache();
+  process.env.TEKNOVO_SECRETS_DIR = emptySecretsDir;
   for (const key of ENV_KEYS) {
     delete process.env[key];
   }
@@ -53,17 +64,23 @@ function mockFetchError(status, errors) {
 
 describe('Pages tools', () => {
   beforeEach(() => {
+    emptySecretsDir = mkdtempSync(join(tmpdir(), 'teknovo-empty-secrets-'));
     for (const key of ENV_KEYS) {
       savedEnv[key] = process.env[key];
     }
+    savedEnv.TEKNOVO_SECRETS_DIR = process.env.TEKNOVO_SECRETS_DIR;
     setValidEnv();
   });
 
   afterEach(() => {
+    resetSecretsCache();
+    if (emptySecretsDir) rmSync(emptySecretsDir, { recursive: true, force: true });
     for (const key of ENV_KEYS) {
       if (savedEnv[key] === undefined) delete process.env[key];
       else process.env[key] = savedEnv[key];
     }
+    if (savedEnv.TEKNOVO_SECRETS_DIR === undefined) delete process.env.TEKNOVO_SECRETS_DIR;
+    else process.env.TEKNOVO_SECRETS_DIR = savedEnv.TEKNOVO_SECRETS_DIR;
   });
 
   describe('pages_create_project', () => {
@@ -71,7 +88,7 @@ describe('Pages tools', () => {
       clearEnv();
       const result = await pagesCreate.handler({ name: 'my-app' });
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain('CLOUDFLARE_API_TOKEN');
+      expect(result.content[0].text).toMatch(/Cloudflare credentials|CLOUDFLARE_API_TOKEN/);
     });
 
     it('validates required name', async () => {

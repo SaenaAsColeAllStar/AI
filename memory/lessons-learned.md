@@ -33,7 +33,7 @@ Lessons below are extracted from **documented** sources in this repository. Item
 git clone git@github.com:SaenaAsColeAllStar/teknovo.git
 curl -fsSL https://ollama.com/install.sh | sh
 ollama serve
-ollama pull qwen2.5-coder:32b
+ollama pull qwen3:32b
 npm install -g opencode-ai
 cd teknovo && opencode
 ```
@@ -55,7 +55,7 @@ cd teknovo && opencode
 **Solution**:
 1. Start `ollama serve` in background
 2. Verify: `curl http://127.0.0.1:11434/api/tags`
-3. Confirm `qwen2.5-coder:32b` in model list
+3. Confirm `qwen3:32b` in model list
 
 **Prevention**: Health check endpoint planned for M4 roadmap.
 
@@ -79,10 +79,10 @@ cd teknovo && opencode
     "ollama-local": {
       "npm": "@ai-sdk/openai-compatible",
       "options": { "baseURL": "http://127.0.0.1:11434/v1" },
-      "models": { "qwen2.5-coder:32b": {} }
+      "models": { "qwen3:32b": {} }
     }
   },
-  "model": "ollama-local/qwen2.5-coder:32b"
+  "model": "ollama-local/qwen3:32b"
 }
 ```
 
@@ -183,7 +183,7 @@ If users attempt vLLM instead of Ollama, common industry issues include:
 | vLLM build failure | vLLM version incompatible with CUDA/torch combo | Use official vLLM Docker image with pinned versions |
 | OOM on 24GB GPU | 32B model without quantization | Use AWQ/GPTQ quant or smaller model; Ollama handles this via pull variants |
 
-**Teknovo recommendation**: Stay on Ollama + `qwen2.5-coder:32b` per `AI_DEPLOY.md`. Do not introduce vLLM to workstation unless Architecture Impact Analysis approves stack change.
+**Teknovo recommendation**: Stay on Ollama + `qwen3:32b` per `bootstrap/install.lock.yaml` and `AI_DEPLOY.md`. Do not introduce vLLM to workstation unless Architecture Impact Analysis approves stack change.
 
 ---
 

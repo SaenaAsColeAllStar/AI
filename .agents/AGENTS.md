@@ -145,7 +145,7 @@ Teknovo-V2/
 
 This workstation targets:
 
-- **Ollama** + **Qwen2.5-Coder 32B** for local inference
+- **Ollama** + **Qwen3 32B** (`qwen3:32b`) for local inference
 - **OpenCode** as agent CLI
 - **Cursor** as IDE with skill autoload via registry
 

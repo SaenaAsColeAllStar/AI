@@ -1,5 +1,5 @@
-﻿/**
- * Platform validation ΓÇö Zod schemas and MCP response helpers.
+/**
+ * Platform validation — Zod schemas and MCP response helpers.
  */
 
 import { z } from 'zod';

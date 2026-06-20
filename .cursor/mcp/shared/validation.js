@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shared validation helpers for Teknovo MCP tool responses.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shared structured logger with secret masking for Teknovo MCP servers.
  */
 
@@ -76,7 +76,7 @@ export function maskValue(value) {
  */
 export function maskId(id) {
   if (!maskSecrets || typeof id !== 'string' || id.length < 8) return id;
-  return `${id.slice(0, 4)}ΓÇª${id.slice(-4)}`;
+  return `${id.slice(0, 4)}…${id.slice(-4)}`;
 }
 
 /**

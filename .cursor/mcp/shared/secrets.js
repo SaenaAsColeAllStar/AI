@@ -1,5 +1,5 @@
-﻿/**
- * Teknovo secret store loader ΓÇö reads credentials from OS config paths only.
+/**
+ * Teknovo secret store loader — reads credentials from OS config paths only.
  * Never commit secrets. Never log raw tokens.
  */
 
@@ -172,7 +172,7 @@ export function loadCloudflareSecrets(options = {}) {
 }
 
 /**
- * Internal credentials for Cloudflare API clients ΓÇö never log return value.
+ * Internal credentials for Cloudflare API clients — never log return value.
  * Falls back to process.env when secret store is not configured.
  */
 export function getCloudflareApiEnv() {

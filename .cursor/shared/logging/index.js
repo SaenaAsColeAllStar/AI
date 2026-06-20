@@ -1,5 +1,5 @@
-﻿/**
- * Platform structured logger ΓÇö extends mcp/shared/logger with child loggers and context.
+/**
+ * Platform structured logger — extends mcp/shared/logger with child loggers and context.
  */
 
 import {

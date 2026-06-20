@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 /**
  * Teknovo Multi-Agent Orchestrator
  * Routes tasks to specialized agents, discovers skills/MCPs, coordinates parallel work.
@@ -13,7 +13,7 @@ import { createLogger } from '../shared/logging/index.js';
 import { validateOrThrow, taskSchema } from '../shared/validation/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = join(__dirname, '..', '..');
+const REPO_ROOT = join(__dirname, '..');
 const logger = createLogger('orchestrator');
 
 const DEFAULT_MAX_RETRIES = 10;
@@ -85,11 +85,11 @@ export function loadMcpRegistry(root = REPO_ROOT) {
 }
 
 /**
- * Discover skill directories under .cursor/skills/
+ * Discover skill directories under .agents/skills/
  * @param {string} [root]
  */
 export function discoverSkills(root = REPO_ROOT) {
-  const skillsDir = join(root, '.cursor', 'skills');
+  const skillsDir = join(root, '.agents', 'skills');
   if (!existsSync(skillsDir)) return [];
 
   /** @type {{ id: string, path: string, category: string }[]} */
@@ -567,7 +567,7 @@ export async function dispatchParallel(tasks, options = {}) {
 }
 
 /**
- * CLI entry â€” route a task from argv.
+ * CLI entry — route a task from argv.
  */
 async function main() {
   const description = process.argv.slice(2).join(' ') || 'General platform task';

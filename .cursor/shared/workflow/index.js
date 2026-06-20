@@ -1,5 +1,5 @@
-﻿/**
- * Teknovo workflow engine ΓÇö step runner with retry and failure recovery.
+/**
+ * Teknovo workflow engine — step runner with retry and failure recovery.
  * Aligns with execution/execution-registry.yaml max_retries: 10.
  */
 

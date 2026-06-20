@@ -1,0 +1,216 @@
+﻿# Teknovo AI Execution System V2 â€” Policy Registry
+# Cross-ref: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md | Bootstrap: .cursor/docs/EXECUTION.md
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Execution Registry
+  description: Execution policies, retry limits, branch patterns, quality gates
+  spec: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md
+  bootstrap: .cursor/docs/EXECUTION.md
+  model_lock: .cursor/runtime/bootstrap/install.lock.yaml
+
+model:
+  required: qwen3:32b
+  forbidden:
+    - qwen2.5-coder
+  verify_commands:
+    - curl -s http://127.0.0.1:11434/api/tags
+    - curl -s http://127.0.0.1:11434/v1/models
+  on_mismatch: warn_and_stop
+
+execution_mode:
+  planning_forbidden: true
+  tool_use_mandatory: true
+  instruct_user_forbidden: true
+  todo_lists_forbidden: true
+
+retry_policies:
+  self_healing:
+    max_retries: 10
+    stop_on_first_failure: false
+    ask_user_on_failure: false
+  npm_install:
+    max_retries: 10
+    actions: [inspect_package_json, repair_json, retry]
+  npm_build:
+    max_retries: 10
+    actions: [inspect_logs, repair_code, retry]
+  typescript:
+    max_retries: 10
+    actions: [inspect_errors, repair_types, retry]
+  tests:
+    max_retries: 10
+    actions: [inspect_failures, repair_implementation, rerun]
+
+branch_policy:
+  protected_branches:
+    - main
+    - master
+  forbidden_actions_on_protected:
+    - direct_commit
+    - direct_push
+    - auto_merge
+  feature_prefix: feature/
+  naming_examples:
+    - feature/cloudflare-mcp
+    - feature/github-mcp
+    - feature/smk-teknovo-landing
+    - feature/ppdb-system
+    - feature/sarpras-system
+    - feature/cbt-system
+    - feature/ai-execution-system-v2
+  pre_implementation_check: git branch --show-current
+  worktree:
+    enabled: true
+    skill: superpowers-using-git-worktrees
+    doc: .cursor/gates/execution/branch-policy.md
+
+secret_store:
+  linux_dir: /root/.config/teknovo/secrets
+  windows_dir: "%USERPROFILE%\\.config\\teknovo\\secrets"
+  files:
+    - cloudflare.env
+    - github.env
+    - openrouter.env
+  loader: mcp/shared/secrets.js
+  doc: .cursor/docs/SECRET_STORE.md
+  rules:
+    - never_hardcode
+    - never_commit
+    - never_log_plaintext
+    - mask_in_output
+    - fail_safely_if_missing
+
+mcp_standards:
+  required_artifacts:
+    - server.js
+    - package.json
+    - README.md
+    - docs/
+    - tests/
+  cloudflare_tools:
+    - pages_create_project
+    - pages_deploy
+    - pages_list_projects
+    - pages_get_deployment
+    - dns_create_record
+    - dns_update_record
+    - dns_list_records
+    - domain_attach
+    - domain_verify
+  registry: .cursor/registry/mcp-registry.yaml
+
+deployment_mode:
+  workflow:
+    - build
+    - test
+    - fix_failures
+    - deploy
+    - verify_deployment
+    - verify_dns
+    - verify_https
+  doc: .cursor/gates/execution/deployment-mode.md
+  skill: teknovo-cloudflare-stack
+  return_fields:
+    - deployment_url
+    - deployment_status
+    - dns_status
+    - https_status
+
+quality_gates:
+  doc: .cursor/gates/quality/quality-gates.md
+  execution_completion_checks:
+    - imports_resolve
+    - package_json_valid
+    - build_success
+    - test_success
+    - lint_success
+    - documentation_links
+    - mcp_registration
+    - configuration_valid
+  fix_automatically: true
+
+git_rules:
+  commit_format: "feat(scope): description"
+  auto_push: false
+  auto_merge: false
+  commit_on_main_forbidden: true
+
+completion_rule:
+  required:
+    - implementation_complete
+    - build_successful
+    - tests_successful
+    - validation_successful
+  return:
+    - files_created
+    - files_modified
+    - commands_executed
+    - final_status
+
+artifacts:
+  spec:
+    path: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md
+    autoload: false
+    trigger: [execution, execution mode, implement directly]
+
+  bootstrap:
+    path: .cursor/docs/EXECUTION.md
+    autoload: false
+    load_after: [agents-md]
+    trigger: [execution, before implementation, deploy, build and deploy]
+
+  failure_recovery:
+    path: .cursor/gates/execution/failure-recovery.md
+    trigger: [command failed, npm install failed, build failed, test failed, tsc failed]
+
+  branch_policy:
+    path: .cursor/gates/execution/branch-policy.md
+    trigger: [branch safety, feature branch, before implementation, git commit]
+
+  deployment_mode:
+    path: .cursor/gates/execution/deployment-mode.md
+    trigger: [deploy, cloudflare deploy, pages deploy, deployment mode]
+
+bundles:
+  pre-implementation-execution:
+    description: Branch safety + execution mode before coding
+    artifacts:
+      - bootstrap
+      - branch_policy
+      - failure_recovery
+    skills:
+      - teknovo-auto-orchestrator
+
+  pre-deploy-execution:
+    description: Deployment execution workflow
+    artifacts:
+      - bootstrap
+      - deployment_mode
+      - failure_recovery
+
+integrations:
+  agents_md: AGENTS.md
+  skill_registry: .cursor/registry/skill-registry.yaml
+  platform_skills: .cursor/registry/skills.yaml
+  platform_agents: .cursor/registry/agents.yaml
+  platform_mcp: .cursor/registry/mcp.yaml
+  orchestrator: .cursor/orchestrator/orchestrator.js
+  workflow_engine: shared/workflow/index.js
+  memory_registry: .cursor/docs/memory/memory-registry.yaml
+  assurance: .cursor/gates/assurance/review-workflow.md
+  quality: .cursor/gates/quality/quality-gates.md
+
+orchestrator:
+  entry: .cursor/orchestrator/orchestrator.js
+  auto_orchestrator: .cursor/skills/teknovo-auto-orchestrator/SKILL.md
+  intent_routing: .cursor/skills/teknovo-auto-orchestrator/intent-routing.yaml
+  chain_map: .cursor/skills/teknovo-auto-orchestrator/chain-map.yaml
+  execution_policy: .cursor/skills/teknovo-auto-orchestrator/execution-policy.yaml
+  registry_agents: .cursor/registry/agents.yaml
+  registry_mcp: .cursor/registry/mcp.yaml
+  shared_workflow: shared/workflow/index.js
+  max_retries: 10
+  doc: .cursor/docs/ai/AI_PLATFORM.md

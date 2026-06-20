@@ -1,0 +1,250 @@
+﻿# Teknovo Agent Registry (Platform Split)
+# Canonical platform agents + cross-ref to legacy .cursor/registry/agent-registry.yaml
+
+version: "2.1.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Platform Agent Registry
+  legacy_registry: .cursor/registry/agent-registry.yaml
+  skill_registry: .cursor/registry/skills.yaml
+  mcp_registry: .cursor/registry/mcp.yaml
+  orchestrator: .cursor/orchestrator/orchestrator.js
+
+agent_types:
+  platform: Multi-agent platform specialists
+  meta: Meta-routing and architecture gates
+  pillar: Primary role gates
+  review: Quality, taste, security reviewers
+  assurance: Verification agents
+  operational: GStack sprint loop
+  specialist: Domain and technical skills
+  runtime: Cursor subagents
+
+agents:
+
+  # ─── META / ROUTING ───────────────────────────────────────────────────────
+  chief-architect:
+    id: chief-architect
+    type: meta
+    path: .cursor/orchestrator/AGENT.md
+    entry: .cursor/orchestrator/orchestrator.js
+    contract: .cursor/orchestrator/agent.yaml
+    config: .cursor/orchestrator/config.yaml
+    priority: critical
+    activate_when: [architecture, chief architect, system design, agent routing, multi-agent split]
+    keywords: [architect, architecture, routing, meta, coordination, split]
+    skills:
+      required: [teknovo-chief-architect]
+      recommended: [superpowers-dispatching-parallel-agents, context-builder]
+    routes_to: [orchestrator, platform-backend, platform-frontend]
+
+  # ─── PLATFORM AGENTS ──────────────────────────────────────────────────────
+  orchestrator:
+    id: orchestrator
+    type: platform
+    path: .cursor/orchestrator/AGENT.md
+    entry: .cursor/orchestrator/orchestrator.js
+    contract: .cursor/orchestrator/agent.yaml
+    config: .cursor/orchestrator/config.yaml
+    priority: critical
+    activate_when: [orchestrate, route task, dispatch agent, multi-agent, parallel agents, workflow]
+    keywords: [orchestrator, routing, dispatch, workflow, coordination, decompose, aggregate]
+    skills:
+      required: [agents-md, teknovo-auto-orchestrator, superpowers-dispatching-parallel-agents, teknovo-chief-architect]
+      recommended: [teknovo-mcp-stack, context-builder, superpowers-subagent-driven-development]
+
+  platform-frontend:
+    id: platform-frontend
+    type: platform
+    path: agents/frontend/AGENT.md
+    entry: agents/frontend/index.js
+    contract: agents/frontend/agent.yaml
+    config: agents/frontend/config.yaml
+    priority: high
+    activate_when: [next.js, react, tailwind, ui, frontend, landing page, seo, accessibility, a11y]
+    keywords: [next.js, react, tailwind, ui, ux, seo, a11y, landing, component, design]
+    skills:
+      required: [teknovo-ui-ux, teknovo-ui-ux-specialist]
+      recommended: [teknovo-landing-page, taste-ux-principles]
+    mcps:
+      required: [filesystem-mcp]
+      recommended: [git-mcp, web-fetch-mcp]
+
+  platform-backend:
+    id: platform-backend
+    type: platform
+    path: agents/backend/AGENT.md
+    entry: agents/backend/index.js
+    contract: agents/backend/agent.yaml
+    config: agents/backend/config.yaml
+    priority: high
+    activate_when: [backend, api, rest, database, migration, rbac, auth, nestjs, drizzle]
+    keywords: [backend, api, rest, database, migration, rbac, auth, service, repository, postgres]
+    skills:
+      required: [teknovo-backend-development, teknovo-api-architect, teknovo-database-architect, teknovo-rbac-architect]
+      recommended: [teknovo-chief-architect, teknovo-feature-implementation]
+    mcps:
+      required: [filesystem-mcp, git-mcp]
+      recommended: [postgres-mcp, github-mcp]
+
+  platform-devops:
+    id: platform-devops
+    type: platform
+    path: agents/devops/AGENT.md
+    entry: agents/devops/index.js
+    contract: agents/devops/agent.yaml
+    config: agents/devops/config.yaml
+    priority: high
+    activate_when: [deploy, docker, ci/cd, rollback, release, pipeline]
+    keywords: [deploy, docker, ci, cd, release, rollback, pipeline, ship]
+    skills:
+      required: [teknovo-devops-engineer, gstack-ship]
+      recommended: [teknovo-cloudflare-stack, teknovo-observability]
+    mcps:
+      required: [filesystem-mcp, git-mcp, shell-mcp]
+      recommended: [cloudflare-mcp, github-mcp]
+    delegates:
+      cloudflare: platform-cloudflare
+      github: platform-github
+
+  platform-testing:
+    id: platform-testing
+    type: platform
+    path: agents/testing/AGENT.md
+    entry: agents/testing/index.js
+    contract: agents/testing/agent.yaml
+    config: agents/testing/config.yaml
+    priority: high
+    activate_when: [test, unit test, integration test, e2e, playwright, jest, vitest, lighthouse, coverage]
+    keywords: [test, testing, jest, vitest, e2e, playwright, coverage, lighthouse, performance, qa, verify]
+    skills:
+      required: [teknovo-testing-architect, gstack-qa, superpowers-verification-before-completion]
+      recommended: [gstack-browser-testing, superpowers-test-driven-development]
+    mcps:
+      required: [filesystem-mcp, shell-mcp]
+      recommended: [git-mcp, postgres-mcp]
+
+  platform-cloudflare:
+    id: platform-cloudflare
+    type: platform
+    path: agents/cloudflare/AGENT.md
+    entry: agents/cloudflare/index.js
+    contract: agents/cloudflare/agent.yaml
+    config: agents/cloudflare/config.yaml
+    priority: high
+    activate_when: [cloudflare, pages, dns, domain attach, ssl, workers, tunnel, production deploy]
+    keywords: [cloudflare, pages, dns, domain, ssl, workers, tunnel, deploy, production, r2, d1]
+    skills:
+      required: [teknovo-cloudflare-stack]
+      recommended: [teknovo-devops-engineer, gstack-ship, security-cloudflare-security]
+    mcps:
+      required: [cloudflare-mcp, filesystem-mcp]
+      recommended: [shell-mcp, git-mcp]
+    mcp_server: .cursor/mcp/cloudflare/server.js
+
+  platform-github:
+    id: platform-github
+    type: platform
+    path: agents/github/AGENT.md
+    entry: agents/github/index.js
+    contract: agents/github/agent.yaml
+    config: agents/github/config.yaml
+    priority: high
+    activate_when: [github, pr, pull request, branch, release, issue, merge, repository]
+    keywords: [github, pr, pull request, branch, release, issue, merge, repository, actions]
+    skills:
+      required: [teknovo-devops-engineer]
+      recommended: [gstack-ship, superpowers-requesting-code-review, superpowers-finishing-development-branch]
+    mcps:
+      required: [github-mcp, filesystem-mcp]
+      recommended: [git-mcp]
+    mcp_server: mcp/github/server.js
+
+  # ─── REVIEW AGENTS (from agents/*.md) ─────────────────────────────────────
+  taste-reviewer:
+    id: taste-reviewer
+    type: review
+    path: .cursor/docs/agents/taste-reviewer.md
+    priority: high
+    activate_when: [taste review, simplify, remove feature, scope cut]
+    keywords: [taste, simplify, scope, remove]
+
+  impeccable-reviewer:
+    id: impeccable-reviewer
+    type: review
+    path: .cursor/docs/agents/impeccable-reviewer.md
+    priority: high
+    activate_when: [review, audit, quality check, code review, pre-release review]
+    keywords: [quality, review, audit, impeccable]
+
+  security-reviewer:
+    id: security-reviewer
+    type: review
+    path: .cursor/docs/agents/security-reviewer.md
+    priority: critical
+    activate_when: [security review, security audit, OWASP, pre-deploy security]
+    keywords: [security, owasp, rbac, vulnerability]
+
+  differential-reviewer:
+    id: differential-reviewer
+    type: assurance
+    path: .cursor/docs/agents/differential-reviewer.md
+    priority: high
+    activate_when: [diff review, PR diff, lockfile change, migration diff]
+    keywords: [diff, pr, migration, lockfile]
+
+  second-opinion-reviewer:
+    id: second-opinion-reviewer
+    type: assurance
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    priority: medium
+    activate_when: [second opinion, high risk, pre-deploy review]
+    keywords: [second opinion, high risk, challenge]
+
+  requirement-clarifier:
+    id: requirement-clarifier
+    type: assurance
+    path: .cursor/docs/agents/requirement-clarifier.md
+    priority: high
+    activate_when: [unclear requirements, clarify, ambiguous, before planning]
+    keywords: [requirements, clarify, ambiguous, scope]
+
+  context-builder:
+    id: context-builder
+    type: assurance
+    path: .cursor/docs/agents/context-builder.md
+    priority: high
+    activate_when: [context, read ADR, standards, before implementation]
+    keywords: [context, adr, standards, architecture]
+
+platform_chains:
+  feature_delivery:
+    description: Platform-routed feature delivery with parallel build
+    workflow:
+      - type: parallel
+        agents: [platform-frontend, platform-backend]
+      - type: sequential
+        agents: [platform-testing, security-reviewer, platform-devops]
+
+  deploy:
+    description: Frontend → Testing → Cloudflare deploy chain
+    sequence:
+      - orchestrator
+      - platform-frontend
+      - platform-testing
+      - security-reviewer
+      - platform-cloudflare
+
+  github_release:
+    description: Testing → GitHub PR → DevOps
+    sequence:
+      - orchestrator
+      - platform-testing
+      - platform-github
+      - platform-devops
+
+cross_reference:
+  legacy: .cursor/registry/agent-registry.yaml
+  pillars: [chief-product-designer, chief-architect, devops-engineer]
+  gstack: [gstack-office-hours, gstack-eng-review, gstack-qa, gstack-ship]

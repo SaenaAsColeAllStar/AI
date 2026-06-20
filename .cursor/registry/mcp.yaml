@@ -1,0 +1,144 @@
+# Teknovo MCP Registry (Platform Split)
+# Cross-ref: .cursor/registry/mcp-registry.yaml (legacy full registry)
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Platform MCP Registry
+  legacy_registry: .cursor/registry/mcp-registry.yaml
+  secret_store: shared/secret-store
+  secret_loader: mcp/shared/secrets.js
+  governance: .cursor/gates/security/ai-agent-security.md
+
+secret_store:
+  implementation: mcp/shared/secrets.js
+  platform_wrapper: shared/secret-store/loader.js
+  linux_path: /root/.config/teknovo/secrets/
+  windows_path: "%USERPROFILE%\\.config\\teknovo\\secrets\\"
+  override_env: TEKNOVO_SECRETS_DIR
+  files:
+    cloudflare: cloudflare.env
+    github: github.env
+    openrouter: openrouter.env
+
+risk_levels:
+  low: Read-only or scoped read
+  medium: Read/write within repo or dev environment
+  high: External API write, infra mutation
+  critical: Production data, credentials, irreversible infra
+
+integrations:
+
+  filesystem-mcp:
+    id: filesystem-mcp
+    status: configured
+    package: mcp/filesystem
+    server_entry: mcp/filesystem/server.js
+    risk_level: medium
+    secret_path: null
+    tools: [read_file, write_file, list_directory, search_files, file_info]
+
+  git-mcp:
+    id: git-mcp
+    status: configured
+    package: mcp/git
+    server_entry: mcp/git/server.js
+    risk_level: medium
+    secret_path: null
+    tools: [git_status, git_diff, git_log, git_commit, git_push, git_branch_list, git_branch_create]
+
+  github-mcp:
+    id: github-mcp
+    status: configured
+    package: mcp/github
+    server_entry: mcp/github/server.js
+    risk_level: high
+    secret_path:
+      linux: /root/.config/teknovo/secrets/github.env
+      windows: "%USERPROFILE%\\.config\\teknovo\\secrets\\github.env"
+      keys: [GITHUB_TOKEN]
+    tools:
+      - create_repository
+      - create_branch
+      - create_issue
+      - create_pull_request
+      - list_pull_requests
+      - commit_changes
+      - create_release
+      - repository_analysis
+      # legacy aliases
+      - repo_list
+      - repo_create
+      - pr_list
+      - pr_create
+      - pr_merge
+      - issue_list
+      - issue_create
+      - workflow_list
+      - workflow_dispatch
+
+  cloudflare-mcp:
+    id: cloudflare-mcp
+    status: configured
+    package: mcp/cloudflare
+    server_entry: .cursor/mcp/cloudflare/server.js
+    risk_level: critical
+    secret_path:
+      linux: /root/.config/teknovo/secrets/cloudflare.env
+      windows: "%USERPROFILE%\\.config\\teknovo\\secrets\\cloudflare.env"
+      keys: [CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ZONE_ID]
+    tools:
+      - pages_create_project
+      - pages_deploy
+      - pages_list_projects
+      - pages_get_deployment
+      - dns_create_record
+      - dns_update_record
+      - dns_list_records
+      - domain_attach
+      - domain_verify
+
+  postgres-mcp:
+    id: postgres-mcp
+    status: configured
+    package: mcp/postgres
+    server_entry: mcp/postgres/server.js
+    risk_level: high
+    secret_path: null
+    tools: [query, list_tables, describe_table]
+
+  qdrant-mcp:
+    id: qdrant-mcp
+    status: configured
+    package: mcp/qdrant
+    server_entry: mcp/qdrant/server.js
+    risk_level: medium
+    secret_path: null
+    tools: [collection_list, search, upsert]
+
+activation_matrix:
+  by_keyword:
+    cloudflare: [cloudflare-mcp]
+    github: [github-mcp, git-mcp]
+    deploy: [cloudflare-mcp, github-mcp]
+    database: [postgres-mcp]
+    postgres: [postgres-mcp]
+    test: [filesystem-mcp, shell-mcp]
+    rag: [qdrant-mcp]
+    frontend: [filesystem-mcp, git-mcp]
+    backend: [filesystem-mcp, postgres-mcp, github-mcp]
+
+bundles:
+  platform-dev:
+    integrations: [filesystem-mcp, git-mcp, shell-mcp]
+    max_risk_level: medium
+
+  platform-deploy:
+    integrations: [filesystem-mcp, git-mcp, github-mcp, cloudflare-mcp]
+    required_agents: [platform-devops, security-reviewer]
+    max_risk_level: critical
+
+cross_reference:
+  legacy: .cursor/registry/mcp-registry.yaml
+  skill: .cursor/registry/skills.yaml#teknovo-mcp-stack

@@ -1,0 +1,44 @@
+---
+description: Teknovo GitHub gate â€” feature branches only, never commit directly to main
+alwaysApply: true
+---
+
+# Teknovo GitHub Rule
+
+## DO
+
+- Check branch **before first edit**: `git branch --show-current`
+- **Always create feature branches** for feature work: `git checkout -b feature/<scope>` (kebab-case)
+- Commit on feature branch only; format: `feat(scope): description`
+- Stage only relevant files â€” never secrets or `.env`
+- Open PR for merge to `main`; human review required for protected branches
+- Use worktrees for large parallel work: `.cursor/skills/superpowers/using-git-worktrees/`
+- Use `gh` CLI for PRs, issues, checks when user requests GitHub operations
+
+## DON'T
+
+- **Never commit directly to `main` or `master`** for feature or user-project work
+- Push or merge to `main` unless user explicitly requests
+- Run destructive git commands (`push --force`, hard reset) without explicit user request
+- Force-push to `main`/`master`
+- Skip pre-commit hooks (`--no-verify`) unless user explicitly requests
+- Commit unless user explicitly asks
+
+## Pre-Edit Checklist
+
+```bash
+git branch --show-current
+```
+
+| Branch | Action |
+|--------|--------|
+| `main` / `master` | Create and checkout `feature/<scope>` |
+| `feature/*` | Proceed |
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Branch policy | `.cursor/gates/execution/branch-policy.md` |
+| GitHub agent | `agents/github/` |
+| Execution registry | `.cursor/gates/execution/execution-registry.yaml` |

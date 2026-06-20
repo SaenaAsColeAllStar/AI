@@ -1,0 +1,225 @@
+﻿# Teknovo Assurance System — Assurance Registry
+# Trail-of-Bits-inspired verification layer — indexes assurance artifacts and agents.
+# Cross-referenced in .cursor/registry/skill-registry.yaml and .cursor/docs/memory/memory-registry.yaml
+
+version: "1.0"
+last_updated: "2026-06-20"
+
+defaults:
+  assurance_root: assurance
+  encoding: utf-8
+  index_doc: .cursor/docs/ai/AI_ASSURANCE_SYSTEM.md
+  skill_registry: .cursor/registry/skill-registry.yaml
+
+load_order_note: >
+  Assurance loads after .cursor/gates/taste/planning and before security implementation gates.
+  Requirement Clarifier → Context Builder → Assurance artifacts → Security Review.
+
+artifacts:
+  assurance-principles:
+    path: .cursor/gates/assurance/assurance-principles.md
+    description: Assurance philosophy — verify assumptions, evidence over narrative
+    category: core
+    phase: planning
+    priority: 30
+    autoload: false
+    load_when:
+      - assurance
+      - verify
+      - Trail of Bits
+      - before implementation
+
+  review-workflow:
+    path: .cursor/gates/assurance/review-workflow.md
+    description: End-to-end assurance workflow integrating review agents
+    category: workflow
+    phase: review
+    priority: 31
+    autoload: false
+    load_when:
+      - assurance review
+      - review workflow
+      - gate sequence
+
+  risk-analysis:
+    path: .cursor/gates/assurance/risk-analysis.md
+    description: Structured risk analysis for features and infrastructure
+    category: analysis
+    phase: planning
+    priority: 32
+    autoload: false
+    load_when:
+      - risk analysis
+      - threat model
+      - impact assessment
+
+  decision-validation:
+    path: .cursor/gates/assurance/decision-validation.md
+    description: Validates one-way door decisions against ADR and PRD
+    category: analysis
+    phase: architecture
+    priority: 33
+    autoload: false
+    load_when:
+      - decision validation
+      - ADR check
+      - one-way door
+
+  sharp-edges:
+    path: .cursor/gates/assurance/sharp-edges.md
+    description: Sharp edges and footguns in Teknovo stack
+    category: reference
+    phase: all
+    priority: 34
+    autoload: false
+    load_when:
+      - sharp edge
+      - footgun
+      - gotcha
+
+  insecure-defaults:
+    path: .cursor/gates/assurance/insecure-defaults.md
+    description: Catalog of insecure defaults to reject
+    category: security
+    phase: review
+    priority: 35
+    autoload: false
+    load_when:
+      - insecure default
+      - config review
+      - env vars
+
+  dependency-review:
+    path: .cursor/gates/assurance/dependency-review.md
+    description: Dependency and lockfile change review
+    category: review
+    phase: review
+    priority: 36
+    autoload: false
+    load_when:
+      - dependency
+      - lockfile
+      - npm audit
+      - package upgrade
+
+  static-analysis:
+    path: .cursor/gates/assurance/static-analysis.md
+    description: Static analysis and CI integration expectations
+    category: review
+    phase: review
+    priority: 37
+    autoload: false
+    load_when:
+      - static analysis
+      - SAST
+      - lint gate
+
+  requirement-clarifier:
+    path: .cursor/docs/agents/requirement-clarifier.md
+    description: Requirements auditor — ambiguity and conflict detection
+    category: agent
+    phase: planning
+    priority: 38
+    autoload: false
+    load_when:
+      - unclear requirements
+      - clarify
+      - ambiguous
+      - before planning
+
+  context-builder:
+    path: .cursor/docs/agents/context-builder.md
+    description: Verifies ADR/PRD/standards loaded before decisions
+    category: agent
+    phase: planning
+    priority: 39
+    autoload: false
+    load_when:
+      - context
+      - read ADR
+      - standards
+      - before implementation
+
+  differential-reviewer:
+    path: .cursor/docs/agents/differential-reviewer.md
+    description: "[PLANNED] Diff-focused review agent"
+    category: agent
+    phase: review
+    priority: 40
+    status: planned
+    autoload: false
+    load_when:
+      - diff review
+      - PR diff
+      - migration diff
+
+  second-opinion-reviewer:
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    description: "[PLANNED] High-risk decision challenger"
+    category: agent
+    phase: review
+    priority: 41
+    status: planned
+    autoload: false
+    load_when:
+      - second opinion
+      - high risk
+      - pre-deploy review
+
+bundles:
+  pre-planning:
+    description: Before plan finalization
+    artifacts:
+      - assurance-principles
+      - requirement-clarifier
+
+  pre-implementation:
+    description: Before architecture and code
+    artifacts:
+      - assurance-principles
+      - requirement-clarifier
+      - context-builder
+      - decision-validation
+      - review-workflow
+
+  pre-review:
+    description: Before PR merge
+    artifacts:
+      - review-workflow
+      - dependency-review
+      - static-analysis
+      - insecure-defaults
+      - sharp-edges
+
+  pre-deploy:
+    description: High-risk production changes
+    artifacts:
+      - review-workflow
+      - risk-analysis
+      - second-opinion-reviewer
+
+  full:
+    description: All assurance artifacts
+    artifacts:
+      - assurance-principles
+      - review-workflow
+      - risk-analysis
+      - decision-validation
+      - sharp-edges
+      - insecure-defaults
+      - dependency-review
+      - static-analysis
+      - requirement-clarifier
+      - context-builder
+
+integrations:
+  agents_md: AGENTS.md
+  skill_registry: .cursor/registry/skill-registry.yaml
+  agent_registry: .cursor/registry/agent-registry.yaml
+  memory_registry: .cursor/docs/memory/memory-registry.yaml
+  taste:
+    - .cursor/gates/taste/taste-gates.md
+  security:
+    - .cursor/gates/security/security-gates.md
+  quality:
+    - .cursor/gates/quality/quality-gates.md

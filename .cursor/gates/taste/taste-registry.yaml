@@ -1,0 +1,209 @@
+﻿# Teknovo Taste System — Registry
+# Indexes all taste artifacts for agents, memory loader, and skill triggers.
+# Cross-referenced in .cursor/docs/memory/memory-registry.yaml and .cursor/registry/legacy-registry.yaml
+#
+# PRECEDENCE (documented — enforce in workflow):
+#   Taste Layer > Impeccable Quality Layer > default generation
+
+version: "1.0"
+last_updated: "2026-06-20"
+
+defaults:
+  taste_root: .cursor/gates/taste
+  encoding: utf-8
+  index_doc: .cursor/docs/ai/AI_TASTE_SYSTEM.md
+  reviewer_agent: .cursor/docs/agents/taste-reviewer.md
+  layer: 2  # load order: 1=memory, 2=taste, 3=quality
+
+precedence:
+  order:
+    - taste
+    - quality
+    - generation
+  rule: "When taste and quality conflict on scope or simplicity, taste wins. Quality enforces correctness after taste approves scope."
+
+artifacts:
+  product-principles:
+    path: .cursor/gates/taste/product-principles.md
+    description: Product taste — real value, removal test, reject low-value complexity
+    category: product
+    phase: planning
+    priority: 1
+    autoload: false
+    load_when:
+      - new feature
+      - feature proposal
+      - PRD
+      - scope change
+      - brainstorm
+
+  ux-principles:
+    path: .cursor/gates/taste/ux-principles.md
+    description: UX taste — nav simplicity, task speed, cognitive load, reject modals/deep nesting
+    category: ux
+    phase: planning
+    priority: 2
+    autoload: false
+    load_when:
+      - before UI
+      - UX review
+      - navigation
+      - dashboard design
+      - information architecture
+
+  design-principles:
+    path: .cursor/gates/taste/design-principles.md
+    description: Visual taste — reject AI dashboards; Stripe/Linear/Notion/Carbon; Teknovo tokens
+    category: visual
+    phase: planning
+    priority: 3
+    autoload: false
+    load_when:
+      - dashboard
+      - UI design
+      - generic template
+      - AI dashboard
+      - design taste
+
+  architecture-principles:
+    path: .cursor/gates/taste/architecture-principles.md
+    description: Architecture taste — simple layers, reject overengineering and premature abstraction
+    category: architecture
+    phase: architecture
+    priority: 4
+    autoload: false
+    load_when:
+      - before migration
+      - new module
+      - before architecture
+      - architecture gate
+      - before backend implementation
+
+  copywriting-principles:
+    path: .cursor/gates/taste/copywriting-principles.md
+    description: Copy taste — clear Indonesian labels, reject jargon and AI fluff
+    category: copy
+    phase: all
+    priority: 5
+    autoload: false
+    load_when:
+      - copy review
+      - i18n
+      - labels
+      - error messages
+      - UI strings
+
+  taste-checklist:
+    path: .cursor/gates/taste/taste-checklist.md
+    description: Taste checklist — simpler, smaller, faster, clearer, removable, approvals
+    category: gates
+    phase: review
+    priority: 6
+    autoload: false
+    load_when:
+      - taste review
+      - before implementation
+      - scope review
+      - simplify
+
+  taste-gates:
+    path: .cursor/gates/taste/taste-gates.md
+    description: Five mandatory taste gates before implementation; GStack integration
+    category: gates
+    phase: all
+    priority: 7
+    autoload: false
+    load_when:
+      - taste gate
+      - before ship
+      - deploy
+      - feature complete
+      - eng-review
+
+  taste-reviewer:
+    path: .cursor/docs/agents/taste-reviewer.md
+    description: Taste review agent — removal, simplification, design director tone
+    category: agent
+    phase: review
+    priority: 8
+    autoload: true
+    load_when:
+      - taste review
+      - simplify
+      - remove feature
+      - scope cut
+      - too complex
+      - taste
+
+bundles:
+  planning:
+    description: Brainstorm and PRD — product + UX + architecture taste
+    load_order: 1
+    artifacts:
+      - product-principles
+      - ux-principles
+      - architecture-principles
+      - taste-reviewer
+
+  pre-ui:
+    description: Before any UI code — UX + visual + copy
+    load_order: 2
+    artifacts:
+      - ux-principles
+      - design-principles
+      - copywriting-principles
+      - taste-checklist
+
+  pre-feature:
+    description: All five taste gates before implementation
+    load_order: 3
+    artifacts:
+      - product-principles
+      - ux-principles
+      - design-principles
+      - architecture-principles
+      - copywriting-principles
+      - taste-gates
+      - taste-checklist
+
+  pre-code:
+    description: Before backend/implementation — architecture taste focus
+    load_order: 4
+    artifacts:
+      - architecture-principles
+      - product-principles
+      - taste-gates
+
+  full:
+    description: All taste artifacts (heavy context)
+    load_order: 5
+    artifacts:
+      - product-principles
+      - ux-principles
+      - design-principles
+      - architecture-principles
+      - copywriting-principles
+      - taste-checklist
+      - taste-gates
+      - taste-reviewer
+
+integrations:
+  agents_md: AGENTS.md
+  skill_registry: .cursor/registry/legacy-registry.yaml
+  memory_registry: .cursor/docs/memory/memory-registry.yaml
+  memory_loader: .cursor/runtime/load-memory.py
+  quality_registry: .cursor/gates/quality/quality-registry.yaml
+  quality_index: .cursor/docs/ai/AI_QUALITY_SYSTEM.md
+  superpowers:
+    - superpowers-brainstorming
+    - superpowers-writing-plans
+  gstack:
+    - gstack-eng-review
+    - gstack-qa
+    - gstack-ship
+  pillars:
+    - teknovo-chief-product-designer
+    - teknovo-chief-architect
+  visual_sources:
+    - .cursor/docs/memory/ui-ux-rules.md
+    - .cursor/gates/quality/design-taste.md

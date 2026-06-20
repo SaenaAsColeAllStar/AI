@@ -1,0 +1,40 @@
+id: orchestrator
+name: Platform Orchestrator
+
+capabilities:
+  - id: task-routing
+    description: Score and route tasks to platform agents by keywords
+  - id: task-decomposition
+    description: Split compound tasks into domain-scoped subtasks
+  - id: agent-selection
+    description: Select agents with config, contract, and MCP resolution
+  - id: parallel-execution
+    description: Run multiple agents concurrently with failure isolation
+  - id: sequential-execution
+    description: Run agents in order with dependency gates
+  - id: conditional-execution
+    description: Branch workflows based on runtime conditions
+  - id: failure-recovery
+    description: Isolate failures, retry up to 10 times, aggregate partial results
+  - id: skill-discovery
+    description: Discover skills from .cursor/skills/
+  - id: mcp-discovery
+    description: Discover MCP servers from mcp/ and .cursor/registry/mcp.yaml
+
+skills:
+  required:
+    - id: teknovo-chief-architect
+      path: .cursor/skills/teknovo-chief-architect/SKILL.md
+    - id: superpowers-dispatching-parallel-agents
+      path: .cursor/skills/superpowers/dispatching-parallel-agents/SKILL.md
+  recommended:
+    - id: teknovo-mcp-stack
+      path: .cursor/skills/teknovo-mcp-stack/SKILL.md
+
+dependencies:
+  agents: []
+  mcps:
+    recommended:
+      - filesystem-mcp
+      - git-mcp
+      - shell-mcp

@@ -1,0 +1,43 @@
+---
+description: Teknovo DevOps gate â€” deployment readiness, environment validation, build-test-deploy pipeline
+alwaysApply: false
+globs: .cursor/gates/execution/**,docs/infrastructure/**,AI_DEPLOY.md,**/.github/workflows/**,**/Dockerfile
+---
+
+# Teknovo DevOps Rule
+
+## DO
+
+- Confirm **deployment readiness** before any staging/production release
+- Validate **environment**: secrets in host store only (`docs/SECRET_STORE.md`), never in repo
+- Follow pipeline: **Build â†’ Test â†’ Fix (max 10 retries) â†’ Deploy â†’ Verify** (`.cursor/gates/execution/deployment-mode.md`)
+- Produce **Deployment Impact Analysis** (Pillar 3) via `.cursor/skills/teknovo-devops-engineer/`
+- Run Security **pre-deploy** review: `.cursor/skills/teknovo-security-review/`
+- Use failure recovery: `.cursor/gates/execution/failure-recovery.md` â€” do not stop on first command failure
+- Return completion fields: `deployment_url`, `deployment_status`, `dns_status`, `https_status`
+
+## DON'T
+
+- Deploy with failing build or tests
+- Hardcode API tokens, Cloudflare credentials, or `.env` files in commits
+- Autonomous agent production deploy without human-approved gates
+- Respond instructions-only when tools and credentials are available â€” **execute** the pipeline
+- Skip QA evidence before production ERP ship
+
+## Environment Validation
+
+Before deploy, verify:
+
+- [ ] Secret store path exists (Windows: `%USERPROFILE%\.config\teknovo\secrets\`; Linux: `/root/.config/teknovo/secrets/`)
+- [ ] Required env files present (e.g. `cloudflare.env`) â€” list missing paths, never print values
+- [ ] Target branch/environment matches intent
+- [ ] Build and test green on deploy branch
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Deployment mode | `.cursor/gates/execution/deployment-mode.md` |
+| Deploy standard | `docs/infrastructure/deployment-standard.md` |
+| Ship skill | `.cursor/skills/gstack/ship/` |
+| Workstation deploy | `AI_DEPLOY.md` |

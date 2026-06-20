@@ -1,0 +1,303 @@
+# Teknovo Auto-Orchestrator â€” Predefined Execution Chains
+# Referenced by intent-routing.yaml chain_ref. Phases run in order unless parallel_group is set.
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Chain Map
+  intent_routing: intent-routing.yaml
+  execution_policy: execution-policy.yaml
+  workflow_order: "Taste â†’ Assurance â†’ Security â†’ Implementation â†’ Verification â†’ Ship"
+
+chains:
+
+  - id: landing-page
+    description: Public school landing page â€” product design through Cloudflare deploy prep
+    domain: ux
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-feature
+        artifacts: [.cursor/gates/taste/taste-gates.md]
+      - step: assurance-gate
+        gate: assurance
+        agent: requirement-clarifier
+        bundle: pre-implementation
+        artifacts: [.cursor/gates/assurance/review-workflow.md]
+      - step: product-design
+        skill: teknovo-chief-product-designer
+        agent: chief-product-designer
+        artifact: Product Design Analysis
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-implementation
+        verdict: APPROVE
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+        artifact: Architecture Impact Analysis
+      - step: landing-implementation
+        skills: [teknovo-landing-page, teknovo-design-system]
+        parallel_group: ui-build
+      - step: ui-implementation
+        skill: teknovo-ui-ux
+        parallel_group: ui-build
+      - step: testing
+        skill: teknovo-testing-architect
+        agents: [gstack-qa]
+        bundle: pre-ship
+      - step: cloudflare
+        skill: teknovo-cloudflare-stack
+        agents: [devops-engineer]
+        optional: true
+        note: Activate when deploy keywords detected or user requests ship
+
+  - id: finance
+    description: School finance module â€” architecture through backend, database, testing
+    domain: finance
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-feature
+      - step: assurance-gate
+        gate: assurance
+        agent: context-builder
+        bundle: pre-implementation
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-domain, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-api
+        verdict: APPROVE
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+        artifact: Architecture Impact Analysis
+      - step: domain-finance
+        skill: teknovo-finance
+      - step: backend
+        skill: teknovo-backend-development
+        skills_extra: [teknovo-feature-implementation, teknovo-rbac-architect]
+      - step: database
+        skill: teknovo-database-architect
+        bundle: pre-db
+      - step: testing
+        skill: teknovo-testing-architect
+        skills_extra: [superpowers-test-driven-development, gstack-qa]
+
+  - id: ppdb
+    description: PPDB admission module â€” architecture, domain, backend, testing
+    domain: ppdb
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-feature
+      - step: assurance-gate
+        gate: assurance
+        agent: requirement-clarifier
+        bundle: pre-implementation
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-domain, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-rbac
+        verdict: APPROVE
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+        artifact: Architecture Impact Analysis
+      - step: domain-ppdb
+        skill: teknovo-ppdb
+      - step: backend
+        skill: teknovo-backend-development
+        skills_extra: [teknovo-feature-implementation, teknovo-database-architect]
+      - step: testing
+        skill: teknovo-testing-architect
+        skills_extra: [gstack-qa]
+
+  - id: sarpras
+    description: Sarpras / inventory â€” architecture, reporting read models, backend, testing
+    domain: sarpras
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-feature
+      - step: assurance-gate
+        gate: assurance
+        agent: context-builder
+        bundle: pre-implementation
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-domain, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-api
+        verdict: APPROVE
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+        artifact: Architecture Impact Analysis
+      - step: reporting
+        skill: teknovo-reporting
+      - step: backend
+        skill: teknovo-backend-development
+        skills_extra: [teknovo-feature-implementation, teknovo-database-architect]
+      - step: testing
+        skill: teknovo-testing-architect
+        skills_extra: [gstack-qa]
+
+  - id: generic-feature
+    description: Default feature delivery when no domain keyword matches
+    domain: general
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-feature
+      - step: assurance-gate
+        gate: assurance
+        agents: [requirement-clarifier, context-builder]
+        bundle: pre-implementation
+      - step: product-design
+        skill: teknovo-chief-product-designer
+        agent: chief-product-designer
+        optional: true
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-review]
+        agent: security-reviewer
+        verdict: APPROVE
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+        artifact: Architecture Impact Analysis
+      - step: implementation
+        skill: teknovo-feature-implementation
+        skills_extra: [teknovo-backend-development, teknovo-ui-ux]
+      - step: testing
+        skill: teknovo-testing-architect
+        skills_extra: [gstack-qa, gstack-eng-review]
+
+  - id: pre-ship
+    description: Verification, quality, security pre-deploy, and ship gate
+    domain: deployment
+    phases:
+      - step: verification
+        ref: verification_chain
+        skills: [superpowers-verification-before-completion]
+      - step: quality-gate
+        gate: quality
+        skills: [quality-gates, quality-self-critique, gstack-eng-review]
+        agent: impeccable-reviewer
+      - step: security-pre-deploy
+        gate: security_pre_deploy
+        skills: [teknovo-security-infra, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-deploy-security
+        verdict: APPROVE
+      - step: ship
+        skills: [teknovo-devops-engineer, teknovo-cloudflare-stack, gstack-ship]
+        agent: devops-engineer
+        artifact: Deployment Impact Analysis
+
+  - id: security-review
+    description: Standalone security audit chain
+    domain: security
+    phases:
+      - step: assurance-context
+        gate: assurance
+        agent: context-builder
+      - step: security-principles
+        skill: teknovo-security
+        artifacts: [.cursor/gates/security/security-principles.md]
+      - step: security-review
+        skills: [teknovo-security-review, teknovo-security-domain]
+        agent: security-reviewer
+        bundle: pre-ship
+        verdict: APPROVE
+
+  - id: bugfix
+    description: Targeted bug fix with debugging and verification
+    domain: engineering
+    phases:
+      - step: branch-safety
+        gate: branch_safety
+        artifact: .cursor/gates/execution/branch-policy.md
+      - step: debug
+        skill: superpowers-systematic-debugging
+      - step: fix-implementation
+        skill: teknovo-feature-implementation
+      - step: testing
+        skill: teknovo-testing-architect
+        ref: verification_chain
+
+  - id: ui-only
+    description: UI-only changes without backend or schema work
+    domain: ux
+    phases:
+      - step: taste-gate
+        gate: taste
+        bundle: pre-ui
+      - step: ux-architecture
+        skill: teknovo-ux-architecture
+        agent: chief-product-designer
+      - step: ui-build
+        skills: [teknovo-ui-ux, teknovo-design-system]
+        bundle: pre-ui
+      - step: testing
+        skills: [gstack-browser-testing, gstack-qa]
+
+  - id: api-only
+    description: API endpoint work without UI
+    domain: api
+    phases:
+      - step: assurance-gate
+        gate: assurance
+        agent: context-builder
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-domain, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-api
+        verdict: APPROVE
+      - step: api-design
+        skill: teknovo-api-architect
+        skills_extra: [teknovo-rbac-architect]
+      - step: backend
+        skill: teknovo-backend-development
+      - step: testing
+        skill: teknovo-testing-architect
+
+  - id: migration
+    description: Database migration and data integrity work
+    domain: database
+    phases:
+      - step: assurance-gate
+        gate: assurance
+        agent: context-builder
+      - step: architecture
+        skill: teknovo-chief-architect
+        agent: chief-architect
+      - step: security-pre-impl
+        gate: security_pre_impl
+        skills: [teknovo-security, teknovo-security-domain, teknovo-security-review]
+        agent: security-reviewer
+        bundle: pre-db
+        verdict: APPROVE
+      - step: database
+        skill: teknovo-database-architect
+      - step: data-migration
+        skill: teknovo-data-migration
+      - step: testing
+        skill: teknovo-testing-architect
+
+# Cross-cutting bundles loaded at chain start (always)
+always_load:
+  skills:
+    - agents-md
+    - superpowers-dispatching-parallel-agents
+    - superpowers-subagent-driven-development
+    - superpowers-verification-before-completion
+  agents:
+    - auto-orchestrator

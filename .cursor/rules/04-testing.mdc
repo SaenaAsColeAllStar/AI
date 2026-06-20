@@ -1,0 +1,42 @@
+---
+description: Teknovo testing gate â€” verification steps per feature, build must pass before done
+alwaysApply: true
+---
+
+# Teknovo Testing Rule
+
+## DO
+
+- Define **verification steps** for every feature before marking complete
+- Run **build** (`npm run build` / project equivalent) â€” must pass before completion
+- Run **tests** (`npm test`, Vitest, Playwright E2E per project) with evidence
+- Apply **TDD** for business logic: `.cursor/skills/superpowers/test-driven-development/`
+- Target **70%+ coverage** baseline; service unit tests for all business rules
+- Verify **five page states** in UI (Loading, Empty, Error, Success, Permission)
+- Run `tsc --noEmit` and linters before ship claim
+- Load `.cursor/skills/superpowers/verification-before-completion/` before declaring done
+- Use `gstack-qa` and `gstack-browser-testing` for functional and E2E validation
+
+## DON'T
+
+- Declare "done" or ship without build + test evidence
+- Skip integration tests for repository/API changes when applicable
+- Merge with failing CI or unresolved test failures
+- Rely on manual-only verification for repeatable business logic
+
+## Per-Feature Verification Checklist
+
+- [ ] Unit tests for service-layer business rules
+- [ ] Integration/API tests where endpoints or repos change
+- [ ] RBAC matrix updated and tested (allowed + denied paths)
+- [ ] UI states verified (including Permission denied view)
+- [ ] Build passes locally
+- [ ] Self-critique complete (`.cursor/gates/quality/self-critique.md`)
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Testing architect | `.cursor/skills/teknovo-testing-architect/` |
+| Quality gates | `.cursor/gates/quality/quality-gates.md`, `.cursor/gates/quality/review-checklist.md` |
+| Execution completion | `.cursor/gates/execution/execution-registry.yaml` |

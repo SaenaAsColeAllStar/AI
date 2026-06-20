@@ -1,0 +1,404 @@
+﻿# Teknovo Agent Registry
+# Maps agents (personas/subagents) to skills, layers, and workflow phases.
+# Canonical skills: .cursor/registry/skill-registry.yaml
+# Designed for 50+ agents â€” extend under agents: with stable id keys.
+
+version: "1.0.0"
+
+metadata:
+  name: Teknovo Agent Registry
+  last_updated: "2026-06-20"
+  skill_registry: .cursor/registry/skill-registry.yaml
+  platform_registry: .cursor/registry/agents.yaml
+  governance_doc: .cursor/docs/ai/skill-governance.md
+
+agent_types:
+  pillar: Primary role gates â€” block downstream work without artifact
+  review: Quality, taste, security, assurance reviewers
+  assurance: Trail-of-Bits-inspired verification agents
+  operational: GStack sprint loop agents
+  specialist: Teknovo domain and technical skills invoked as agents
+  runtime: Cursor/IDE built-in subagent types
+
+workflow_phases:
+  - discovery
+  - planning
+  - taste
+  - pillar-1-product
+  - pillar-2-architecture
+  - security-pre-implementation
+  - implementation
+  - ui
+  - testing
+  - review
+  - qa
+  - security-pre-deploy
+  - ship
+  - pillar-3-devops
+  - retrospective
+
+agents:
+
+  # â”€â”€â”€ THREE PILLARS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  chief-product-designer:
+    id: chief-product-designer
+    type: pillar
+    pillar: 1
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    skill_id: teknovo-chief-product-designer
+    layer: product
+    priority: critical
+    phases: [planning, pillar-1-product, ui]
+    mandatory_artifact: Product Design Analysis
+    blocks: [ui implementation without PRD alignment, architecture without product analysis]
+    skills:
+      required: [teknovo-chief-product-designer, agents-md]
+      recommended: [taste-product-principles, taste-ux-principles, teknovo-prd-generator, teknovo-ui-ux-specialist]
+      optional: [superpowers-brainstorming, gstack-office-hours]
+    activate_when: [product design review, PRD alignment, UX strategy, before UI implementation]
+
+  chief-architect:
+    id: chief-architect
+    type: pillar
+    pillar: 2
+    path: .cursor/skills/teknovo-chief-architect/SKILL.md
+    skill_id: teknovo-chief-architect
+    layer: architecture
+    priority: critical
+    phases: [pillar-2-architecture, implementation]
+    mandatory_artifact: Architecture Impact Analysis
+    blocks: [code, migrations, new routes without permission mapping]
+    skills:
+      required: [teknovo-chief-architect, agents-md, context-builder]
+      recommended: [teknovo-database-architect, teknovo-api-architect, teknovo-rbac-architect, teknovo-repository-governance, taste-architecture-principles]
+      optional: [teknovo-domain-management, teknovo-integration-architect]
+    activate_when: [architecture gate, schema impact, RBAC impact, before migration]
+
+  devops-engineer:
+    id: devops-engineer
+    type: pillar
+    pillar: 3
+    path: .cursor/skills/teknovo-devops-engineer/SKILL.md
+    skill_id: teknovo-devops-engineer
+    layer: deployment
+    priority: critical
+    phases: [ship, pillar-3-devops, security-pre-deploy]
+    mandatory_artifact: Deployment Impact Analysis
+    blocks: [staging/production deploy without QA evidence and security approval]
+    skills:
+      required: [teknovo-devops-engineer, agents-md, security-reviewer]
+      recommended: [teknovo-cloudflare-stack, gstack-ship, teknovo-observability, security-cloudflare-security]
+      optional: [gstack-investigate, teknovo-incident-response]
+    activate_when: [CI/CD, cloudflare deploy, release to production, deployment impact]
+
+  # â”€â”€â”€ REVIEW AGENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  taste-reviewer:
+    id: taste-reviewer
+    type: review
+    path: .cursor/docs/agents/taste-reviewer.md
+    skill_id: taste-reviewer
+    layer: review
+    priority: high
+    phases: [taste, planning, review]
+    runs_before: [impeccable-reviewer]
+    skills:
+      required: [taste-reviewer, taste-gates]
+      recommended: [taste-checklist, taste-product-principles, taste-ux-principles]
+    activate_when: [taste review, simplify, remove feature, scope cut]
+
+  impeccable-reviewer:
+    id: impeccable-reviewer
+    type: review
+    path: .cursor/docs/agents/impeccable-reviewer.md
+    skill_id: impeccable-reviewer
+    layer: review
+    priority: high
+    phases: [review, qa]
+    runs_after: [taste-reviewer]
+    skills:
+      required: [impeccable-reviewer, quality-self-critique]
+      recommended: [quality-review-checklist, quality-gates, quality-review-principles, gstack-eng-review]
+    activate_when: [review, audit, quality check, code review, pre-release review]
+
+  security-reviewer:
+    id: security-reviewer
+    type: review
+    path: .cursor/docs/agents/security-reviewer.md
+    skill_id: security-reviewer
+    layer: security
+    priority: critical
+    phases: [security-pre-implementation, security-pre-deploy, review]
+    verdict: APPROVE | BLOCK
+    skills:
+      required: [security-reviewer, security-principles, security-gates]
+      recommended: [security-review-checklist, teknovo-security-review, security-rbac-security, security-api-security]
+    activate_when: [security review, security audit, OWASP, pre-deploy security]
+
+  differential-reviewer:
+    id: differential-reviewer
+    type: assurance
+    status: planned
+    path: .cursor/docs/agents/differential-reviewer.md
+    skill_id: differential-reviewer
+    layer: assurance
+    priority: high
+    phases: [review, qa]
+    skills:
+      required: [differential-reviewer, context-builder]
+      recommended: [assurance-dependency-review, assurance-static-analysis, security-reviewer]
+    activate_when: [diff review, PR diff, lockfile change, migration diff]
+
+  second-opinion-reviewer:
+    id: second-opinion-reviewer
+    type: assurance
+    status: planned
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    skill_id: second-opinion-reviewer
+    layer: assurance
+    priority: medium
+    phases: [review, ship]
+    skills:
+      required: [second-opinion-reviewer]
+      recommended: [impeccable-reviewer, security-reviewer, assurance-decision-validation]
+    activate_when: [second opinion, high risk, pre-deploy review, architecture challenge]
+
+  requirement-clarifier:
+    id: requirement-clarifier
+    type: assurance
+    path: .cursor/docs/agents/requirement-clarifier.md
+    skill_id: requirement-clarifier
+    layer: assurance
+    priority: high
+    phases: [discovery, planning]
+    runs_before: [context-builder, chief-architect]
+    skills:
+      required: [requirement-clarifier, agents-md]
+      recommended: [superpowers-brainstorming, assurance-principles, taste-product-principles]
+    activate_when: [unclear requirements, clarify, ambiguous, before planning]
+
+  context-builder:
+    id: context-builder
+    type: assurance
+    path: .cursor/docs/agents/context-builder.md
+    skill_id: context-builder
+    layer: assurance
+    priority: high
+    phases: [planning, pillar-2-architecture]
+    runs_after: [requirement-clarifier]
+    skills:
+      required: [context-builder, agents-md, memory-architecture-decisions]
+      recommended: [memory-coding-standards, memory-domain-knowledge, assurance-decision-validation]
+    activate_when: [context, read ADR, standards, before implementation]
+
+  # â”€â”€â”€ GSTACK OPERATIONAL AGENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  gstack-office-hours:
+    id: gstack-office-hours
+    type: operational
+    path: .cursor/skills/gstack/office-hours/SKILL.md
+    skill_id: gstack-office-hours
+    layer: product
+    priority: medium
+    phases: [discovery, planning]
+    skills:
+      required: [gstack-office-hours]
+      recommended: [superpowers-brainstorming, requirement-clarifier]
+    activate_when: [blocker, consultation, architectural question]
+
+  gstack-eng-review:
+    id: gstack-eng-review
+    type: operational
+    path: .cursor/skills/gstack/eng-review/SKILL.md
+    skill_id: gstack-eng-review
+    layer: review
+    priority: high
+    phases: [review]
+    skills:
+      required: [gstack-eng-review, teknovo-repository-governance]
+      recommended: [quality-review-checklist, teknovo-chief-architect]
+    activate_when: [engineering review, layer audit]
+
+  gstack-qa:
+    id: gstack-qa
+    type: operational
+    path: .cursor/skills/gstack/qa/SKILL.md
+    skill_id: gstack-qa
+    layer: review
+    priority: high
+    phases: [qa, review]
+    skills:
+      required: [gstack-qa, teknovo-testing-architect]
+      recommended: [gstack-browser-testing, superpowers-verification-before-completion]
+    activate_when: [QA, functional test, validate feature]
+
+  gstack-browser-testing:
+    id: gstack-browser-testing
+    type: operational
+    path: .cursor/skills/gstack/browser-testing/SKILL.md
+    skill_id: gstack-browser-testing
+    layer: review
+    priority: high
+    phases: [qa]
+    skills:
+      required: [gstack-browser-testing, gstack-qa]
+      recommended: [teknovo-testing-architect]
+    activate_when: [E2E, Playwright, browser test]
+
+  gstack-ship:
+    id: gstack-ship
+    type: operational
+    path: .cursor/skills/gstack/ship/SKILL.md
+    skill_id: gstack-ship
+    layer: deployment
+    priority: high
+    phases: [ship, pillar-3-devops]
+    skills:
+      required: [gstack-ship, security-reviewer, quality-gates]
+      recommended: [teknovo-devops-engineer, gstack-qa]
+    activate_when: [deploy, release, ship]
+
+  gstack-retro:
+    id: gstack-retro
+    type: operational
+    path: .cursor/skills/gstack/retro/SKILL.md
+    skill_id: gstack-retro
+    layer: review
+    priority: optional
+    phases: [retrospective]
+    skills:
+      required: [gstack-retro]
+      recommended: [memory-lessons-learned]
+    activate_when: [retrospective, sprint review, lessons learned]
+
+  gstack-cso:
+    id: gstack-cso
+    type: operational
+    path: .cursor/skills/gstack/cso/SKILL.md
+    skill_id: gstack-cso
+    layer: product
+    priority: medium
+    phases: [ship, retrospective]
+    skills:
+      required: [gstack-cso]
+      recommended: [gstack-retro]
+    activate_when: [stakeholder update, release notes, customer success]
+
+  gstack-investigate:
+    id: gstack-investigate
+    type: operational
+    path: .cursor/skills/gstack/investigate/SKILL.md
+    skill_id: gstack-investigate
+    layer: deployment
+    priority: high
+    phases: [discovery, ship]
+    skills:
+      required: [gstack-investigate]
+      recommended: [teknovo-incident-response, teknovo-observability, superpowers-systematic-debugging]
+    activate_when: [investigate production, root cause, incident timeline]
+
+  # â”€â”€â”€ CURSOR RUNTIME SUBAGENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  cursor-explore:
+    id: cursor-explore
+    type: runtime
+    status: configured
+    layer: automation
+    priority: high
+    description: Fast readonly codebase exploration subagent
+    skills:
+      recommended: [memory-repository-map, agents-md]
+    activate_when: [find files, explore codebase, where is]
+
+  cursor-shell:
+    id: cursor-shell
+    type: runtime
+    status: configured
+    layer: automation
+    priority: high
+    description: Command execution specialist for git, CI, terminal tasks
+    skills:
+      required: [security-ai-agent-security]
+      recommended: [superpowers-verification-before-completion]
+    activate_when: [run command, git, terminal, CI]
+
+  cursor-bugbot:
+    id: cursor-bugbot
+    type: runtime
+    status: configured
+    layer: review
+    priority: medium
+    description: Automated PR-style code review subagent
+    skills:
+      recommended: [impeccable-reviewer, assurance-static-analysis, differential-reviewer]
+    activate_when: [bugbot, automated review]
+
+  cursor-security-review:
+    id: cursor-security-review
+    type: runtime
+    status: configured
+    layer: security
+    priority: high
+    description: Security-focused change review subagent
+    skills:
+      required: [security-reviewer, teknovo-security-review]
+      recommended: [assurance-insecure-defaults]
+    activate_when: [security review subagent]
+
+  auto-orchestrator:
+    id: auto-orchestrator
+    type: meta
+    path: .cursor/skills/teknovo-auto-orchestrator/SKILL.md
+    config:
+      intent_routing: .cursor/skills/teknovo-auto-orchestrator/intent-routing.yaml
+      chain_map: .cursor/skills/teknovo-auto-orchestrator/chain-map.yaml
+      execution_policy: .cursor/skills/teknovo-auto-orchestrator/execution-policy.yaml
+    skill_id: teknovo-auto-orchestrator
+    layer: automation
+    priority: critical
+    phases: [discovery, planning, implementation, ship]
+    skills:
+      required:
+        - teknovo-auto-orchestrator
+        - superpowers-dispatching-parallel-agents
+        - superpowers-subagent-driven-development
+      recommended:
+        - superpowers-verification-before-completion
+        - teknovo-testing-architect
+        - teknovo-cloudflare-stack
+        - teknovo-chief-architect
+    activate_when:
+      - build
+      - implement
+      - create
+      - deploy
+      - orchestrate
+      - auto orchestrator
+      - implementation request
+
+agent_chains:
+  feature_delivery:
+    description: Standard feature from idea to ship
+    sequence:
+      - requirement-clarifier
+      - chief-product-designer
+      - taste-reviewer
+      - chief-architect
+      - context-builder
+      - security-reviewer
+      - teknovo-feature-implementation
+      - gstack-qa
+      - impeccable-reviewer
+      - security-reviewer
+      - chief-architect
+      - gstack-ship
+      - devops-engineer
+
+  hotfix:
+    description: Production incident response
+    sequence:
+      - gstack-investigate
+      - teknovo-incident-response
+      - superpowers-systematic-debugging
+      - differential-reviewer
+      - security-reviewer
+      - gstack-ship
+      - devops-engineer
+      - gstack-cso

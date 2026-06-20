@@ -1,0 +1,485 @@
+﻿# Teknovo Memory Registry
+# Tracks all long-term memory artifacts for AI workstation context loading.
+# Used by .cursor/runtime/load-memory.py and scripts/refresh-memory.*
+# Cross-ref: .cursor/registry/skill-registry.yaml (memory-* skill IDs, layer=memory)
+
+version: "1.3"
+last_updated: "2026-06-20"
+
+integrations:
+  skill_registry: .cursor/registry/skill-registry.yaml
+  agent_registry: .cursor/registry/agent-registry.yaml
+  platform_agent_registry: .cursor/registry/agents.yaml
+  platform_mcp_registry: .cursor/registry/mcp.yaml
+  execution_registry: .cursor/gates/execution/execution-registry.yaml
+  governance: .cursor/docs/ai/skill-governance.md
+  skill_loader: .cursor/runtime/load-skills.py
+
+defaults:
+  memory_root: memory
+  encoding: utf-8
+  missing_file_policy: warn  # warn | skip | error
+
+artifacts:
+  project-context:
+    path: .cursor/docs/memory/project-context.md
+    description: Master project context — agent identity, workflow, constraints, skill system, roadmap
+    category: core
+    refresh_policy: manual
+    priority: 1
+    autoload: true
+
+  repository-map:
+    path: .cursor/docs/memory/repository-map.md
+    description: Folder, package, and application structure for AI repo and Teknovo-V2 target
+    category: structure
+    refresh_policy: auto
+    refresh_script: refresh_helpers.py --repo-map-only
+    priority: 2
+    autoload: true
+
+  product-context:
+    path: .cursor/docs/memory/product-context.md
+    description: Teknovo vision, ERP modules, PPDB, CBT, Finance, WA Sender, business concepts
+    category: product
+    refresh_policy: manual
+    priority: 3
+    autoload: true
+
+  domain-knowledge:
+    path: .cursor/docs/memory/domain-knowledge.md
+    description: Bounded contexts, schemas, domain events, cross-domain ownership rules
+    category: domain
+    refresh_policy: manual
+    priority: 4
+    autoload: true
+
+  architecture-decisions:
+    path: .cursor/docs/memory/architecture-decisions.md
+    description: ADR summaries — monorepo, Cloudflare, Nuxt, RBAC, sidebar, Ollama stack
+    category: architecture
+    refresh_policy: manual
+    priority: 5
+    autoload: true
+
+  coding-standards:
+    path: .cursor/docs/memory/coding-standards.md
+    description: Layer isolation, naming, database, API, RBAC, testing standards
+    category: standards
+    refresh_policy: manual
+    priority: 6
+    autoload: true
+
+  ui-ux-rules:
+    path: .cursor/docs/memory/ui-ux-rules.md
+    description: Color tokens, typography, sidebar rules, page states, tables, forms, icons
+    category: design
+    refresh_policy: manual
+    priority: 7
+    autoload: true
+
+  lessons-learned:
+    path: .cursor/docs/memory/lessons-learned.md
+    description: Installation failures, deployment issues, workstation recovery, integration gaps
+    category: operations
+    refresh_policy: append
+    priority: 8
+    autoload: true
+
+  execution-system:
+    path: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md
+    description: Execution System V2 — model lock, failure recovery, branch safety, deployment mode
+    category: execution
+    refresh_policy: manual
+    priority: 9
+    autoload: false
+    trigger: [execution, before implementation, deploy]
+
+  execution-bootstrap:
+    path: .cursor/docs/EXECUTION.md
+    description: Condensed execution bootstrap for agents
+    category: execution
+    refresh_policy: manual
+    priority: 10
+    autoload: false
+    trigger: [execution, before implementation, deploy]
+
+  platform-architecture:
+    path: .cursor/docs/ai/AI_PLATFORM.md
+    description: Multi-agent platform — orchestrator, specialists, registries, workflow
+    category: platform
+    refresh_policy: manual
+    priority: 11
+    autoload: false
+    trigger: [multi-agent, orchestrator, platform agent, dispatch]
+
+  platform-readme:
+    path: .cursor/docs/platform/README.md
+    description: Platform quick start and component index
+    category: platform
+    refresh_policy: manual
+    priority: 12
+    autoload: false
+
+  # Taste Layer artifacts — full index in .cursor/gates/taste/taste-registry.yaml
+  # Precedence: Taste > Quality. Loader layer=2 (after memory, before quality).
+  taste-product-principles:
+    path: .cursor/gates/taste/product-principles.md
+    description: Product taste — removal test, reject low-value complexity
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 81
+    autoload: false
+
+  taste-ux-principles:
+    path: .cursor/gates/taste/ux-principles.md
+    description: UX taste — nav simplicity, task speed, reject modals and deep nesting
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 82
+    autoload: false
+
+  taste-design-principles:
+    path: .cursor/gates/taste/design-principles.md
+    description: Visual taste — anti-AI-dashboard; Stripe/Linear/Notion/Carbon
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 83
+    autoload: false
+
+  taste-architecture-principles:
+    path: .cursor/gates/taste/architecture-principles.md
+    description: Architecture taste — simple layers, reject overengineering
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 84
+    autoload: false
+
+  taste-copywriting-principles:
+    path: .cursor/gates/taste/copywriting-principles.md
+    description: Copy taste — clear Indonesian labels, reject jargon
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 85
+    autoload: false
+
+  taste-checklist:
+    path: .cursor/gates/taste/taste-checklist.md
+    description: Taste checklist — simpler, smaller, faster, clearer, removable
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 86
+    autoload: false
+
+  taste-gates:
+    path: .cursor/gates/taste/taste-gates.md
+    description: Five mandatory taste gates before implementation
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 87
+    autoload: false
+
+  taste-reviewer:
+    path: .cursor/docs/agents/taste-reviewer.md
+    description: Taste review agent — removal and simplification
+    category: taste
+    layer: 2
+    refresh_policy: manual
+    priority: 88
+    autoload: true
+
+  # Impeccable Architect quality artifacts — full index in .cursor/gates/quality/quality-registry.yaml
+  quality-self-critique:
+    path: .cursor/gates/quality/self-critique.md
+    description: Mandatory self-critique before final output — simpler, maintainable, scalable
+    category: quality
+    refresh_policy: manual
+    priority: 10
+    autoload: true
+
+  quality-product-principles:
+    path: .cursor/gates/quality/product-principles.md
+    description: Product excellence — user value, business value, complexity scoring
+    category: quality
+    refresh_policy: manual
+    priority: 11
+    autoload: false
+
+  quality-ux-principles:
+    path: .cursor/gates/quality/ux-principles.md
+    description: UX excellence — cognitive load, sidebar IA, page states, a11y
+    category: quality
+    refresh_policy: manual
+    priority: 12
+    autoload: false
+
+  quality-architecture-principles:
+    path: .cursor/gates/quality/architecture-principles.md
+    description: Architecture excellence — domain ownership, layer isolation, API boundaries
+    category: quality
+    refresh_policy: manual
+    priority: 13
+    autoload: false
+
+  quality-engineering-principles:
+    path: .cursor/gates/quality/engineering-principles.md
+    description: Engineering excellence — readability, tests, security, scalability
+    category: quality
+    refresh_policy: manual
+    priority: 14
+    autoload: false
+
+  quality-review-checklist:
+    path: .cursor/gates/quality/review-checklist.md
+    description: Pre-ship checklist — Product, UX, Architecture, DB, API, Security, RBAC, Testing
+    category: quality
+    refresh_policy: manual
+    priority: 15
+    autoload: false
+
+  quality-gates:
+    path: .cursor/gates/quality/quality-gates.md
+    description: Mandatory quality gates before feature complete and deploy
+    category: quality
+    refresh_policy: manual
+    priority: 16
+    autoload: false
+
+  quality-design-taste:
+    path: .cursor/gates/quality/design-taste.md
+    description: Design taste — Stripe/Linear/Notion/Carbon; reject AI dashboard slop
+    category: quality
+    refresh_policy: manual
+    priority: 17
+    autoload: false
+
+  # Assurance Engineering artifacts — full index in .cursor/gates/assurance/assurance-registry.yaml
+  assurance-principles:
+    path: .cursor/gates/assurance/assurance-principles.md
+    description: Assurance philosophy — verify, challenge, block unverified assumptions
+    category: assurance
+    refresh_policy: manual
+    priority: 18
+    autoload: true
+
+  assurance-review-workflow:
+    path: .cursor/gates/assurance/review-workflow.md
+    description: Full assurance workflow phases A–E, GStack integration
+    category: assurance
+    refresh_policy: manual
+    priority: 19
+    autoload: false
+
+  assurance-risk-analysis:
+    path: .cursor/gates/assurance/risk-analysis.md
+    description: Risk register template and Teknovo domain risk catalog
+    category: assurance
+    refresh_policy: manual
+    priority: 20
+    autoload: false
+
+  assurance-decision-validation:
+    path: .cursor/gates/assurance/decision-validation.md
+    description: Decision log, assumptions, alternatives, conflicts
+    category: assurance
+    refresh_policy: manual
+    priority: 21
+    autoload: false
+
+  assurance-sharp-edges:
+    path: .cursor/gates/assurance/sharp-edges.md
+    description: Dangerous APIs, fragile abstractions, hidden complexity
+    category: assurance
+    refresh_policy: manual
+    priority: 22
+    autoload: false
+
+  assurance-insecure-defaults:
+    path: .cursor/gates/assurance/insecure-defaults.md
+    description: Proactive audit for validation, auth, secrets, config gaps
+    category: assurance
+    refresh_policy: manual
+    priority: 23
+    autoload: false
+
+  assurance-dependency-review:
+    path: .cursor/gates/assurance/dependency-review.md
+    description: NPM, Python, GitHub Actions, MCP supply chain review
+    category: assurance
+    refresh_policy: manual
+    priority: 24
+    autoload: false
+
+  assurance-static-analysis:
+    path: .cursor/gates/assurance/static-analysis.md
+    description: Semgrep, CodeQL, lint strategy for Teknovo stack
+    category: assurance
+    refresh_policy: manual
+    priority: 25
+    autoload: false
+
+  requirement-clarifier:
+    path: .cursor/docs/agents/requirement-clarifier.md
+    description: Detect ambiguity and missing requirements before implementation
+    category: assurance-agent
+    refresh_policy: manual
+    priority: 26
+    autoload: false
+
+  context-builder:
+    path: .cursor/docs/agents/context-builder.md
+    description: Load ADR, PRD, RBAC, DB, UI standards before decisions
+    category: assurance-agent
+    refresh_policy: manual
+    priority: 27
+    autoload: false
+
+  differential-reviewer:
+    path: .cursor/docs/agents/differential-reviewer.md
+    description: Review diffs for regressions, breaking changes, RBAC gaps
+    category: assurance-agent
+    refresh_policy: manual
+    priority: 28
+    autoload: false
+
+  second-opinion-reviewer:
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    description: Challenge plans and deploy conclusions under adversarial scrutiny
+    category: assurance-agent
+    refresh_policy: manual
+    priority: 29
+    autoload: false
+
+  # Security Architect artifacts — full index in .cursor/gates/security/security-registry.yaml
+  security-principles:
+    path: .cursor/gates/security/security-principles.md
+    description: Master security principles — least privilege, defense in depth, secure defaults
+    category: security
+    refresh_policy: manual
+    priority: 20
+    autoload: false
+
+  security-rbac:
+    path: .cursor/gates/security/rbac-security.md
+    description: RBAC hierarchy, permission mapping, route guards, data ownership
+    category: security
+    refresh_policy: manual
+    priority: 21
+    autoload: false
+
+  security-api:
+    path: .cursor/gates/security/api-security.md
+    description: Auth, validation, rate limits, CORS, error handling
+    category: security
+    refresh_policy: manual
+    priority: 22
+    autoload: false
+
+  security-database:
+    path: .cursor/gates/security/database-security.md
+    description: UUID v7, soft delete, audit logs, tenancy, FK constraints
+    category: security
+    refresh_policy: manual
+    priority: 23
+    autoload: false
+
+  security-cloudflare:
+    path: .cursor/gates/security/cloudflare-security.md
+    description: Workers, D1, R2, DNS, tunnels, secrets
+    category: security
+    refresh_policy: manual
+    priority: 24
+    autoload: false
+
+  security-ai-agent:
+    path: .cursor/gates/security/ai-agent-security.md
+    description: Agent tool limits, MCP, commits, deploy boundaries
+    category: security
+    refresh_policy: manual
+    priority: 25
+    autoload: false
+
+  security-review-checklist:
+    path: .cursor/gates/security/review-checklist.md
+    description: Ten-section security checklist before PR/deploy
+    category: security
+    refresh_policy: manual
+    priority: 26
+    autoload: false
+
+  security-gates:
+    path: .cursor/gates/security/security-gates.md
+    description: Pre-implementation, pre-deploy, pre-production gates
+    category: security
+    refresh_policy: manual
+    priority: 27
+    autoload: false
+
+  sessions:
+    path: .cursor/docs/memory/sessions/
+    description: Per-session summaries — goals, decisions, files, problems, outcomes
+    category: episodic
+    refresh_policy: append
+    priority: 9
+    autoload: false
+    glob: "*.md"
+    exclude:
+      - README.md
+
+refresh:
+  scripts:
+    unix: scripts/refresh-memory.sh
+    windows: scripts/refresh-memory.ps1
+  helpers:
+    python: .cursor/runtime/refresh_helpers.py
+  auto_targets:
+    - repository-map
+  manual_targets:
+    - project-context
+    - product-context
+    - domain-knowledge
+    - architecture-decisions
+    - coding-standards
+    - ui-ux-rules
+  append_targets:
+    - lessons-learned
+    - sessions
+
+loader:
+  module: .cursor/runtime/load-memory.py
+  default_format: markdown
+  section_separator: "\n\n---\n\n"
+  max_file_bytes: 524288
+
+sources:
+  primary:
+    - AGENTS.md
+    - .cursor/docs/AGENTS.md
+    - .cursor/registry/skill-registry.yaml
+    - .cursor/registry/agent-registry.yaml
+    - .cursor/registry/agents.yaml
+    - .cursor/registry/mcp.yaml
+    - .cursor/registry/legacy-registry.yaml
+    - .cursor/docs/ai/
+    - .cursor/docs/ai/AI_PLATFORM.md
+    - .cursor/docs/platform/
+    - .cursor/gates/taste/taste-registry.yaml
+    - .cursor/gates/quality/quality-registry.yaml
+    - .cursor/gates/security/security-registry.yaml
+    - .cursor/gates/assurance/assurance-registry.yaml
+    - .cursor/gates/execution/execution-registry.yaml
+    - .cursor/docs/ai/AI_EXECUTION_SYSTEM.md
+  teknovo_v2_reference:
+    - docs/adr/
+    - docs/prd/master/master-prd.md
+    - docs/standards/
+    - docs/architecture/
+    - docs/domain/
+    - docs/infrastructure/

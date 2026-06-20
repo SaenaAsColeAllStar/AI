@@ -1,0 +1,79 @@
+# Teknovo Skills Registry (Platform Split)
+# Pointer to canonical skill-registry.yaml â€” do not duplicate skill definitions.
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Platform Skills Index
+  canonical: .cursor/registry/skill-registry.yaml
+  legacy: .cursor/registry/legacy-registry.yaml
+  loader: .cursor/runtime/load-skills.py
+  governance: .cursor/docs/ai/skill-governance.md
+
+canonical_registry:
+  path: .cursor/registry/skill-registry.yaml
+  description: Single source of truth for all skill definitions, layers, bundles, triggers
+
+legacy_registry:
+  path: .cursor/registry/legacy-registry.yaml
+  description: Autoload and lifecycle compatibility index
+
+discovery:
+  skills_root: .cursor/skills
+  pattern: "**/SKILL.md"
+  orchestrator_api: .cursor/orchestrator/orchestrator.js#discoverSkills
+  auto_orchestrator: .cursor/skills/teknovo-auto-orchestrator/SKILL.md
+  auto_orchestrator_config:
+    intent_routing: .cursor/skills/teknovo-auto-orchestrator/intent-routing.yaml
+    chain_map: .cursor/skills/teknovo-auto-orchestrator/chain-map.yaml
+    execution_policy: .cursor/skills/teknovo-auto-orchestrator/execution-policy.yaml
+
+platform_bundles:
+  platform-session:
+    description: Default bundle for multi-agent platform sessions
+    skills:
+      - agents-md
+      - teknovo-auto-orchestrator
+      - superpowers-dispatching-parallel-agents
+      - superpowers-executing-plans
+      - superpowers-verification-before-completion
+      - teknovo-mcp-stack
+
+  platform-frontend:
+    description: Frontend agent skill bundle
+    skills:
+      - teknovo-ui-ux
+      - teknovo-ui-ux-specialist
+      - teknovo-landing-page
+      - taste-ux-principles
+
+  platform-backend:
+    description: Backend agent skill bundle
+    skills:
+      - teknovo-backend-development
+      - teknovo-api-architect
+      - teknovo-database-architect
+      - teknovo-rbac-architect
+      - teknovo-feature-implementation
+
+  platform-devops:
+    description: DevOps agent skill bundle
+    skills:
+      - teknovo-devops-engineer
+      - teknovo-cloudflare-stack
+      - gstack-ship
+      - security-cloudflare-security
+
+  platform-testing:
+    description: Testing agent skill bundle
+    skills:
+      - teknovo-testing-architect
+      - gstack-qa
+      - gstack-browser-testing
+      - superpowers-test-driven-development
+
+cross_reference:
+  agent_registry: .cursor/registry/agents.yaml
+  mcp_registry: .cursor/registry/mcp.yaml
+  memory_registry: .cursor/docs/memory/memory-registry.yaml

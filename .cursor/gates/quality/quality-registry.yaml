@@ -1,0 +1,207 @@
+﻿# Teknovo Impeccable Architect — Quality Registry
+# Indexes all quality artifacts for agents, memory loader, and skill triggers.
+# Cross-referenced in .cursor/docs/memory/memory-registry.yaml and .cursor/registry/legacy-registry.yaml
+
+version: "1.0"
+last_updated: "2026-06-20"
+
+defaults:
+  quality_root: quality
+  encoding: utf-8
+  index_doc: .cursor/docs/ai/AI_QUALITY_SYSTEM.md
+  reviewer_agent: agents/impeccable-reviewer.md
+
+artifacts:
+  product-principles:
+    path: .cursor/gates/quality/product-principles.md
+    description: Product excellence — user value, business value, complexity, maintenance cost
+    category: product
+    phase: planning
+    priority: 10
+    autoload: false
+    load_when:
+      - new feature proposal
+      - PRD draft
+      - scope change
+      - brainstorm
+
+  ux-principles:
+    path: .cursor/gates/quality/ux-principles.md
+    description: UX excellence — cognitive load, navigation, hierarchy, a11y, mobile
+    category: ux
+    phase: planning
+    priority: 11
+    autoload: false
+    load_when:
+      - before UI implementation
+      - UX review
+      - navigation change
+      - dashboard design
+
+  architecture-principles:
+    path: .cursor/gates/quality/architecture-principles.md
+    description: Architecture excellence — domain ownership, API boundaries, data ownership
+    category: architecture
+    phase: architecture
+    priority: 12
+    autoload: false
+    load_when:
+      - before migration
+      - new module
+      - cross-domain integration
+      - architecture gate
+
+  engineering-principles:
+    path: .cursor/gates/quality/engineering-principles.md
+    description: Engineering excellence — readability, maintainability, scalability, tests, security
+    category: engineering
+    phase: implementation
+    priority: 13
+    autoload: false
+    load_when:
+      - before code generation
+      - during implementation
+      - refactor
+
+  review-principles:
+    path: .cursor/gates/quality/review-principles.md
+    description: Unified review philosophy, severity model, Superpowers/GStack integration
+    category: review
+    phase: review
+    priority: 14
+    autoload: false
+    load_when:
+      - code review
+      - review request
+      - quality audit
+
+  review-checklist:
+    path: .cursor/gates/quality/review-checklist.md
+    description: Full pre-ship checklist — Product, UX, Architecture, DB, API, Security, etc.
+    category: review
+    phase: review
+    priority: 15
+    autoload: false
+    load_when:
+      - before PR
+      - before merge
+      - before ship
+      - eng-review
+
+  design-taste:
+    path: .cursor/gates/quality/design-taste.md
+    description: Design taste — avoid AI dashboards/Bootstrap; prefer Stripe/Linear/Notion/Carbon
+    category: ux
+    phase: planning
+    priority: 16
+    autoload: false
+    load_when:
+      - UI design
+      - dashboard
+      - generic template detection
+      - AI-ish design
+
+  quality-gates:
+    path: .cursor/gates/quality/quality-gates.md
+    description: Mandatory gates — Architecture, UX, RBAC, Testing, Documentation, Deployment
+    category: gates
+    phase: ship
+    priority: 17
+    autoload: false
+    load_when:
+      - before ship
+      - deploy
+      - release
+      - feature complete
+
+  self-critique:
+    path: .cursor/gates/quality/self-critique.md
+    description: Mandatory self-critique before final output — simpler, maintainable, scalable
+    category: gates
+    phase: all
+    priority: 18
+    autoload: true
+    load_when:
+      - before final output
+      - task complete
+      - done
+      - verify
+
+  impeccable-reviewer:
+    path: .cursor/docs/agents/impeccable-reviewer.md
+    description: Code review agent — architectural, UX, product, engineering quality enforcement
+    category: agent
+    phase: review
+    priority: 19
+    autoload: false
+    load_when:
+      - review
+      - audit
+      - quality check
+      - impeccable
+
+bundles:
+  planning:
+    description: Load during brainstorm and plan authoring
+    artifacts:
+      - product-principles
+      - ux-principles
+      - architecture-principles
+
+  pre-ui:
+    description: Load before any UI code
+    artifacts:
+      - ux-principles
+      - design-taste
+      - self-critique
+
+  pre-code:
+    description: Load before backend/implementation
+    artifacts:
+      - architecture-principles
+      - engineering-principles
+      - self-critique
+
+  pre-ship:
+    description: Load before PR merge or deploy
+    artifacts:
+      - review-checklist
+      - quality-gates
+      - self-critique
+      - review-principles
+
+  full:
+    description: All quality artifacts (heavy context)
+    artifacts:
+      - product-principles
+      - ux-principles
+      - architecture-principles
+      - engineering-principles
+      - review-principles
+      - review-checklist
+      - design-taste
+      - quality-gates
+      - self-critique
+
+integrations:
+  agents_md: AGENTS.md
+  skill_registry: .cursor/registry/legacy-registry.yaml
+  memory_registry: .cursor/docs/memory/memory-registry.yaml
+  memory_loader: .cursor/runtime/load-memory.py
+  assurance:
+    - .cursor/gates/assurance/review-workflow.md
+    - agents/requirement-clarifier.md
+    - agents/differential-reviewer.md
+  superpowers:
+    - superpowers-brainstorming
+    - superpowers-writing-plans
+    - superpowers-requesting-code-review
+    - superpowers-verification-before-completion
+  gstack:
+    - gstack-eng-review
+    - gstack-qa
+    - gstack-ship
+  pillars:
+    - teknovo-chief-product-designer
+    - teknovo-chief-architect
+    - teknovo-devops-engineer

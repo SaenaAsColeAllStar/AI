@@ -1,0 +1,44 @@
+---
+description: Teknovo UI/UX gate â€” editorial design, no AI layouts, PageShell, five states, design system
+alwaysApply: true
+---
+
+# Teknovo UI/UX Rule
+
+## DO
+
+- Follow **editorial design patterns** â€” hierarchy, storytelling, scan-in-5-seconds density
+- Prioritize **visual hierarchy**: headline â†’ supporting copy â†’ primary action â†’ secondary detail
+- Use **PageShell** layout: PageHeader â†’ PageContent â†’ PageFooter (`.cursor/skills/teknovo-ui-ux/`)
+- Implement all **five page states**: Loading, Empty, Error, Success, Permission
+- Use **shadcn/ui + Radix**, **Phosphor icons**, tokens from `.cursor/skills/teknovo-design-system/`
+- Plan IA and journeys **before code** via `.cursor/skills/teknovo-ux-architecture/` (max 3 nav levels)
+- Public school sites: `.cursor/skills/teknovo-landing-page/` â€” PPDB conversion, trust, clarity
+- Pass taste gates: UX, Visual, Copywriting (`.cursor/gates/taste/ux-principles.md`, `.cursor/gates/taste/design-principles.md`)
+
+## DON'T
+
+- Build **AI-looking layouts** â€” generic hero + 3-column feature grid + gradient blobs
+- Use **generic Tailwind sections** copied from template marketplaces
+- Ship **dashboard-style landing pages** for public marketing (ERP dashboard â‰  school homepage)
+- Add decorative hero bands on admin ERP pages
+- Use forbidden libraries: Lucide, Font Awesome, Bootstrap, Ant Design, Material UI
+- Generate UI code before Product Design Analysis and pre-code UX artifacts are complete
+- Hide inaccessible nav with locked teasing links â€” RBAC hides unavailable items
+
+## Load Order
+
+```text
+Product Design (ux-architecture) â†’ Architecture (chief-architect) â†’ UI Build (ui-ux + design-system)
+```
+
+Registry bundle: `pre-ui`
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Design system (canonical) | `.cursor/design-system/README.md` |
+| UX principles | `.cursor/gates/taste/ux-principles.md`, `.cursor/gates/quality/ux-principles.md` |
+| Landing patterns | `.cursor/skills/teknovo-landing-page/` |
+| Chief Product Designer | `.cursor/skills/teknovo-chief-product-designer/` |

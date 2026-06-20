@@ -1,0 +1,44 @@
+﻿---
+description: Teknovo product gate â€” PRD-first planning, module decomposition, workflow gates before code
+alwaysApply: true
+---
+
+# Teknovo Product Rule
+
+## DO
+
+- Read **Master PRD** (`docs/prd/master/master-prd.md`) and module PRDs under `docs/prd/` before implementation
+- Resolve document priority per `AGENTS.md`: ADR â†’ PRD â†’ Database â†’ API â†’ RBAC â†’ Design System â†’ Coding Standard
+- Break work into **modules** with clear boundaries, ownership, and verification steps
+- Run workflow gates in order: **Taste â†’ Assurance Sign-Off â†’ Security (pre-implementation)** before first code edit
+- Load skills by intent: `.cursor/registry/skill-registry.yaml`, bundles `pre-feature`, `pre-implementation`
+- Produce **Product Design Analysis** (Pillar 1) via `.cursor/skills/teknovo-ux-architecture/` or `.cursor/skills/teknovo-chief-product-designer/`
+- Propose removal/simplification when scope lacks measurable user value (`.cursor/gates/taste/taste-gates.md`)
+
+## DON'T
+
+- Start coding before understanding requirements and PRD alignment
+- Create tables, routes, or pages without PRD reference
+- Skip planning artifacts (`implementation_plan.md`, Assurance Sign-Off)
+- Polish low-value features â€” taste wins over default generation
+- Bypass **requirement-clarifier** when scope is ambiguous (`.cursor/docs/agents/requirement-clarifier.md`)
+
+## Module Decomposition
+
+Each module deliverable must define:
+
+1. **Goal** â€” user/business outcome from PRD
+2. **Scope** â€” in/out boundaries
+3. **Dependencies** â€” RBAC permissions, API contracts, schema ownership
+4. **Verification** â€” test cases and acceptance criteria
+5. **Ship gate** â€” Security + Quality evidence before deploy
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Master agent rules | `AGENTS.md`, `.cursor/docs/AGENTS.md` |
+| PRD generator | `.cursor/skills/teknovo-prd-generator/` |
+| Taste gates | `.cursor/gates/taste/taste-gates.md` |
+| Assurance workflow | `.cursor/gates/assurance/review-workflow.md` |
+| Skill registry | `.cursor/registry/skill-registry.yaml` |

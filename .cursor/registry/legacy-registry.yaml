@@ -1,0 +1,1483 @@
+﻿# Teknovo AI SuperStack â€” Agent Skill Registry (LEGACY COMPATIBILITY)
+# CANONICAL ORCHESTRATION: .cursor/registry/skill-registry.yaml
+# Agents: .cursor/registry/agent-registry.yaml | MCP: .cursor/registry/mcp-registry.yaml
+# Governance: .cursor/docs/ai/skill-governance.md | Loader: .cursor/runtime/load-skills.py
+# Load autoload skills at session start; match triggers for on-demand skills.
+
+version: "1.6"
+
+orchestration:
+  canonical: .cursor/registry/skill-registry.yaml
+  agents: .cursor/registry/agent-registry.yaml
+  platform_agents: .cursor/registry/agents.yaml
+  mcp: .cursor/registry/mcp-registry.yaml
+  platform_mcp: .cursor/registry/mcp.yaml
+  platform_skills: .cursor/registry/skills.yaml
+  orchestrator: .cursor/orchestrator/orchestrator.js
+  governance: .cursor/docs/ai/skill-governance.md
+  inventory: .cursor/docs/ai/skill-inventory.md
+  skill_loader: .cursor/runtime/load-skills.py
+  platform_doc: .cursor/docs/ai/AI_PLATFORM.md
+
+# =============================================================================
+# MULTI-AGENT PLATFORM â€” Orchestrator + Specialist Agents
+# =============================================================================
+platform_agents:
+  orchestrator:
+    path: .cursor/orchestrator/AGENT.md
+    entry: .cursor/orchestrator/orchestrator.js
+    config: .cursor/orchestrator/config.yaml
+    autoload: true
+  platform-frontend:
+    path: agents/frontend/AGENT.md
+    config: agents/frontend/config.yaml
+  platform-backend:
+    path: agents/backend/AGENT.md
+    config: agents/backend/config.yaml
+  platform-devops:
+    path: agents/devops/AGENT.md
+    config: agents/devops/config.yaml
+  platform-testing:
+    path: agents/testing/AGENT.md
+    config: agents/testing/config.yaml
+
+# =============================================================================
+# THREE PILLARS â€” Primary Role Gates
+# =============================================================================
+# Pillar 1: teknovo-chief-product-designer  â†’ Planning/UI (PRD, UX, IA, Nav)
+# Pillar 2: teknovo-chief-architect           â†’ Architecture (DB, API, RBAC, Folders)
+# Pillar 3: teknovo-devops-engineer           â†’ Ship/Deploy (CI, Cloudflare, Monitoring)
+# =============================================================================
+
+# =============================================================================
+# AUTO-LOAD SKILLS â€” loaded at every session start
+# =============================================================================
+autoload:
+  - superpowers-brainstorming
+  - superpowers-writing-plans
+  - superpowers-executing-plans
+  - superpowers-verification-before-completion
+  - superpowers-test-driven-development
+  - quality-self-critique
+  - gstack-eng-review
+  - gstack-qa
+  - teknovo-rbac-architect
+  - teknovo-database-architect
+  - teknovo-feature-implementation
+  - teknovo-repository-governance
+  - teknovo-testing-architect
+  - teknovo-api-architect
+  - teknovo-security-review
+  - teknovo-ui-ux
+  - teknovo-backend-development
+  - teknovo-domain-management
+  - teknovo-landing-page
+  - taste-reviewer
+  - teknovo-auto-orchestrator
+
+# =============================================================================
+# TASTE LAYER â€” judgement, restraint, removal (precedes quality)
+# Registry index: .cursor/gates/taste/taste-registry.yaml
+# Precedence: Taste > Impeccable Quality > default generation
+# =============================================================================
+taste:
+  taste-product-principles:
+    path: .cursor/gates/taste/product-principles.md
+    load_before: quality-product-principles
+    trigger:
+      - "new feature"
+      - "feature proposal"
+      - "PRD"
+      - "scope change"
+      - "brainstorm"
+
+  taste-ux-principles:
+    path: .cursor/gates/taste/ux-principles.md
+    load_before: quality-ux-principles
+    trigger:
+      - "before UI"
+      - "UX review"
+      - "navigation"
+      - "dashboard design"
+      - "information architecture"
+
+  taste-design-principles:
+    path: .cursor/gates/taste/design-principles.md
+    load_before: quality-design-taste
+    trigger:
+      - "dashboard"
+      - "UI design"
+      - "generic template"
+      - "AI dashboard"
+      - "design taste"
+
+  taste-architecture-principles:
+    path: .cursor/gates/taste/architecture-principles.md
+    load_before: quality-architecture-principles
+    trigger:
+      - "before migration"
+      - "new module"
+      - "before architecture"
+      - "architecture gate"
+      - "before backend implementation"
+
+  taste-copywriting-principles:
+    path: .cursor/gates/taste/copywriting-principles.md
+    trigger:
+      - "copy review"
+      - "i18n"
+      - "labels"
+      - "UI strings"
+      - "error messages"
+
+  taste-checklist:
+    path: .cursor/gates/taste/taste-checklist.md
+    trigger:
+      - "taste review"
+      - "simplify"
+      - "scope review"
+      - "before implementation"
+
+  taste-gates:
+    path: .cursor/gates/taste/taste-gates.md
+    load_before: quality-gates
+    trigger:
+      - "taste gate"
+      - "before ship"
+      - "deploy"
+      - "feature complete"
+      - "eng-review"
+
+  taste-reviewer:
+    path: .cursor/docs/agents/taste-reviewer.md
+    load_before: impeccable-reviewer
+    trigger:
+      - "taste review"
+      - "taste"
+      - "simplify"
+      - "remove feature"
+      - "scope cut"
+      - "too complex"
+
+# =============================================================================
+# ASSURANCE ENGINEERING â€” validate, challenge, verify before implementation
+# Registry index: .cursor/gates/assurance/assurance-registry.yaml
+# Precedence: Taste â†’ Assurance â†’ Security â†’ Implementation â†’ Quality â†’ Ship
+# =============================================================================
+assurance:
+  assurance-principles:
+    path: .cursor/gates/assurance/assurance-principles.md
+    load_after: taste-gates
+    load_before: security-principles
+    trigger:
+      - "assurance"
+      - "assurance review"
+      - "before implementation"
+      - "validate requirements"
+
+  assurance-review-workflow:
+    path: .cursor/gates/assurance/review-workflow.md
+    trigger:
+      - "assurance workflow"
+      - "assurance gate"
+      - "before planning complete"
+      - "before implementation"
+
+  assurance-risk-analysis:
+    path: .cursor/gates/assurance/risk-analysis.md
+    trigger:
+      - "risk analysis"
+      - "risk register"
+      - "before implementation"
+
+  assurance-decision-validation:
+    path: .cursor/gates/assurance/decision-validation.md
+    trigger:
+      - "decision validation"
+      - "assumptions"
+      - "before planning complete"
+
+  assurance-sharp-edges:
+    path: .cursor/gates/assurance/sharp-edges.md
+    trigger:
+      - "sharp edges"
+      - "dangerous API"
+      - "before implementation"
+
+  assurance-insecure-defaults:
+    path: .cursor/gates/assurance/insecure-defaults.md
+    load_before: security-principles
+    trigger:
+      - "insecure defaults"
+      - "before security gate"
+      - "pre-implementation"
+
+  assurance-dependency-review:
+    path: .cursor/gates/assurance/dependency-review.md
+    trigger:
+      - "new dependency"
+      - "lockfile"
+      - "supply chain"
+      - "github action"
+      - "MCP integration"
+
+  assurance-static-analysis:
+    path: .cursor/gates/assurance/static-analysis.md
+    trigger:
+      - "static analysis"
+      - "semgrep"
+      - "codeql"
+      - "before PR"
+
+  requirement-clarifier:
+    path: .cursor/docs/agents/requirement-clarifier.md
+    trigger:
+      - "unclear requirements"
+      - "clarify requirements"
+      - "ambiguous"
+      - "what does"
+      - "before planning complete"
+      - "underspecified"
+
+  context-builder:
+    path: .cursor/docs/agents/context-builder.md
+    trigger:
+      - "context build"
+      - "read ADR"
+      - "load standards"
+      - "before implementation"
+      - "audit context"
+
+  differential-reviewer:
+    path: .cursor/docs/agents/differential-reviewer.md
+    load_before: gstack-eng-review
+    trigger:
+      - "pull request"
+      - "PR"
+      - "diff review"
+      - "on diff"
+      - "differential review"
+      - "review changes"
+      - "merge request"
+
+  second-opinion-reviewer:
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    trigger:
+      - "second opinion"
+      - "challenge plan"
+      - "disagree"
+      - "stress test"
+      - "before deploy"
+      - "pre-deploy review"
+      - "high risk"
+
+# =============================================================================
+# IMPECCABLE QUALITY â€” product, UX, architecture, engineering excellence
+# Registry index: .cursor/gates/quality/quality-registry.yaml
+# =============================================================================
+quality:
+  quality-self-critique:
+    path: .cursor/gates/quality/self-critique.md
+    trigger:
+      - "done"
+      - "complete"
+      - "finish task"
+      - "ready to ship"
+      - "final output"
+
+  quality-product-principles:
+    path: .cursor/gates/quality/product-principles.md
+    trigger:
+      - "new feature"
+      - "feature proposal"
+      - "PRD"
+      - "scope change"
+
+  quality-ux-principles:
+    path: .cursor/gates/quality/ux-principles.md
+    trigger:
+      - "before UI"
+      - "UX review"
+      - "navigation"
+      - "dashboard design"
+
+  quality-design-taste:
+    path: .cursor/gates/quality/design-taste.md
+    trigger:
+      - "dashboard"
+      - "AI dashboard"
+      - "generic template"
+      - "design taste"
+
+  quality-architecture-principles:
+    path: .cursor/gates/quality/architecture-principles.md
+    trigger:
+      - "before migration"
+      - "new module"
+      - "before backend implementation"
+      - "architecture gate"
+
+  quality-engineering-principles:
+    path: .cursor/gates/quality/engineering-principles.md
+    trigger:
+      - "before code generation"
+      - "implement feature"
+      - "refactor"
+
+  quality-review-checklist:
+    path: .cursor/gates/quality/review-checklist.md
+    trigger:
+      - "before PR"
+      - "before merge"
+      - "before ship"
+      - "review checklist"
+
+  quality-gates:
+    path: .cursor/gates/quality/quality-gates.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "feature complete"
+      - "quality gate"
+
+  impeccable-reviewer:
+    path: .cursor/docs/agents/impeccable-reviewer.md
+    trigger:
+      - "review"
+      - "audit"
+      - "quality check"
+      - "impeccable"
+      - "code review"
+      - "pre-release review"
+    load_after: taste-reviewer
+
+# =============================================================================
+# SECURITY ARCHITECT â€” least privilege, defense in depth, secure defaults
+# Registry index: .cursor/gates/security/security-registry.yaml
+# Load after taste planning; before implementation
+# =============================================================================
+security:
+  security-principles:
+    path: .cursor/gates/security/security-principles.md
+    load_after: assurance-insecure-defaults
+    trigger:
+      - "security review"
+      - "new feature"
+      - "architecture gate"
+      - "before implementation"
+
+  security-rbac:
+    path: .cursor/gates/security/rbac-security.md
+    trigger:
+      - "RBAC"
+      - "permission"
+      - "role"
+      - "route guard"
+      - "before RBAC changes"
+
+  security-api:
+    path: .cursor/gates/security/api-security.md
+    trigger:
+      - "REST API"
+      - "endpoint"
+      - "before API"
+      - "webhook"
+
+  security-database:
+    path: .cursor/gates/security/database-security.md
+    trigger:
+      - "migration"
+      - "schema"
+      - "before DB"
+      - "before database migration"
+
+  security-cloudflare:
+    path: .cursor/gates/security/cloudflare-security.md
+    trigger:
+      - "cloudflare"
+      - "deploy"
+      - "tunnel"
+      - "R2"
+      - "DNS"
+      - "before deploy"
+
+  security-ai-agent:
+    path: .cursor/gates/security/ai-agent-security.md
+    trigger:
+      - "agent session"
+      - "MCP"
+      - "automation"
+      - "cursor agent"
+
+  security-review-checklist:
+    path: .cursor/gates/security/review-checklist.md
+    trigger:
+      - "security audit"
+      - "before PR"
+      - "security check"
+      - "OWASP"
+
+  security-gates:
+    path: .cursor/gates/security/security-gates.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "security gate"
+
+  security-reviewer:
+    path: .cursor/docs/agents/security-reviewer.md
+    load_after: security-gates
+    trigger:
+      - "security review"
+      - "security audit"
+      - "vulnerability"
+      - "pre-deploy security"
+      - "pen test"
+
+# =============================================================================
+# PLANNING SKILLS â€” requirements, design, consultation
+# Pillar 1 gate: teknovo-chief-product-designer
+# Pillar 2 gate: teknovo-chief-architect
+# =============================================================================
+planning:
+  superpowers-brainstorming:
+    path: .cursor/skills/superpowers/brainstorming/SKILL.md
+    trigger:
+      - "new feature"
+      - "design"
+      - "requirements"
+      - "brainstorm"
+      - "starting task"
+
+  superpowers-writing-plans:
+    path: .cursor/skills/superpowers/writing-plans/SKILL.md
+    trigger:
+      - "implementation plan"
+      - "create plan"
+      - "draft roadmap"
+      - "plan feature"
+
+  gstack-office-hours:
+    path: .cursor/skills/gstack/office-hours/SKILL.md
+    trigger:
+      - "blocker"
+      - "consultation"
+      - "unclear requirements"
+      - "architectural question"
+
+  teknovo-prd-generator:
+    path: .cursor/skills/teknovo-prd-generator/SKILL.md
+    trigger:
+      - "create PRD"
+      - "product requirements"
+      - "module requirements"
+      - "write spec"
+      - "draft PRD"
+      - "generate PRD"
+
+  teknovo-chief-product-designer:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    role: pillar-1
+    trigger:
+      - "product design review"
+      - "product strategy"
+      - "UX strategy"
+      - "user journey"
+      - "navigation architecture"
+      - "landing page review"
+      - "dashboard strategy"
+      - "AI-ish design"
+      - "AI-ish design detection"
+      - "conversion optimization"
+      - "before UI implementation"
+      - "product design analysis"
+      - "IA review"
+      - "PRD alignment"
+      - "PRD review"
+      - "PRD gap analysis"
+      - "master PRD review"
+      - "module PRD review"
+      - "requirements alignment"
+      - "information architecture"
+      - "navigation planning"
+
+  teknovo-chief-architect:
+    path: .cursor/skills/teknovo-chief-architect/SKILL.md
+    role: pillar-2
+    trigger:
+      - "architecture impact"
+      - "architecture gate"
+      - "chief architect"
+      - "architecture review before implementation"
+      - "schema impact analysis"
+      - "API contract review"
+      - "RBAC impact analysis"
+      - "folder structure review"
+      - "monorepo layout review"
+      - "before backend implementation"
+      - "before database migration"
+      - "cross-domain architecture"
+      - "architecture impact analysis"
+
+  teknovo-ui-ux-specialist:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    trigger:
+      - "UX review"
+      - "design review"
+      - "navigation planning"
+      - "information architecture"
+      - "user flow"
+      - "dashboard planning"
+      - "form planning"
+      - "UX audit"
+      - "UX review session"
+
+# =============================================================================
+# IMPLEMENTATION SKILLS â€” coding, TDD, orchestration
+# Specialist skills invoked by teknovo-chief-architect during/after architecture gate
+# =============================================================================
+implementation:
+  superpowers-executing-plans:
+    path: .cursor/skills/superpowers/executing-plans/SKILL.md
+    trigger:
+      - "execute plan"
+      - "implement checklist"
+      - "build from plan"
+
+  superpowers-test-driven-development:
+    path: .cursor/skills/superpowers/test-driven-development/SKILL.md
+    trigger:
+      - "write tests"
+      - "TDD"
+      - "red green refactor"
+      - "coverage"
+
+  superpowers-subagent-driven-development:
+    path: .cursor/skills/superpowers/subagent-driven-development/SKILL.md
+    trigger:
+      - "subagent"
+      - "parallel tasks"
+      - "orchestrate agents"
+      - "delegate task"
+
+  superpowers-dispatching-parallel-agents:
+    path: .cursor/skills/superpowers/dispatching-parallel-agents/SKILL.md
+    trigger:
+      - "parallel agents"
+      - "sibling agents"
+      - "dispatch agents"
+      - "multitask"
+      - "split workstreams"
+
+  superpowers-using-git-worktrees:
+    path: .cursor/skills/superpowers/using-git-worktrees/SKILL.md
+    trigger:
+      - "worktree"
+      - "parallel branch"
+      - "isolated workspace"
+
+  teknovo-feature-implementation:
+    path: .cursor/skills/teknovo-feature-implementation/SKILL.md
+    trigger:
+      - "implement feature"
+      - "build feature"
+      - "create endpoint"
+      - "write service"
+
+  teknovo-backend-development:
+    path: .cursor/skills/teknovo-backend-development/SKILL.md
+    trigger:
+      - "backend"
+      - "controller"
+      - "repository"
+      - "module definition"
+
+  teknovo-database-architect:
+    path: .cursor/skills/teknovo-database-architect/SKILL.md
+    trigger:
+      - "schema"
+      - "migration"
+      - "drizzle"
+      - "postgresql"
+      - "UUID v7"
+
+  teknovo-api-architect:
+    path: .cursor/skills/teknovo-api-architect/SKILL.md
+    trigger:
+      - "REST API"
+      - "endpoint"
+      - "swagger"
+      - "openapi"
+      - "DTO"
+
+  teknovo-rbac-architect:
+    path: .cursor/skills/teknovo-rbac-architect/SKILL.md
+    trigger:
+      - "permission"
+      - "role"
+      - "RBAC"
+      - "route guard"
+      - "access control"
+
+  teknovo-ui-ux:
+    path: .cursor/skills/teknovo-ui-ux/SKILL.md
+    trigger:
+      - "UI"
+      - "page layout"
+      - "component"
+      - "design system"
+      - "Phosphor icons"
+
+  teknovo-ui-ux-specialist:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    trigger:
+      - "build UI"
+      - "create page"
+      - "design dashboard"
+      - "frontend architecture"
+      - "page layout plan"
+
+  teknovo-domain-management:
+    path: .cursor/skills/teknovo-domain-management/SKILL.md
+    trigger:
+      - "domain event"
+      - "cross-domain"
+      - "data ownership"
+      - "DDD"
+
+  teknovo-landing-page:
+    path: .cursor/skills/teknovo-landing-page/SKILL.md
+    trigger:
+      - "landing page"
+      - "marketing site"
+      - "SEO"
+      - "Lighthouse"
+
+  teknovo-auto-orchestrator:
+    path: .cursor/skills/teknovo-auto-orchestrator/SKILL.md
+    config:
+      intent_routing: .cursor/skills/teknovo-auto-orchestrator/intent-routing.yaml
+      chain_map: .cursor/skills/teknovo-auto-orchestrator/chain-map.yaml
+      execution_policy: .cursor/skills/teknovo-auto-orchestrator/execution-policy.yaml
+    trigger:
+      - "build"
+      - "implement"
+      - "create"
+      - "develop"
+      - "deploy"
+      - "orchestrate"
+      - "auto orchestrator"
+      - "auto orchestration"
+      - "implementation request"
+      - "build feature"
+      - "build system"
+      - "make landing page"
+      - "build landing page"
+
+  teknovo-finance:
+    path: .cursor/skills/teknovo-finance/SKILL.md
+    trigger:
+      - "finance"
+      - "billing"
+      - "payment"
+      - "tagihan"
+      - "pembayaran"
+      - "kuitansi"
+      - "tunggakan"
+      - "cash book"
+
+  teknovo-ppdb:
+    path: .cursor/skills/teknovo-ppdb/SKILL.md
+    trigger:
+      - "PPDB"
+      - "admission"
+      - "pendaftaran"
+      - "calon siswa"
+      - "seleksi"
+      - "registrasi ulang"
+
+  teknovo-cbt:
+    path: .cursor/skills/teknovo-cbt/SKILL.md
+    trigger:
+      - "CBT"
+      - "ujian online"
+      - "bank soal"
+      - "exam"
+      - "proctoring"
+      - "hasil ujian"
+
+  teknovo-communication:
+    path: .cursor/skills/teknovo-communication/SKILL.md
+    trigger:
+      - "WhatsApp"
+      - "WA template"
+      - "campaign"
+      - "notifikasi"
+      - "broadcast"
+      - "pesan WA"
+
+  teknovo-academic:
+    path: .cursor/skills/teknovo-academic/SKILL.md
+    trigger:
+      - "academic"
+      - "akademik"
+      - "kelas"
+      - "absensi"
+      - "nilai"
+      - "rapor"
+      - "jadwal"
+      - "guru"
+
+  teknovo-reporting:
+    path: .cursor/skills/teknovo-reporting/SKILL.md
+    trigger:
+      - "report"
+      - "dashboard"
+      - "analytics"
+      - "export PDF"
+      - "laporan"
+      - "read model"
+
+  teknovo-integration-architect:
+    path: .cursor/skills/teknovo-integration-architect/SKILL.md
+    trigger:
+      - "integration"
+      - "webhook"
+      - "payment gateway"
+      - "third-party API"
+      - "external system"
+
+  teknovo-data-migration:
+    path: .cursor/skills/teknovo-data-migration/SKILL.md
+    trigger:
+      - "data migration"
+      - "import legacy"
+      - "seed data"
+      - "ETL"
+      - "bulk import"
+
+  teknovo-performance-engineer:
+    path: .cursor/skills/teknovo-performance-engineer/SKILL.md
+    trigger:
+      - "slow query"
+      - "optimize performance"
+      - "Lighthouse"
+      - "Core Web Vitals"
+      - "cache"
+      - "bundle size"
+
+  teknovo-cloudflare-stack:
+    path: .cursor/skills/teknovo-cloudflare-stack/SKILL.md
+    trigger:
+      - "cloudflare"
+      - "tunnel"
+      - "R2"
+      - "DNS"
+      - "edge config"
+
+# =============================================================================
+# REVIEW SKILLS â€” quality gates, security, shipping
+# Pillar 3 gate: teknovo-devops-engineer
+# =============================================================================
+review:
+  superpowers-verification-before-completion:
+    path: .cursor/skills/superpowers/verification-before-completion/SKILL.md
+    trigger:
+      - "done"
+      - "complete"
+      - "finish task"
+      - "verify"
+
+  superpowers-requesting-code-review:
+    path: .cursor/skills/superpowers/requesting-code-review/SKILL.md
+    trigger:
+      - "pull request"
+      - "PR"
+      - "code review"
+      - "merge request"
+
+  superpowers-receiving-code-review:
+    path: .cursor/skills/superpowers/receiving-code-review/SKILL.md
+    trigger:
+      - "review feedback"
+      - "address comments"
+      - "review changes"
+
+  superpowers-finishing-development-branch:
+    path: .cursor/skills/superpowers/finishing-development-branch/SKILL.md
+    trigger:
+      - "merge branch"
+      - "finish branch"
+      - "cleanup worktree"
+
+  gstack-eng-review:
+    path: .cursor/skills/gstack/eng-review/SKILL.md
+    trigger:
+      - "engineering review"
+      - "layer audit"
+      - "architecture review"
+
+  gstack-qa:
+    path: .cursor/skills/gstack/qa/SKILL.md
+    trigger:
+      - "QA"
+      - "functional test"
+      - "user flow"
+      - "validate feature"
+
+  gstack-browser-testing:
+    path: .cursor/skills/gstack/browser-testing/SKILL.md
+    trigger:
+      - "E2E"
+      - "Playwright"
+      - "browser test"
+      - "page interaction"
+
+  gstack-ship:
+    path: .cursor/skills/gstack/ship/SKILL.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "merge to staging"
+
+  teknovo-devops-engineer:
+    path: .cursor/skills/teknovo-devops-engineer/SKILL.md
+    role: pillar-3
+    trigger:
+      - "devops"
+      - "CI/CD"
+      - "GitHub Actions"
+      - "GitHub workflow"
+      - "cloudflare deploy"
+      - "cloudflare tunnel"
+      - "subdomain routing"
+      - "workers deploy"
+      - "D1 migration"
+      - "R2 bucket"
+      - "monitoring setup"
+      - "observability"
+      - "release to staging"
+      - "release to production"
+      - "ship to production"
+      - "infrastructure change"
+      - "DNS change"
+      - "edge configuration"
+      - "deployment impact"
+      - "deploy review"
+      - "pre-production checklist"
+      - "infra review"
+      - "release readiness"
+
+  gstack-retro:
+    path: .cursor/skills/gstack/retro/SKILL.md
+    trigger:
+      - "retrospective"
+      - "post-mortem"
+      - "sprint review"
+      - "lessons learned"
+
+  gstack-cso:
+    path: .cursor/skills/gstack/cso/SKILL.md
+    trigger:
+      - "stakeholder update"
+      - "release notes"
+      - "school admin email"
+      - "rollout communication"
+      - "customer success"
+
+  teknovo-observability:
+    path: .cursor/skills/teknovo-observability/SKILL.md
+    trigger:
+      - "logging"
+      - "tracing"
+      - "alerting"
+      - "SLO"
+      - "metrics dashboard"
+
+  teknovo-repository-governance:
+    path: .cursor/skills/teknovo-repository-governance/SKILL.md
+    trigger:
+      - "folder structure"
+      - "naming convention"
+      - "monorepo"
+      - "kebab-case"
+
+  teknovo-testing-architect:
+    path: .cursor/skills/teknovo-testing-architect/SKILL.md
+    trigger:
+      - "test plan"
+      - "vitest"
+      - "coverage audit"
+      - "integration test"
+
+  teknovo-security-review:
+    path: .cursor/skills/teknovo-security-review/SKILL.md
+    trigger:
+      - "security audit"
+      - "CORS"
+      - "JWT"
+      - "rate limit"
+      - "OWASP"
+
+  teknovo-ui-ux-specialist:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    trigger:
+      - "dashboard review"
+      - "form audit"
+      - "table audit"
+      - "accessibility audit"
+      - "a11y review"
+      - "mobile UX review"
+      - "design QA"
+      - "pre-release UX"
+      - "UX score"
+
+  teknovo-chief-product-designer:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    trigger:
+      - "product design review"
+      - "AI-ish design detection"
+      - "generic dashboard"
+      - "template design"
+      - "conversion funnel review"
+      - "ERP dashboard philosophy"
+      - "PRD alignment"
+      - "PRD review"
+
+  teknovo-chief-architect:
+    path: .cursor/skills/teknovo-chief-architect/SKILL.md
+    trigger:
+      - "architecture review"
+      - "layer audit"
+      - "pre-implementation architecture"
+      - "architecture gate review"
+
+
+# =============================================================================
+# TROUBLESHOOTING SKILLS â€” debugging and root cause analysis
+# =============================================================================
+troubleshooting:
+  superpowers-systematic-debugging:
+    path: .cursor/skills/superpowers/systematic-debugging/SKILL.md
+    trigger:
+      - "bug"
+      - "error"
+      - "fail"
+      - "stacktrace"
+      - "crash"
+      - "exception"
+      - "debug"
+
+  gstack-investigate:
+    path: .cursor/skills/gstack/investigate/SKILL.md
+    trigger:
+      - "investigate production"
+      - "root cause"
+      - "incident timeline"
+      - "production anomaly"
+      - "queue stuck"
+
+  teknovo-incident-response:
+    path: .cursor/skills/teknovo-incident-response/SKILL.md
+    trigger:
+      - "incident"
+      - "outage"
+      - "rollback"
+      - "production down"
+      - "SEV-1"
+      - "emergency deploy"
+
+# =============================================================================
+# FLAT SKILL INDEX â€” backward-compatible lookup
+# =============================================================================
+skills:
+  superpowers-brainstorming:
+    path: .cursor/skills/superpowers/brainstorming/SKILL.md
+    category: planning
+    autoload: true
+
+  superpowers-writing-plans:
+    path: .cursor/skills/superpowers/writing-plans/SKILL.md
+    category: planning
+    autoload: true
+
+  superpowers-executing-plans:
+    path: .cursor/skills/superpowers/executing-plans/SKILL.md
+    category: implementation
+    autoload: true
+
+  superpowers-systematic-debugging:
+    path: .cursor/skills/superpowers/systematic-debugging/SKILL.md
+    category: troubleshooting
+    autoload: false
+
+  superpowers-verification-before-completion:
+    path: .cursor/skills/superpowers/verification-before-completion/SKILL.md
+    category: review
+    autoload: true
+
+  superpowers-requesting-code-review:
+    path: .cursor/skills/superpowers/requesting-code-review/SKILL.md
+    category: review
+    autoload: false
+
+  superpowers-receiving-code-review:
+    path: .cursor/skills/superpowers/receiving-code-review/SKILL.md
+    category: review
+    autoload: false
+
+  superpowers-test-driven-development:
+    path: .cursor/skills/superpowers/test-driven-development/SKILL.md
+    category: implementation
+    autoload: true
+
+  superpowers-subagent-driven-development:
+    path: .cursor/skills/superpowers/subagent-driven-development/SKILL.md
+    category: implementation
+    autoload: false
+
+  superpowers-dispatching-parallel-agents:
+    path: .cursor/skills/superpowers/dispatching-parallel-agents/SKILL.md
+    category: planning
+    autoload: false
+
+  superpowers-using-git-worktrees:
+    path: .cursor/skills/superpowers/using-git-worktrees/SKILL.md
+    category: implementation
+    autoload: false
+
+  superpowers-finishing-development-branch:
+    path: .cursor/skills/superpowers/finishing-development-branch/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-office-hours:
+    path: .cursor/skills/gstack/office-hours/SKILL.md
+    category: planning
+    autoload: false
+
+  gstack-eng-review:
+    path: .cursor/skills/gstack/eng-review/SKILL.md
+    category: review
+    autoload: true
+
+  gstack-qa:
+    path: .cursor/skills/gstack/qa/SKILL.md
+    category: review
+    autoload: true
+
+  gstack-browser-testing:
+    path: .cursor/skills/gstack/browser-testing/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-ship:
+    path: .cursor/skills/gstack/ship/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-retro:
+    path: .cursor/skills/gstack/retro/SKILL.md
+    category: review
+    autoload: false
+
+  teknovo-rbac-architect:
+    path: .cursor/skills/teknovo-rbac-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-cloudflare-stack:
+    path: .cursor/skills/teknovo-cloudflare-stack/SKILL.md
+    category: implementation
+    autoload: false
+
+  teknovo-database-architect:
+    path: .cursor/skills/teknovo-database-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-prd-generator:
+    path: .cursor/skills/teknovo-prd-generator/SKILL.md
+    category: planning
+    autoload: false
+
+  teknovo-feature-implementation:
+    path: .cursor/skills/teknovo-feature-implementation/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-repository-governance:
+    path: .cursor/skills/teknovo-repository-governance/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-testing-architect:
+    path: .cursor/skills/teknovo-testing-architect/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-api-architect:
+    path: .cursor/skills/teknovo-api-architect/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-security-review:
+    path: .cursor/skills/teknovo-security-review/SKILL.md
+    category: review
+    autoload: true
+
+  teknovo-ui-ux:
+    path: .cursor/skills/teknovo-ui-ux/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-backend-development:
+    path: .cursor/skills/teknovo-backend-development/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-domain-management:
+    path: .cursor/skills/teknovo-domain-management/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-landing-page:
+    path: .cursor/skills/teknovo-landing-page/SKILL.md
+    category: implementation
+    autoload: true
+
+  teknovo-auto-orchestrator:
+    path: .cursor/skills/teknovo-auto-orchestrator/SKILL.md
+    config:
+      intent_routing: .cursor/skills/teknovo-auto-orchestrator/intent-routing.yaml
+      chain_map: .cursor/skills/teknovo-auto-orchestrator/chain-map.yaml
+      execution_policy: .cursor/skills/teknovo-auto-orchestrator/execution-policy.yaml
+    category: automation
+    autoload: true
+
+  teknovo-ui-ux-specialist:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    category: review
+    autoload: false
+
+  teknovo-chief-product-designer:
+    path: .cursor/skills/teknovo-ux-architecture/SKILL.md
+    category: planning
+    role: pillar-1
+    autoload: false
+
+  teknovo-chief-architect:
+    path: .cursor/skills/teknovo-chief-architect/SKILL.md
+    category: planning
+    role: pillar-2
+    autoload: false
+
+  teknovo-devops-engineer:
+    path: .cursor/skills/teknovo-devops-engineer/SKILL.md
+    category: review
+    role: pillar-3
+    autoload: false
+
+  gstack-cso:
+    path: .cursor/skills/gstack/cso/SKILL.md
+    category: review
+    autoload: false
+
+  gstack-investigate:
+    path: .cursor/skills/gstack/investigate/SKILL.md
+    category: troubleshooting
+    autoload: false
+
+  teknovo-finance:
+    path: .cursor/skills/teknovo-finance/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-ppdb:
+    path: .cursor/skills/teknovo-ppdb/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-cbt:
+    path: .cursor/skills/teknovo-cbt/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-communication:
+    path: .cursor/skills/teknovo-communication/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-academic:
+    path: .cursor/skills/teknovo-academic/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-reporting:
+    path: .cursor/skills/teknovo-reporting/SKILL.md
+    category: domain
+    autoload: false
+
+  teknovo-performance-engineer:
+    path: .cursor/skills/teknovo-performance-engineer/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-observability:
+    path: .cursor/skills/teknovo-observability/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-data-migration:
+    path: .cursor/skills/teknovo-data-migration/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-integration-architect:
+    path: .cursor/skills/teknovo-integration-architect/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  teknovo-incident-response:
+    path: .cursor/skills/teknovo-incident-response/SKILL.md
+    category: cross-cutting
+    autoload: false
+
+  quality-self-critique:
+    path: .cursor/gates/quality/self-critique.md
+    category: quality
+    autoload: true
+
+  quality-product-principles:
+    path: .cursor/gates/quality/product-principles.md
+    category: quality
+    autoload: false
+
+  quality-ux-principles:
+    path: .cursor/gates/quality/ux-principles.md
+    category: quality
+    autoload: false
+
+  quality-architecture-principles:
+    path: .cursor/gates/quality/architecture-principles.md
+    category: quality
+    autoload: false
+
+  quality-engineering-principles:
+    path: .cursor/gates/quality/engineering-principles.md
+    category: quality
+    autoload: false
+
+  quality-review-checklist:
+    path: .cursor/gates/quality/review-checklist.md
+    category: quality
+    autoload: false
+
+  quality-gates:
+    path: .cursor/gates/quality/quality-gates.md
+    category: quality
+    autoload: false
+
+  impeccable-reviewer:
+    path: .cursor/docs/agents/impeccable-reviewer.md
+    category: quality
+    autoload: false
+
+  assurance-principles:
+    path: .cursor/gates/assurance/assurance-principles.md
+    category: assurance
+    autoload: true
+
+  assurance-review-workflow:
+    path: .cursor/gates/assurance/review-workflow.md
+    category: assurance
+    autoload: false
+
+  assurance-risk-analysis:
+    path: .cursor/gates/assurance/risk-analysis.md
+    category: assurance
+    autoload: false
+
+  assurance-decision-validation:
+    path: .cursor/gates/assurance/decision-validation.md
+    category: assurance
+    autoload: false
+
+  assurance-sharp-edges:
+    path: .cursor/gates/assurance/sharp-edges.md
+    category: assurance
+    autoload: false
+
+  assurance-insecure-defaults:
+    path: .cursor/gates/assurance/insecure-defaults.md
+    category: assurance
+    autoload: false
+
+  assurance-dependency-review:
+    path: .cursor/gates/assurance/dependency-review.md
+    category: assurance
+    autoload: false
+
+  assurance-static-analysis:
+    path: .cursor/gates/assurance/static-analysis.md
+    category: assurance
+    autoload: false
+
+  requirement-clarifier:
+    path: .cursor/docs/agents/requirement-clarifier.md
+    category: assurance
+    autoload: false
+
+  context-builder:
+    path: .cursor/docs/agents/context-builder.md
+    category: assurance
+    autoload: false
+
+  differential-reviewer:
+    path: .cursor/docs/agents/differential-reviewer.md
+    category: assurance
+    autoload: false
+
+  second-opinion-reviewer:
+    path: .cursor/docs/agents/second-opinion-reviewer.md
+    category: assurance
+    autoload: false
+
+  security-principles:
+    path: .cursor/gates/security/security-principles.md
+    category: security
+    autoload: false
+
+  security-rbac:
+    path: .cursor/gates/security/rbac-security.md
+    category: security
+    autoload: false
+
+  security-api:
+    path: .cursor/gates/security/api-security.md
+    category: security
+    autoload: false
+
+  security-database:
+    path: .cursor/gates/security/database-security.md
+    category: security
+    autoload: false
+
+  security-cloudflare:
+    path: .cursor/gates/security/cloudflare-security.md
+    category: security
+    autoload: false
+
+  security-ai-agent:
+    path: .cursor/gates/security/ai-agent-security.md
+    category: security
+    autoload: false
+
+  security-review-checklist:
+    path: .cursor/gates/security/review-checklist.md
+    category: security
+    autoload: false
+
+  security-gates:
+    path: .cursor/gates/security/security-gates.md
+    category: security
+    autoload: false
+
+  security-reviewer:
+    path: .cursor/docs/agents/security-reviewer.md
+    category: security
+    autoload: false
+
+  taste-product-principles:
+    path: .cursor/gates/taste/product-principles.md
+    category: taste
+    autoload: false
+
+  taste-ux-principles:
+    path: .cursor/gates/taste/ux-principles.md
+    category: taste
+    autoload: false
+
+  taste-design-principles:
+    path: .cursor/gates/taste/design-principles.md
+    category: taste
+    autoload: false
+
+  taste-architecture-principles:
+    path: .cursor/gates/taste/architecture-principles.md
+    category: taste
+    autoload: false
+
+  taste-copywriting-principles:
+    path: .cursor/gates/taste/copywriting-principles.md
+    category: taste
+    autoload: false
+
+  taste-checklist:
+    path: .cursor/gates/taste/taste-checklist.md
+    category: taste
+    autoload: false
+
+  taste-gates:
+    path: .cursor/gates/taste/taste-gates.md
+    category: taste
+    autoload: false
+
+  taste-reviewer:
+    path: .cursor/docs/agents/taste-reviewer.md
+    category: taste
+    autoload: true
+
+# =============================================================================
+# EXECUTION SYSTEM V2 â€” tool-first execution, failure recovery, branch safety
+# Registry index: .cursor/gates/execution/execution-registry.yaml
+# Spec: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md | Bootstrap: .cursor/docs/EXECUTION.md
+# =============================================================================
+execution:
+  execution-bootstrap:
+    path: .cursor/docs/EXECUTION.md
+    load_after: agents-md
+    trigger:
+      - "execution"
+      - "execution mode"
+      - "implement directly"
+      - "before implementation"
+      - "deploy"
+      - "build and deploy"
+
+  execution-spec:
+    path: .cursor/docs/ai/AI_EXECUTION_SYSTEM.md
+    trigger:
+      - "execution system"
+      - "execution v2"
+
+  execution-failure-recovery:
+    path: .cursor/gates/execution/failure-recovery.md
+    trigger:
+      - "command failed"
+      - "npm install failed"
+      - "build failed"
+      - "test failed"
+      - "tsc failed"
+      - "failure recovery"
+
+  execution-branch-policy:
+    path: .cursor/gates/execution/branch-policy.md
+    trigger:
+      - "branch safety"
+      - "feature branch"
+      - "before implementation"
+      - "git commit"
+      - "worktree"
+
+  execution-deployment-mode:
+    path: .cursor/gates/execution/deployment-mode.md
+    trigger:
+      - "deploy"
+      - "cloudflare deploy"
+      - "pages deploy"
+      - "deployment mode"
+      - "deploy ke cloudflare"

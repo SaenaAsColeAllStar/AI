@@ -1,0 +1,48 @@
+---
+description: Teknovo Cloudflare gate â€” deployment verification, DNS validation, HTTPS, MCP workflow
+alwaysApply: false
+globs: .cursor/mcp/cloudflare/**,docs/infrastructure/**,**/*cloudflare*
+---
+
+# Teknovo Cloudflare Rule
+
+## DO
+
+- Require **deployment verification** after every Cloudflare Pages deploy
+- Require **DNS validation** â€” record exists, correct target, propagation verified
+- Verify **HTTPS**: valid TLS, `https://<domain>` returns 200, HTTPâ†’HTTPS redirect if required
+- Execute full MCP workflow when credentials exist (`.cursor/skills/teknovo-cloudflare-stack/`):
+
+```text
+build â†’ test â†’ pages_deploy â†’ domain_attach â†’ domain_verify
+```
+
+- Use MCP server at `.cursor/mcp/cloudflare/` â€” tools: `pages_deploy`, `dns_list_records`, `domain_verify`
+- Load secrets from Teknovo secret store â€” **never** hardcode tokens
+- Self-heal failures up to **10 retries** (`.cursor/gates/execution/failure-recovery.md`)
+- Load `.cursor/skills/teknovo-security-infra/` before infra changes
+
+## DON'T
+
+- Stop at deploy command without verifying deployment status, DNS, and HTTPS
+- Create DNS records without confirming zone and CNAME/A target against Pages hostname
+- Expose API tokens in code, commits, or chat output
+- Deploy production ERP without Security pre-deploy APPROVE
+
+## Verification Checklist
+
+- [ ] `pages_get_deployment` or dashboard shows **success**
+- [ ] Deployment URL reachable (HTTP 200)
+- [ ] DNS record verified via `dns_list_records` or `domain_verify`
+- [ ] HTTPS valid on custom domain
+- [ ] Return: `deployment_url`, `deployment_status`, `dns_status`, `https_status`
+
+## References
+
+| Artifact | Path |
+|----------|------|
+| Cloudflare skill | `.cursor/skills/teknovo-cloudflare-stack/` |
+| Deployment mode | `.cursor/gates/execution/deployment-mode.md` |
+| MCP README | `.cursor/mcp/cloudflare/README.md` |
+| Cloudflare security | `.cursor/gates/security/cloudflare-security.md` |
+| Setup guide | `docs/infrastructure/cloudflare-setup-guide.md` |

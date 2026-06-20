@@ -1,0 +1,353 @@
+﻿# Teknovo MCP Registry
+# Model Context Protocol integrations — purpose, permissions, risk, activation.
+# Designed for 20+ MCP servers. Status: configured | planned | deprecated
+
+version: "1.0.0"
+
+metadata:
+  name: Teknovo MCP Registry
+  last_updated: "2026-06-20"
+  security_doc: .cursor/gates/security/ai-agent-security.md
+  secret_store_doc: .cursor/docs/SECRET_STORE.md
+  skill_registry: .cursor/registry/skill-registry.yaml
+  platform_registry: .cursor/registry/mcp.yaml
+  governance_doc: .cursor/docs/ai/skill-governance.md
+
+secret_store:
+  implementation: mcp/shared/secrets.js
+  linux_path: /root/.config/teknovo/secrets/
+  windows_path: "%USERPROFILE%\\.config\\teknovo\\secrets\\"
+  dev_path: "~/.config/teknovo/secrets/"
+  override_env: TEKNOVO_SECRETS_DIR
+  files:
+    cloudflare: cloudflare.env
+    github: github.env
+    openrouter: openrouter.env
+  required_keys:
+    cloudflare.env:
+      - CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_ACCOUNT_ID
+      - CLOUDFLARE_ZONE_ID
+    github.env:
+      - GITHUB_TOKEN
+    openrouter.env:
+      - OPENROUTER_API_KEY
+  policy:
+    - never_commit_secrets
+    - mask_tokens_in_logs
+    - fail_closed_when_missing
+    - chmod_600_on_secret_files
+
+risk_levels:
+  low: Read-only or scoped read — minimal blast radius
+  medium: Read/write within repo or dev environment
+  high: External API write, infra mutation, or secret-adjacent
+  critical: Production data, credentials, or irreversible infra changes
+
+defaults:
+  require_security_review: true
+  autoload_skill: security-ai-agent-security
+  audit_log: recommended
+
+integrations:
+
+  # ─── CONFIGURED (Cursor / workstation) ────────────────────────────────────
+  filesystem-mcp:
+    id: filesystem-mcp
+    name: Filesystem MCP
+    status: configured
+    provider: teknovo
+    package: mcp/filesystem
+    server_entry: mcp/filesystem/server.js
+    purpose: Read, write, search workspace files within TEKNOVO_WORKSPACE boundary
+    required_permissions: [file_read, file_write, file_search]
+    risk_level: medium
+    activation_conditions: [every agent session, file edit, codebase search]
+    depends_on_skills: [security-ai-agent-security, agents-md, teknovo-mcp-stack]
+    tools:
+      - read_file
+      - write_file
+      - list_directory
+      - search_files
+      - file_info
+    restrictions:
+      - path traversal blocked
+      - scoped to TEKNOVO_WORKSPACE env
+    notes: Teknovo MCP server — see mcp/filesystem/README.md
+
+  git-mcp:
+    id: git-mcp
+    name: Git MCP
+    status: configured
+    provider: teknovo
+    package: mcp/git
+    server_entry: mcp/git/server.js
+    purpose: Status, diff, log, commit (when user requests), branch operations
+    required_permissions: [git_read, git_write]
+    risk_level: medium
+    activation_conditions: [git status, commit, diff, branch, PR prep]
+    depends_on_skills: [security-ai-agent-security, agents-md, teknovo-mcp-stack]
+    tools:
+      - git_status
+      - git_diff
+      - git_log
+      - git_commit
+      - git_push
+      - git_branch_list
+      - git_branch_create
+    restrictions:
+      - no force push to main without explicit user request
+      - force push blocked at server level
+      - no git config mutation
+      - no skip hooks unless user requests
+      - scoped to TEKNOVO_WORKSPACE git root
+    notes: Teknovo MCP server — see mcp/git/README.md
+
+  shell-mcp:
+    id: shell-mcp
+    name: Shell / Terminal MCP
+    status: configured
+    provider: cursor-native
+    purpose: Execute shell commands for build, test, deploy scripts
+    required_permissions: [process_execute, network_optional]
+    risk_level: high
+    activation_conditions: [run tests, build, npm, python, deploy script]
+    depends_on_skills: [security-ai-agent-security, superpowers-verification-before-completion]
+    restrictions:
+      - no destructive commands without confirmation
+      - prefer read-only investigation first
+
+  web-fetch-mcp:
+    id: web-fetch-mcp
+    name: Web Fetch MCP
+    status: configured
+    provider: cursor-native
+    purpose: Fetch public URLs for documentation and API reference
+    required_permissions: [network_read]
+    risk_level: low
+    activation_conditions: [fetch URL, documentation lookup, API docs]
+    depends_on_skills: [security-ai-agent-security]
+
+  web-search-mcp:
+    id: web-search-mcp
+    name: Web Search MCP
+    status: configured
+    provider: cursor-native
+    purpose: Real-time web search for tech updates and vendor docs
+    required_permissions: [network_read]
+    risk_level: low
+    activation_conditions: [search web, latest version, current events]
+
+  # ─── PLANNED — Teknovo stack ────────────────────────────────────────────────
+  github-mcp:
+    id: github-mcp
+    name: GitHub MCP
+    status: configured
+    provider: teknovo
+    package: mcp/github
+    server_entry: mcp/github/server.js
+    purpose: Issues, PRs, checks, releases, workflow dispatch for Teknovo monorepo
+    required_permissions: [repo_read, repo_write, actions_read, pr_write]
+    risk_level: high
+    activation_conditions: [create PR, triage issue, CI checks, release, gh cli]
+    depends_on_skills: [security-ai-agent-security, gstack-ship, teknovo-devops-engineer, teknovo-mcp-stack]
+    teknovo_use: GitHub Actions CI/CD, PR automation, Bugbot integration
+    tools:
+      - create_repository
+      - create_branch
+      - create_issue
+      - create_pull_request
+      - list_pull_requests
+      - commit_changes
+      - create_release
+      - repository_analysis
+      # legacy
+      - repo_list
+      - repo_create
+      - pr_list
+      - pr_create
+      - pr_merge
+      - issue_list
+      - issue_create
+      - workflow_list
+      - workflow_dispatch
+    secret_store:
+      loader: mcp/shared/secrets.js
+      file: github.env
+      path_linux: /root/.config/teknovo/secrets/github.env
+      path_windows: "%USERPROFILE%\\.config\\teknovo\\secrets\\github.env"
+      keys: [GITHUB_TOKEN]
+    notes: Requires GITHUB_TOKEN via Teknovo secret store. Pair with gstack-ship and superpowers-requesting-code-review
+
+  cloudflare-mcp:
+    id: cloudflare-mcp
+    name: Cloudflare MCP
+    status: configured
+    provider: teknovo
+    package: mcp/cloudflare
+    server_entry: .cursor/mcp/cloudflare/server.js
+    purpose: Workers, D1, R2, DNS, Pages, Tunnel management for Teknovo edge stack
+    required_permissions: [cloudflare_read, cloudflare_write, secrets_read]
+    risk_level: critical
+    activation_conditions: [cloudflare deploy, DNS change, R2 bucket, tunnel, workers, pages deploy]
+    depends_on_skills: [security-cloudflare-security, teknovo-cloudflare-stack, teknovo-devops-engineer, security-reviewer]
+    secret_store:
+      loader: mcp/shared/secrets.js
+      file: cloudflare.env
+      path_linux: /root/.config/teknovo/secrets/cloudflare.env
+      path_windows: "%USERPROFILE%\\.config\\teknovo\\secrets\\cloudflare.env"
+      keys: [CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ZONE_ID]
+    teknovo_use: Staging/production deploy, subdomain routing, edge config, Pages automation
+    tools:
+      - pages_create_project
+      - pages_deploy
+      - pages_list_projects
+      - pages_get_deployment
+      - dns_create_record
+      - dns_update_record
+      - dns_list_records
+      - domain_attach
+      - domain_verify
+    notes: Requires security-reviewer APPROVE before write operations. Credentials via Teknovo secret store — see .cursor/docs/SECRET_STORE.md.
+
+  postgres-mcp:
+    id: postgres-mcp
+    name: PostgreSQL MCP
+    status: configured
+    provider: teknovo
+    package: mcp/postgres
+    server_entry: mcp/postgres/server.js
+    purpose: Read-only schema inspection and query explain for Teknovo PostgreSQL 17
+    required_permissions: [db_read]
+    risk_level: high
+    activation_conditions: [slow query, explain analyze, schema inspect, migration verify]
+    depends_on_skills: [teknovo-database-architect, security-database-security, teknovo-performance-engineer, teknovo-mcp-stack]
+    teknovo_use: Dev/staging read-only — never production write via MCP
+    tools:
+      - query
+      - list_tables
+      - describe_table
+    restrictions:
+      - read-only connection string
+      - no DDL via MCP
+      - SELECT/WITH/EXPLAIN/SHOW only
+    notes: Requires DATABASE_URL. Use Drizzle migrations for all DDL
+
+  qdrant-mcp:
+    id: qdrant-mcp
+    name: Qdrant MCP
+    status: configured
+    provider: teknovo
+    package: mcp/qdrant
+    server_entry: mcp/qdrant/server.js
+    purpose: Vector search for RAG, semantic code/doc retrieval in AI workstation
+    required_permissions: [vector_read, vector_write]
+    risk_level: medium
+    activation_conditions: [semantic search, RAG, embedding index, code retrieval]
+    depends_on_skills: [memory-project-context, security-ai-agent-security, teknovo-mcp-stack]
+    teknovo_use: Optional workstation memory augmentation — not production ERP path
+    tools:
+      - collection_list
+      - search
+      - upsert
+    notes: Requires QDRANT_URL. Isolate collection per environment; no PII in vectors
+
+  slack-mcp:
+    id: slack-mcp
+    name: Slack MCP
+    status: planned
+    provider: slack
+    purpose: Incident notifications and CSO stakeholder updates
+    required_permissions: [slack_post, channel_read]
+    risk_level: medium
+    activation_conditions: [incident notify, stakeholder update, release announcement]
+    depends_on_skills: [gstack-cso, teknovo-incident-response]
+    notes: "[PLANNED] Post only to approved channels; no secrets in messages"
+
+  linear-mcp:
+    id: linear-mcp
+    name: Linear MCP
+    status: planned
+    provider: linear
+    purpose: Issue tracking sync for sprint and assurance findings
+    required_permissions: [issue_read, issue_write]
+    risk_level: medium
+    activation_conditions: [create issue, sprint board, assurance finding]
+    depends_on_skills: [requirement-clarifier, assurance-review-workflow]
+    notes: "[PLANNED] Optional — Teknovo may use GitHub Issues primary"
+
+  sentry-mcp:
+    id: sentry-mcp
+    name: Sentry MCP
+    status: planned
+    provider: sentry
+    purpose: Production error triage and release health for Teknovo apps
+    required_permissions: [sentry_read, project_read]
+    risk_level: low
+    activation_conditions: [production error, release health, incident triage]
+    depends_on_skills: [gstack-investigate, teknovo-observability]
+    notes: "[PLANNED] Read-only for agents; escalate via incident-response skill"
+
+  datadog-mcp:
+    id: datadog-mcp
+    name: Datadog MCP
+    status: planned
+    provider: datadog
+    purpose: Metrics, logs, APM dashboards for observability investigations
+    required_permissions: [metrics_read, logs_read]
+    risk_level: low
+    activation_conditions: [metrics, APM, log investigation, SLO breach]
+    depends_on_skills: [teknovo-observability, gstack-investigate]
+    notes: "[PLANNED] Alternative to Cloudflare-native monitoring"
+
+  playwright-mcp:
+    id: playwright-mcp
+    name: Playwright MCP
+    status: planned
+    provider: community
+    purpose: Browser automation for E2E validation beyond Vitest runner
+    required_permissions: [browser_automation, network]
+    risk_level: medium
+    activation_conditions: [E2E, browser test, visual regression]
+    depends_on_skills: [gstack-browser-testing, teknovo-testing-architect]
+    notes: "[PLANNED] Staging URLs only; no production credentials in tests"
+
+  ollama-mcp:
+    id: ollama-mcp
+    name: Ollama MCP
+    status: planned
+    provider: local
+    purpose: Local LLM inference for offline workstation (Qwen 32B stack)
+    required_permissions: [local_inference]
+    risk_level: low
+    activation_conditions: [ollama, local model, offline inference, qwen]
+    depends_on_skills: [security-ai-agent-security, memory-project-context]
+    teknovo_use: AI workstation per AI_DEPLOY.md — not production user-facing
+    notes: "[PLANNED] Bind localhost only; no external exposure"
+
+bundles:
+  dev-session:
+    description: Safe default MCP set for daily development
+    integrations: [filesystem-mcp, git-mcp, shell-mcp, web-fetch-mcp]
+    max_risk_level: medium
+
+  deploy-session:
+    description: Infrastructure work — requires security review
+    integrations: [filesystem-mcp, git-mcp, shell-mcp, github-mcp, cloudflare-mcp]
+    required_skills: [security-reviewer, teknovo-devops-engineer, teknovo-mcp-stack]
+    max_risk_level: critical
+
+  investigate-session:
+    description: Production incident read-only investigation
+    integrations: [filesystem-mcp, git-mcp, web-fetch-mcp, postgres-mcp, qdrant-mcp]
+    required_skills: [gstack-investigate, teknovo-incident-response, teknovo-mcp-stack]
+    max_risk_level: high
+
+activation_matrix:
+  by_keyword:
+    cloudflare: [cloudflare-mcp]
+    github: [github-mcp, git-mcp]
+    database: [postgres-mcp]
+    RAG: [qdrant-mcp]
+    E2E: [playwright-mcp]
+    incident: [sentry-mcp, slack-mcp]

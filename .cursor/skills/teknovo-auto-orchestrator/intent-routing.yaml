@@ -1,0 +1,323 @@
+# Teknovo Auto-Orchestrator â€” Intent â†’ Chain Routing
+# Source of truth for keyword/pattern matching. Consumed by agents reading SKILL.md.
+# Resolve chains via chain-map.yaml using chain_ref.
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Intent Routing
+  skill: teknovo-auto-orchestrator
+  chain_map: chain-map.yaml
+  execution_policy: execution-policy.yaml
+  skill_registry: .cursor/registry/skill-registry.yaml
+  agent_registry: .cursor/registry/agent-registry.yaml
+
+# Autonomous execution triggers (no plan-only stops, execute with tools)
+autonomous_triggers:
+  - build
+  - implement
+  - create
+  - develop
+  - deploy
+  - orchestrate
+  - route
+  - dispatch
+  - auto
+  - fix
+  - add
+  - setup
+  - make
+  - generate
+  - ship
+  - release
+
+intents:
+
+  - id: landing-page
+    keywords:
+      - landing page
+      - landing
+      - website
+      - school website
+      - company profile
+      - marketing site
+      - marketing website
+      - profil sekolah
+      - situs sekolah
+      - homepage
+      - halaman utama
+    patterns:
+      - "build.*landing"
+      - "create.*website"
+      - "school.*site"
+    chain_ref: landing-page
+    priority: 10
+    required_gates:
+      - taste
+      - assurance
+      - security_pre_impl
+      - branch_safety
+    deploy_overlay: true
+
+  - id: finance
+    keywords:
+      - finance
+      - financial
+      - accounting
+      - school finance
+      - bos
+      - payroll
+      - billing
+      - payment
+      - tagihan
+      - pembayaran
+      - kuitansi
+      - tunggakan
+      - cash book
+      - keuangan
+    patterns:
+      - "build.*finance"
+      - "finance.*module"
+      - "payment.*system"
+    chain_ref: finance
+    priority: 10
+    required_gates:
+      - taste
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+  - id: ppdb
+    keywords:
+      - ppdb
+      - admission
+      - student registration
+      - pendaftaran
+      - calon siswa
+      - seleksi
+      - registrasi ulang
+      - new student intake
+    patterns:
+      - "build.*ppdb"
+      - "admission.*system"
+    chain_ref: ppdb
+    priority: 10
+    required_gates:
+      - taste
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+  - id: sarpras
+    keywords:
+      - sarpras
+      - inventory
+      - asset
+      - assets
+      - facility management
+      - facilities
+      - aset
+      - inventaris
+      - sarana prasarana
+    patterns:
+      - "build.*sarpras"
+      - "inventory.*system"
+      - "asset.*management"
+    chain_ref: sarpras
+    priority: 10
+    required_gates:
+      - taste
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+  - id: security-audit
+    keywords:
+      - security audit
+      - security review
+      - vulnerability
+      - owasp
+      - penetration
+      - security check
+      - audit security
+    patterns:
+      - "review.*security"
+      - "security.*audit"
+    chain_ref: security-review
+    priority: 20
+    required_gates:
+      - assurance
+
+  - id: deploy
+    keywords:
+      - deploy
+      - deployment
+      - release
+      - ship
+      - cloudflare
+      - pages
+      - production
+      - staging
+      - dns
+      - tunnel
+      - publish
+    patterns:
+      - "deploy.*cloudflare"
+      - "ship.*production"
+      - "release.*staging"
+    chain_ref: pre-ship
+    priority: 25
+    overlay: true
+    required_gates:
+      - security_pre_deploy
+      - quality
+      - branch_safety
+
+  - id: generic-feature
+    keywords:
+      - build
+      - implement
+      - create
+      - develop
+      - make
+      - setup
+      - add feature
+      - new feature
+      - build feature
+      - build system
+    patterns:
+      - "implement.*feature"
+      - "build.*module"
+    chain_ref: generic-feature
+    priority: 1
+    fallback: true
+    required_gates:
+      - taste
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+  - id: bugfix
+    keywords:
+      - bug
+      - fix
+      - error
+      - broken
+      - regression
+      - crash
+      - exception
+      - stacktrace
+      - failing test
+    patterns:
+      - "fix.*bug"
+      - "debug.*error"
+    chain_ref: bugfix
+    priority: 15
+    required_gates:
+      - branch_safety
+
+  - id: ui-only
+    keywords:
+      - ui only
+      - frontend only
+      - page layout
+      - component
+      - redesign ui
+      - update ui
+      - styling
+      - design system
+    patterns:
+      - "update.*ui"
+      - "fix.*layout"
+      - "build.*component"
+    chain_ref: ui-only
+    priority: 8
+    required_gates:
+      - taste
+      - branch_safety
+
+  - id: api-only
+    keywords:
+      - api only
+      - endpoint
+      - rest api
+      - openapi
+      - swagger
+      - controller
+      - webhook
+    patterns:
+      - "add.*endpoint"
+      - "create.*api"
+      - "implement.*route"
+    chain_ref: api-only
+    priority: 8
+    required_gates:
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+  - id: migration
+    keywords:
+      - migration
+      - schema change
+      - drizzle
+      - alter table
+      - database migration
+      - seed data
+      - data migration
+    patterns:
+      - "add.*migration"
+      - "schema.*change"
+    chain_ref: migration
+    priority: 12
+    required_gates:
+      - assurance
+      - security_pre_impl
+      - branch_safety
+
+# Multi-intent resolution: highest priority wins; ties broken by keyword score
+resolution:
+  min_keyword_score: 1
+  multi_domain_parallel_threshold: 3
+  deploy_overlay_chain: pre-ship
+
+# Skill ID â†’ filesystem path (native Cursor skills use .cursor/skills/)
+skill_paths:
+  teknovo-chief-product-designer: .cursor/skills/teknovo-ux-architecture/SKILL.md
+  teknovo-chief-architect: .cursor/skills/teknovo-chief-architect/SKILL.md
+  teknovo-landing-page: .cursor/skills/teknovo-landing-page/SKILL.md
+  teknovo-ui-ux: .cursor/skills/teknovo-ui-ux/SKILL.md
+  teknovo-ux-architecture: .cursor/skills/teknovo-ux-architecture/SKILL.md
+  teknovo-design-system: .cursor/skills/teknovo-design-system/SKILL.md
+  teknovo-testing-architect: .cursor/skills/teknovo-testing-architect/SKILL.md
+  teknovo-cloudflare-stack: .cursor/skills/teknovo-cloudflare-stack/SKILL.md
+  teknovo-devops-engineer: .cursor/skills/teknovo-devops-engineer/SKILL.md
+  teknovo-finance: .cursor/skills/teknovo-finance/SKILL.md
+  teknovo-ppdb: .cursor/skills/teknovo-ppdb/SKILL.md
+  teknovo-reporting: .cursor/skills/teknovo-reporting/SKILL.md
+  teknovo-database-architect: .cursor/skills/teknovo-database-architect/SKILL.md
+  teknovo-backend-development: .cursor/skills/teknovo-backend-development/SKILL.md
+  teknovo-api-architect: .cursor/skills/teknovo-api-architect/SKILL.md
+  teknovo-rbac-architect: .cursor/skills/teknovo-rbac-architect/SKILL.md
+  teknovo-feature-implementation: .cursor/skills/teknovo-feature-implementation/SKILL.md
+  teknovo-security: .cursor/skills/teknovo-security/SKILL.md
+  teknovo-security-domain: .cursor/skills/teknovo-security-domain/SKILL.md
+  teknovo-security-infra: .cursor/skills/teknovo-security-infra/SKILL.md
+  teknovo-security-review: .cursor/skills/teknovo-security-review/SKILL.md
+  teknovo-data-migration: .cursor/skills/teknovo-data-migration/SKILL.md
+  superpowers-systematic-debugging: .cursor/skills/superpowers/systematic-debugging/SKILL.md
+  superpowers-dispatching-parallel-agents: .cursor/skills/superpowers/dispatching-parallel-agents/SKILL.md
+  superpowers-subagent-driven-development: .cursor/skills/superpowers/subagent-driven-development/SKILL.md
+  superpowers-verification-before-completion: .cursor/skills/superpowers/verification-before-completion/SKILL.md
+  superpowers-test-driven-development: .cursor/skills/superpowers/test-driven-development/SKILL.md
+  gstack-qa: .cursor/skills/gstack/qa/SKILL.md
+  gstack-eng-review: .cursor/skills/gstack/eng-review/SKILL.md
+  gstack-ship: .cursor/skills/gstack/ship/SKILL.md
+  taste-gates: .cursor/gates/taste/taste-gates.md
+  assurance-review-workflow: .cursor/gates/assurance/review-workflow.md
+  security-gates: .cursor/gates/security/security-gates.md
+  quality-gates: .cursor/gates/quality/quality-gates.md
+  quality-self-critique: .cursor/gates/quality/self-critique.md
+  execution-branch-policy: .cursor/gates/execution/branch-policy.md
+  execution-failure-recovery: .cursor/gates/execution/failure-recovery.md

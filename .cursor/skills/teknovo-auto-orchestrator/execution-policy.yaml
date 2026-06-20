@@ -1,0 +1,211 @@
+# Teknovo Auto-Orchestrator — Execution Policy
+# Gates, verification, retries, parallel rules, and completion criteria.
+# Aligns with .cursor/gates/execution/execution-registry.yaml and .cursor/rules/
+
+version: "2.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Orchestrator Execution Policy
+  execution_registry: .cursor/gates/execution/execution-registry.yaml
+  branch_policy: .cursor/gates/execution/branch-policy.md
+  failure_recovery: .cursor/gates/execution/failure-recovery.md
+  cursor_rules: .cursor/rules/
+
+# Mandatory workflow gates (order enforced)
+gates:
+
+  taste:
+    order: 1
+    artifacts:
+      - .cursor/gates/taste/taste-gates.md
+      - .cursor/gates/taste/taste-checklist.md
+    agent: taste-reviewer
+    bundle: pre-feature
+    blocks: [implementation, ui code, migrations]
+    cursor_rule: .cursor/rules/01-product.mdc
+    pass_criteria: All five taste gates documented or waived with Principal Architect approval
+
+  assurance:
+    order: 2
+    artifacts:
+      - .cursor/gates/assurance/review-workflow.md
+    agents: [requirement-clarifier, context-builder]
+    bundle: pre-implementation
+    blocks: [first code edit, migrations, new routes]
+    pass_criteria: Assurance Sign-Off APPROVE in plan or session notes
+
+  security_pre_impl:
+    order: 3
+    artifacts:
+      - .cursor/gates/security/security-gates.md
+      - .cursor/gates/security/review-checklist.md
+    skills: [teknovo-security, teknovo-security-review]
+    agent: security-reviewer
+    bundles: [pre-implementation, pre-rbac, pre-api, pre-db]
+    blocks: [code, migrations, new routes/endpoints]
+    cursor_rule: .cursor/rules/03-engineering.mdc
+    pass_criteria: Security reviewer verdict APPROVE
+
+  branch_safety:
+    order: 0
+    artifact: .cursor/gates/execution/branch-policy.md
+    pre_implementation_check: git branch --show-current
+    blocks: [first file edit on main or master]
+    action_on_main: "git checkout -b feature/<scope>"
+    cursor_rule: .cursor/rules/06-github.mdc
+
+  quality:
+    order: 5
+    artifacts:
+      - .cursor/gates/quality/quality-gates.md
+      - .cursor/gates/quality/self-critique.md
+    skills: [quality-gates, quality-self-critique, gstack-eng-review]
+    agent: impeccable-reviewer
+    bundle: pre-ship
+    blocks: [ship claim, merge]
+    cursor_rule: .cursor/rules/04-testing.mdc
+
+  security_pre_deploy:
+    order: 6
+    artifacts:
+      - .cursor/gates/security/cloudflare-security.md
+    skills: [teknovo-security-infra, teknovo-security-review]
+    agent: security-reviewer
+    bundle: pre-deploy-security
+    blocks: [staging deploy, production deploy]
+    cursor_rule: .cursor/rules/07-cloudflare.mdc
+    pass_criteria: Security reviewer pre-deploy verdict APPROVE
+
+# Full workflow sequence for agent sessions
+workflow_sequence:
+  - branch_safety
+  - taste
+  - assurance
+  - security_pre_impl
+  - implementation
+  - verification_chain
+  - quality
+  - security_pre_deploy
+  - ship
+
+verification_chain:
+  description: Run before declaring task complete — evidence required
+  steps:
+    - id: branch_check
+      command: git branch --show-current
+      expect: "not main|master for feature work"
+    - id: build
+      commands: [npm run build, "project-specific build"]
+      skill: superpowers-verification-before-completion
+      on_fail: execution-failure-recovery
+    - id: lint
+      commands: [npm run lint, "tsc --noEmit"]
+      on_fail: execution-failure-recovery
+    - id: test
+      commands: [npm test, "vitest run", "playwright test"]
+      skills: [teknovo-testing-architect, gstack-qa]
+      on_fail: execution-failure-recovery
+    - id: self_critique
+      artifact: .cursor/gates/quality/self-critique.md
+      skill: quality-self-critique
+      blocks_completion: true
+
+retry:
+  max: 10
+  source: .cursor/gates/execution/execution-registry.yaml
+  policy: .cursor/gates/execution/failure-recovery.md
+  stop_on_first_failure: false
+  ask_user_on_failure: false
+  applies_to:
+    - npm_install
+    - npm_build
+    - typescript
+    - tests
+    - deploy_verify
+
+parallel_allowed:
+  # Phases that may run concurrently when parallel_group matches
+  groups:
+    - id: ui-build
+      description: Landing page layout + UI components after architecture approved
+      max_siblings: 3
+      requires: [architecture gate complete]
+    - id: domain-modules
+      description: Independent domain chains after shared architecture
+      max_siblings: 3
+      trigger: multi_domain_parallel_threshold
+      domains: [finance, ppdb, sarpras]
+    - id: verification-prep
+      description: Test plan drafting parallel to final UI polish
+      max_siblings: 2
+      requires: [implementation contracts defined]
+  forbidden_parallel:
+    - security_pre_impl with implementation
+    - branch_safety bypass with any write
+    - ship before verification_chain
+
+block_conditions:
+  - id: on_main_branch
+    check: "git branch --show-current in [main, master]"
+    action: block_writes
+    remediation: "Create feature/<scope> branch per .cursor/gates/execution/branch-policy.md"
+
+  - id: missing_assurance_signoff
+    check: assurance gate not APPROVE
+    action: block_implementation
+    remediation: "Run requirement-clarifier + context-builder; document Assurance Sign-Off"
+
+  - id: security_block
+    check: security reviewer verdict BLOCK
+    action: block_implementation_and_deploy
+    remediation: "Address security-reviewer findings; re-run teknovo-security-review"
+
+  - id: missing_product_analysis
+    check: UI work without Product Design Analysis
+    action: block_ui_implementation
+    applies_to: [landing-page, ui-only, generic-feature with UI]
+    remediation: "Complete teknovo-chief-product-designer artifact"
+
+  - id: missing_architecture_analysis
+    check: Code/migrations without Architecture Impact Analysis
+    action: block_implementation
+    remediation: "Complete teknovo-chief-architect artifact"
+
+  - id: verification_failed
+    check: any verification_chain step failed after max retries
+    action: block_completion
+    remediation: "Report blocked status with last error and fixes attempted"
+
+completion_criteria:
+  all_required:
+    - branch_safety_passed
+    - required_gates_for_intent_passed
+    - implementation_complete
+    - verification_chain_all_pass
+    - self_critique_complete
+  optional_for_non_deploy:
+    - security_pre_deploy
+    - ship_artifact
+  evidence_required:
+    - command_output_for_build
+    - command_output_for_tests
+    - gate_verdicts_documented
+  forbidden_claims:
+    - done without test evidence
+    - ship without security pre-deploy APPROVE
+    - complete on main branch for feature work
+
+autonomous_execution:
+  ask_unnecessary_questions: false
+  produce_long_plans: false
+  stop_after_architecture: false
+  create_and_modify_files: true
+  run_builds: true
+  fix_errors_until_complete: true
+  tool_use_mandatory: true
+
+cli:
+  load_skills: "python .cursor/runtime/load-skills.py --trigger \"<keywords>\""
+  load_bundle: "python .cursor/runtime/load-skills.py --bundle pre-implementation"
+  load_memory: "python .cursor/runtime/load-memory.py --include-security --security-bundle pre-api"

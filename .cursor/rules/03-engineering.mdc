@@ -1,0 +1,44 @@
+---
+description: Teknovo engineering gate â€” Clean Architecture, SOLID, type safety, layer isolation, RBAC, Zod
+alwaysApply: true
+---
+
+# Teknovo Engineering Rule
+
+## DO
+
+- Apply **Clean Architecture** with strict **layer isolation**: `Controller â†’ Service â†’ Repository â†’ Database`
+- Follow **SOLID** â€” single responsibility per module; depend on abstractions at boundaries
+- Enforce **type safety**: strict TypeScript, no `any`, no `ts-ignore`
+- Validate all payloads with **Zod** at the controller layer
+- Use **UUID v7** primary keys; **soft deletes** (`deleted_at` filter, no hard deletes)
+- Map **RBAC** on every route, menu, API action, and mutation â€” no UI-only authorization
+- Export only **Services** cross-module; keep repositories private
+- Prefer **maintainability over shortcuts** â€” no dump files (`utils.ts`, `helpers.ts`, `common.ts`)
+- Load `.cursor/skills/teknovo-feature-implementation/` for layer-by-layer delivery
+- Run Security pre-implementation: `.cursor/skills/teknovo-security/` â†’ domain/infra skills as needed
+
+## DON'T
+
+- Query repository or database from controllers
+- Execute raw SQL/ORM from service layer
+- Access database from frontend
+- Write placeholder/TODO stubs â€” complete implementations only
+- Skip permission guards on new endpoints
+- Commit secrets â€” use host secret store (`docs/SECRET_STORE.md`)
+- Implement on `main` â€” see `06-github.mdc` and `.cursor/gates/execution/branch-policy.md`
+
+## Architecture Artifacts (Pillar 2)
+
+Before code: **Architecture Impact Analysis** via `.cursor/skills/teknovo-chief-architect/` covering database, API, RBAC, folder structure.
+
+## References
+
+| Standard | Path |
+|----------|------|
+| Coding standard | `docs/standards/coding/coding-standard.md` |
+| Database standard | `docs/standards/database/database-standard.md` |
+| API contract | `docs/standards/api/api-contract.md` |
+| RBAC contract | `docs/standards/rbac/rbac-standard.md` |
+| Execution bootstrap | `.cursor/docs/EXECUTION.md`, `.cursor/gates/execution/branch-policy.md` |
+| Model lock (workstation) | `qwen3:32b` per `.cursor/runtime/bootstrap/install.lock.yaml` |

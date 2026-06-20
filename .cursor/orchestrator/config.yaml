@@ -1,0 +1,43 @@
+id: orchestrator
+name: Platform Orchestrator
+type: platform
+priority: critical
+path: .cursor/orchestrator/AGENT.md
+entry: .cursor/orchestrator/orchestrator.js
+
+skills:
+  required:
+    - agents-md
+    - superpowers-dispatching-parallel-agents
+    - superpowers-executing-plans
+    - teknovo-chief-architect
+  recommended:
+    - teknovo-mcp-stack
+    - context-builder
+    - requirement-clarifier
+
+mcps:
+  recommended:
+    - filesystem-mcp
+    - git-mcp
+    - shell-mcp
+
+triggers:
+  - orchestrate
+  - route task
+  - dispatch agent
+  - multi-agent
+  - parallel agents
+  - skill discovery
+  - mcp discovery
+
+keywords:
+  - orchestrator
+  - routing
+  - dispatch
+  - workflow
+  - coordination
+
+failure_recovery:
+  max_retries: 10
+  policy: .cursor/gates/execution/execution-registry.yaml

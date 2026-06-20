@@ -1,0 +1,265 @@
+# Teknovo Auto-Orchestrator — Intent Categories
+# Consumed by orchestrator.js for keyword matching and skill/agent selection.
+
+version: "1.0.0"
+last_updated: "2026-06-20"
+
+metadata:
+  name: Teknovo Intent Map
+  skill: teknovo-auto-orchestrator
+  routing_config: routing.yaml
+
+# Global execution skills always appended after intent-specific skills
+always_include:
+  skills:
+    - superpowers-dispatching-parallel-agents
+    - superpowers-subagent-driven-development
+    - superpowers-executing-plans
+    - superpowers-verification-before-completion
+  agents:
+    - orchestrator
+
+deploy_detection:
+  keywords:
+    - deploy
+    - deployment
+    - release
+    - ship
+    - cloudflare
+    - pages deploy
+    - production
+    - staging
+    - dns
+    - tunnel
+  skills:
+    - teknovo-cloudflare-stack
+    - teknovo-devops-engineer
+    - gstack-ship
+  agents:
+    - platform-devops
+    - platform-cloudflare
+  mcps:
+    - cloudflare-mcp
+
+intents:
+
+  landing_page:
+    category: ux
+    description: Public school website, marketing site, company profile
+    keywords:
+      - landing page
+      - landing
+      - website
+      - school website
+      - company profile
+      - marketing site
+      - marketing website
+      - profil sekolah
+      - situs sekolah
+    skills:
+      - teknovo-chief-architect
+      - teknovo-landing-page
+      - teknovo-ui-ux
+      - teknovo-ui-ux-specialist
+      - teknovo-testing-architect
+      - teknovo-cloudflare-stack
+    agents:
+      - chief-architect
+      - platform-frontend
+      - platform-testing
+    mcps:
+      - filesystem-mcp
+      - cloudflare-mcp
+    execution_mode: parallel
+    parallel_groups:
+      - id: architecture
+        label: Architecture & IA
+        skills: [teknovo-chief-architect, teknovo-landing-page]
+        agents: [chief-architect]
+      - id: frontend
+        label: UI Implementation
+        skills: [teknovo-ui-ux, teknovo-ui-ux-specialist]
+        agents: [platform-frontend]
+      - id: verification
+        label: Testing & Deploy Prep
+        skills: [teknovo-testing-architect, teknovo-cloudflare-stack]
+        agents: [platform-testing, platform-devops]
+
+  finance:
+    category: domain
+    description: School finance, accounting, BOS, payroll
+    keywords:
+      - finance
+      - financial
+      - accounting
+      - school finance
+      - bos
+      - payroll
+      - billing
+      - payment
+      - tagihan
+      - pembayaran
+      - kuitansi
+      - tunggakan
+      - cash book
+    skills:
+      - teknovo-chief-architect
+      - teknovo-finance
+      - teknovo-database-architect
+      - teknovo-backend-development
+      - teknovo-rbac-architect
+      - teknovo-testing-architect
+      - teknovo-security-review
+    agents:
+      - chief-architect
+      - platform-backend
+      - platform-testing
+    mcps:
+      - filesystem-mcp
+      - postgres-mcp
+    execution_mode: sequential
+    parallel_groups:
+      - id: architecture
+        label: Architecture & Schema
+        skills: [teknovo-chief-architect, teknovo-database-architect, teknovo-rbac-architect]
+        agents: [chief-architect, platform-backend]
+      - id: domain
+        label: Finance Domain Implementation
+        skills: [teknovo-finance, teknovo-backend-development]
+        agents: [platform-backend]
+      - id: security_testing
+        label: Security & Testing
+        skills: [teknovo-security-review, teknovo-testing-architect]
+        agents: [platform-testing]
+
+  ppdb:
+    category: domain
+    description: Student admission, registration, selection
+    keywords:
+      - ppdb
+      - admission
+      - student registration
+      - pendaftaran
+      - calon siswa
+      - seleksi
+      - registrasi ulang
+      - new student intake
+    skills:
+      - teknovo-chief-architect
+      - teknovo-ppdb
+      - teknovo-backend-development
+      - teknovo-database-architect
+      - teknovo-testing-architect
+    agents:
+      - chief-architect
+      - platform-backend
+      - platform-testing
+    mcps:
+      - filesystem-mcp
+      - postgres-mcp
+    execution_mode: sequential
+    parallel_groups:
+      - id: architecture
+        label: Architecture & Schema
+        skills: [teknovo-chief-architect, teknovo-database-architect]
+        agents: [chief-architect, platform-backend]
+      - id: domain
+        label: PPDB Domain Implementation
+        skills: [teknovo-ppdb, teknovo-backend-development]
+        agents: [platform-backend]
+      - id: verification
+        label: Testing
+        skills: [teknovo-testing-architect]
+        agents: [platform-testing]
+
+  sarpras:
+    category: domain
+    description: Inventory, assets, facility management
+    keywords:
+      - sarpras
+      - inventory
+      - asset
+      - assets
+      - facility management
+      - facilities
+      - aset
+      - inventaris
+      - sarana prasarana
+    skills:
+      - teknovo-chief-architect
+      - teknovo-database-architect
+      - teknovo-backend-development
+      - teknovo-reporting
+      - teknovo-testing-architect
+    agents:
+      - chief-architect
+      - platform-backend
+      - platform-testing
+    mcps:
+      - filesystem-mcp
+      - postgres-mcp
+    execution_mode: sequential
+    parallel_groups:
+      - id: architecture
+        label: Architecture & Schema
+        skills: [teknovo-chief-architect, teknovo-database-architect]
+        agents: [chief-architect, platform-backend]
+      - id: domain
+        label: Sarpras Implementation
+        skills: [teknovo-backend-development, teknovo-reporting]
+        agents: [platform-backend]
+      - id: verification
+        label: Testing
+        skills: [teknovo-testing-architect]
+        agents: [platform-testing]
+
+  generic_build:
+    category: implementation
+    description: Fallback for build/implement requests without domain match
+    keywords:
+      - build
+      - implement
+      - create
+      - develop
+      - make
+      - setup
+      - add feature
+    skills:
+      - teknovo-chief-architect
+      - teknovo-feature-implementation
+      - teknovo-testing-architect
+    agents:
+      - orchestrator
+      - platform-backend
+      - platform-frontend
+    mcps:
+      - filesystem-mcp
+    execution_mode: sequential
+    parallel_groups:
+      - id: implementation
+        label: Feature Implementation
+        skills: [teknovo-chief-architect, teknovo-feature-implementation]
+        agents: [orchestrator]
+
+skill_paths:
+  teknovo-chief-architect: .agents/skills/teknovo-chief-architect/SKILL.md
+  teknovo-chief-product-designer: .agents/skills/teknovo-chief-product-designer/SKILL.md
+  teknovo-landing-page: .agents/skills/teknovo-landing-page/SKILL.md
+  teknovo-ui-ux: .agents/skills/teknovo-ui-ux/SKILL.md
+  teknovo-ui-ux-specialist: .agents/skills/teknovo-ui-ux-specialist/SKILL.md
+  teknovo-testing-architect: .agents/skills/teknovo-testing-architect/SKILL.md
+  teknovo-cloudflare-stack: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+  teknovo-devops-engineer: .agents/skills/teknovo-devops-engineer/SKILL.md
+  teknovo-finance: .agents/skills/teknovo-finance/SKILL.md
+  teknovo-ppdb: .agents/skills/teknovo-ppdb/SKILL.md
+  teknovo-database-architect: .agents/skills/teknovo-database-architect/SKILL.md
+  teknovo-backend-development: .agents/skills/teknovo-backend-development/SKILL.md
+  teknovo-rbac-architect: .agents/skills/teknovo-rbac-architect/SKILL.md
+  teknovo-security-review: .agents/skills/teknovo-security-review/SKILL.md
+  teknovo-reporting: .agents/skills/teknovo-reporting/SKILL.md
+  teknovo-feature-implementation: .agents/skills/teknovo-feature-implementation/SKILL.md
+  superpowers-dispatching-parallel-agents: .agents/skills/superpowers/dispatching-parallel-agents/SKILL.md
+  superpowers-subagent-driven-development: .agents/skills/superpowers/subagent-driven-development/SKILL.md
+  superpowers-executing-plans: .agents/skills/superpowers/executing-plans/SKILL.md
+  superpowers-verification-before-completion: .agents/skills/superpowers/verification-before-completion/SKILL.md
+  gstack-ship: .agents/skills/gstack/ship/SKILL.md

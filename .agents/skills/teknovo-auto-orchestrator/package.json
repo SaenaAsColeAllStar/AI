@@ -1,0 +1,21 @@
+{
+  "name": "@teknovo/auto-orchestrator",
+  "version": "1.0.0",
+  "description": "Teknovo autonomous intent routing and subagent dispatch planner",
+  "type": "module",
+  "main": "orchestrator.js",
+  "bin": {
+    "teknovo-auto-orchestrator": "./orchestrator.js"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "node orchestrator.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0"
+  },
+  "license": "MIT"
+}

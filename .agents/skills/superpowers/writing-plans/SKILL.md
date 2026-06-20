@@ -23,6 +23,8 @@ Adapted from [Superpowers writing-plans](https://github.com/obra/superpowers) wi
 
 Every plan must follow this template:
 
+> **Assurance gate**: Include **Assurance Sign-Off** section per `assurance/review-workflow.md`. No execution until APPROVE.
+
 ```markdown
 # [Feature Name] Implementation Plan
 
@@ -62,7 +64,27 @@ Every plan must follow this template:
 
 ## RBAC Impact
 | Permission | Roles | Layer |
-|------------|-------|-------|
+
+## Security Impact
+| Control | Layer | Verification |
+|---------|-------|--------------|
+| RBAC permissions | API + UI | 403 test |
+| Data ownership | Service | tenancy filter |
+| Audit log | DB | mutation covered |
+| Rate limits | API/Redis | if public/auth |
+
+Reference: `security/security-principles.md`, `security/rbac-security.md`, `agents/security-reviewer.md`
+
+## Taste Gate Sign-Off
+| Gate | Status | Notes |
+|------|--------|-------|
+| 1 Product | | Removal test: |
+| 2 UX | | Nav clicks: |
+| 3 Visual | | |
+| 4 Architecture | | |
+| 5 Copy | | |
+
+Reference: `taste/taste-gates.md` — all five must pass before execution.
 
 ## UI Impact
 [Pages, components, 5 page states checklist]
@@ -78,6 +100,19 @@ Every plan must follow this template:
 - [ ] E2E test passes (critical flow)
 - [ ] Coverage meets threshold (70%+)
 - [ ] eng-review checklist passes
+
+## Assurance Sign-Off
+| Step | Status | Evidence |
+|------|--------|----------|
+| Requirement clarification | ☐ | |
+| Context build | ☐ | |
+| Risk analysis | ☐ | |
+| Sharp edges | ☐ | |
+| Insecure defaults | ☐ | |
+| Static analysis plan | ☐ | |
+| Second opinion (if high-risk) | ☐ | |
+
+**Assurance verdict**: PASS | BLOCK
 ```
 
 ---
@@ -109,16 +144,40 @@ Verify plan alignment against:
 
 | Standard | Path |
 |----------|------|
+| Product taste | `taste/product-principles.md` |
+| UX taste | `taste/ux-principles.md` |
+| Visual taste | `taste/design-principles.md` |
+| Architecture taste | `taste/architecture-principles.md` |
+| Copy taste | `taste/copywriting-principles.md` |
+| Taste gates | `taste/taste-gates.md` |
+| Product principles (quality) | `quality/product-principles.md` |
+| UX principles (quality) | `quality/ux-principles.md` |
+| Architecture principles (quality) | `quality/architecture-principles.md` |
+| Engineering principles | `quality/engineering-principles.md` |
 | Folder contract | `docs/architecture/folder-contract.md` |
 | Database standard | `docs/standards/database/database-standard.md` |
 | API contract | `docs/standards/api/api-contract.md` |
 | RBAC standard | `docs/standards/rbac/rbac-standard.md` |
+| Security principles | `security/security-principles.md` |
+| Security gates | `security/security-gates.md` |
 | Design system | `docs/standards/design-system/design-system-contract.md` |
 | Testing standard | `docs/standards/testing/testing-standard.md` |
+| Assurance workflow | `assurance/review-workflow.md` |
+| Context builder | `agents/context-builder.md` |
 
 ---
 
-## Output Location
+## Pre-Execution Gate
+
+Before invoking **superpowers-executing-plans**:
+
+1. Run **agents/context-builder.md** — context checklist in plan
+2. Complete **Assurance Review** — `assurance/review-workflow.md` with PASS verdict
+3. Complete **Security Review** — `security/security-gates.md` with APPROVE
+
+Load: `python ai-agent/runtime/load-memory.py --include-assurance --assurance-bundle pre-implementation`
+
+**Quality gate**: Plan must address product, UX, architecture, and **assurance** dimensions before execution begins.
 
 Save plan to:
 
@@ -127,6 +186,12 @@ docs/plans/YYYY-MM-DD-<feature-name>-plan.md
 ```
 
 Or `implementation_plan.md` in the working directory for active sessions.
+
+**Taste + security + quality gate**: Plan must include Taste Gate Sign-Off, **Security Impact section**, and address product, UX, and architecture dimensions before execution.
+
+**Security gate**: After architecture approval, run `agents/security-reviewer.md` (APPROVE) before first code commit.
+
+**CLI**: `python ai-agent/runtime/load-memory.py --include-taste --include-assurance --include-security --include-quality --taste-bundle pre-feature --assurance-bundle pre-implementation --security-bundle planning --quality-bundle planning`
 
 ---
 

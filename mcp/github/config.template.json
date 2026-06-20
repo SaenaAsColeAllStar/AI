@@ -1,0 +1,14 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/config.json",
+  "name": "github",
+  "description": "GitHub MCP server — issues, PRs, repositories",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
+  "env": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+  },
+  "notes": [
+    "Replace ${GITHUB_PERSONAL_ACCESS_TOKEN} via environment variable at runtime.",
+    "Do not commit tokens to git."
+  ]
+}

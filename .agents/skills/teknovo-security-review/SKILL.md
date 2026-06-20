@@ -9,6 +9,8 @@ Use this skill when auditing codebase security, configuring credentials, or revi
 
 **Reference**: `docs/reviews/security-review-template.md`, `docs/standards/rbac/rbac-standard.md`
 
+**Security System**: `docs/ai/AI_SECURITY_SYSTEM.md`, `security/security-registry.yaml`, `agents/security-reviewer.md` — use for formal gates; this skill for tactical auth/CORS/JWT checks.
+
 ---
 
 ## Authentication & Sessions

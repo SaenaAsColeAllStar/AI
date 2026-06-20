@@ -23,6 +23,11 @@ Adapted from [Superpowers requesting-code-review](https://github.com/obra/superp
 
 Before requesting review, confirm:
 
+- [ ] **agents/differential-reviewer.md** — differential review PASS on diff
+- [ ] **quality/self-critique.md** completed
+- [ ] **security/review-checklist.md** applicable sections pass (Critical rows)
+- [ ] **Security Reviewer** APPROVE for changes touching auth/API/DB/infra (`agents/security-reviewer.md`)
+- [ ] **quality/review-checklist.md** all Critical rows pass
 - [ ] **superpowers-verification-before-completion** passed with evidence
 - [ ] **gstack-eng-review** self-review completed
 - [ ] Plan/tasks all marked complete
@@ -104,6 +109,8 @@ When asking for review:
 > - RBAC guards on all new endpoints
 > - 5 page states on new UI pages
 > - Coverage meets module threshold
+>
+> Checklist: `quality/review-checklist.md` · Security: `security/review-checklist.md` · Reviewers: `agents/impeccable-reviewer.md`, `agents/security-reviewer.md`
 
 ---
 

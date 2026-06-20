@@ -29,21 +29,27 @@ Every task goes through this process — todo lists, single-function utilities, 
 Complete in order:
 
 1. **Explore project context** — read files, docs (`docs/adr/**`, `docs/prd/**`), recent commits
-2. **Ask clarifying questions** — one at a time; understand purpose, constraints, success criteria
+2. **Ask clarifying questions** — invoke **agents/requirement-clarifier.md**; one at a time; understand purpose, constraints, success criteria
 3. **Propose 2-3 approaches** — with trade-offs and recommendation
 4. **Present design in sections** — get approval after each section
 5. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<feature>-design.md`
 6. **Spec self-review** — fix placeholders, contradictions, ambiguity, scope
-7. **Transition to planning** — invoke **superpowers-writing-plans** skill
+7. **Assurance checkpoint** — load `assurance/decision-validation.md`; resolve Critical ambiguities before planning
+8. **Transition to planning** — invoke **superpowers-writing-plans** skill
 
 ---
 
 ## Teknovo-Specific Checks
 
-During brainstorming, always verify:
+During brainstorming, always verify **taste before quality**:
 
 | Check | Reference |
 |-------|-----------|
+| Removal test / real value | `taste/product-principles.md` — reject complexity without measurable value |
+| UX restraint | `taste/ux-principles.md` — IA depth, cognitive load, no modal wizards |
+| Architecture simplicity | `taste/architecture-principles.md` — no premature abstraction |
+| Product quality bar (after taste) | `quality/product-principles.md` |
+| UX quality bar (after taste) | `quality/ux-principles.md` |
 | Domain ownership | `docs/architecture/data-ownership-matrix.md` |
 | Subdomain routing | `docs/adr/ADR-011-subdomain-architecture.md` |
 | Existing module patterns | `apps/portal/src/modules/` |
@@ -87,6 +93,12 @@ docs/plans/YYYY-MM-DD-<feature-name>-design.md
 ```
 
 Then invoke **superpowers-writing-plans** — the ONLY skill to invoke after brainstorming completes.
+
+**Taste gate**: Run removal test via `taste/product-principles.md` and `agents/taste-reviewer.md` before design approval.  
+**Assurance**: Run **agents/requirement-clarifier.md** when requirements unclear.  
+**Quality gate**: Score surviving scope against `quality/product-principles.md`.
+
+**CLI**: `python ai-agent/runtime/load-memory.py --include-taste --include-assurance --taste-bundle planning --assurance-bundle planning`
 
 ---
 

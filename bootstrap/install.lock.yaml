@@ -1,0 +1,13 @@
+os: ubuntu-22.04
+
+node: 22
+
+python: 3.10
+
+ollama: latest
+
+model:
+  qwen2.5-coder:32b
+
+opencode:
+  version: 1.17.8

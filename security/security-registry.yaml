@@ -1,0 +1,225 @@
+# Teknovo Security System — Security Registry
+# Indexes all security artifacts for agents, memory loader, and skill triggers.
+# Cross-referenced in memory/memory-registry.yaml and .agents/registry.yaml
+
+version: "1.0"
+last_updated: "2026-06-20"
+
+defaults:
+  security_root: security
+  encoding: utf-8
+  layer: 3
+  index_doc: docs/ai/AI_SECURITY_SYSTEM.md
+  reviewer_agent: agents/security-reviewer.md
+  skill: .agents/skills/teknovo-security-review/SKILL.md
+
+load_order_note: >
+  Security loads after taste/planning context and before implementation artifacts.
+  Use --security-bundle to match workflow phase.
+
+artifacts:
+  security-principles:
+    path: security/security-principles.md
+    description: Master security principles — least privilege, defense in depth, secure defaults
+    category: core
+    phase: planning
+    priority: 20
+    autoload: false
+    load_when:
+      - security review
+      - new feature
+      - architecture gate
+      - before implementation
+
+  rbac-security:
+    path: security/rbac-security.md
+    description: RBAC hierarchy, permission mapping, route guards, data ownership
+    category: rbac
+    phase: pre-rbac
+    priority: 21
+    autoload: false
+    load_when:
+      - RBAC
+      - permission
+      - role
+      - route guard
+      - access control
+
+  api-security:
+    path: security/api-security.md
+    description: Auth, validation, rate limits, CORS, error handling, API versioning
+    category: api
+    phase: pre-api
+    priority: 22
+    autoload: false
+    load_when:
+      - REST API
+      - endpoint
+      - webhook
+      - before API implementation
+
+  database-security:
+    path: security/database-security.md
+    description: UUID v7, soft delete, audit logs, tenancy, FK constraints
+    category: database
+    phase: pre-db
+    priority: 23
+    autoload: false
+    load_when:
+      - migration
+      - schema
+      - drizzle
+      - before database migration
+
+  cloudflare-security:
+    path: security/cloudflare-security.md
+    description: Workers, D1, R2, DNS, tunnels, secrets, deployment hardening
+    category: infrastructure
+    phase: pre-deploy
+    priority: 24
+    autoload: false
+    load_when:
+      - cloudflare
+      - deploy
+      - tunnel
+      - R2
+      - DNS
+      - workers
+
+  ai-agent-security:
+    path: security/ai-agent-security.md
+    description: Agent tool limits, MCP, commits, credentials, workstation boundaries
+    category: ai-agent
+    phase: pre-agent
+    priority: 25
+    autoload: false
+    load_when:
+      - agent session
+      - MCP
+      - automation
+      - cursor
+      - ollama workstation
+
+  review-checklist:
+    path: security/review-checklist.md
+    description: Ten-section security checklist — auth, RBAC, validation, audit, infra, AI safety
+    category: review
+    phase: review
+    priority: 26
+    autoload: false
+    load_when:
+      - security audit
+      - before PR
+      - before merge
+      - security check
+
+  security-gates:
+    path: security/security-gates.md
+    description: Mandatory gates — pre-implementation, pre-deploy, pre-production
+    category: gates
+    phase: gates
+    priority: 27
+    autoload: false
+    load_when:
+      - deploy
+      - release
+      - ship
+      - before implementation
+      - security gate
+
+  security-reviewer:
+    path: agents/security-reviewer.md
+    description: Security review agent — risk level, attack surface, mitigation, verdict
+    category: agent
+    phase: review
+    priority: 28
+    autoload: false
+    load_when:
+      - security review
+      - security audit
+      - OWASP
+      - vulnerability
+      - pre-deploy security
+
+bundles:
+  planning:
+    description: Load during plan authoring and architecture — security principles only
+    artifacts:
+      - security-principles
+      - security-gates
+
+  pre-rbac:
+    description: Load before RBAC, permissions, route guards, nav changes
+    artifacts:
+      - security-principles
+      - rbac-security
+      - review-checklist
+
+  pre-api:
+    description: Load before API endpoint implementation
+    artifacts:
+      - security-principles
+      - api-security
+      - rbac-security
+      - review-checklist
+
+  pre-db:
+    description: Load before database migrations and schema changes
+    artifacts:
+      - security-principles
+      - database-security
+      - rbac-security
+      - review-checklist
+
+  pre-deploy:
+    description: Load before staging/production deploy
+    artifacts:
+      - security-principles
+      - cloudflare-security
+      - api-security
+      - review-checklist
+      - security-gates
+
+  pre-agent:
+    description: Load before AI agent automation, MCP setup, workstation changes
+    artifacts:
+      - security-principles
+      - ai-agent-security
+      - review-checklist
+
+  full:
+    description: All security artifacts (heavy context)
+    artifacts:
+      - security-principles
+      - rbac-security
+      - api-security
+      - database-security
+      - cloudflare-security
+      - ai-agent-security
+      - review-checklist
+      - security-gates
+
+integrations:
+  agents_md: AGENTS.md
+  skill_registry: .agents/registry.yaml
+  memory_registry: memory/memory-registry.yaml
+  memory_loader: ai-agent/runtime/load-memory.py
+  taste:
+    - taste/taste-gates.md
+  quality:
+    - quality/quality-gates.md
+    - quality/self-critique.md
+    - quality/review-checklist.md
+  superpowers:
+    - superpowers-writing-plans
+    - superpowers-requesting-code-review
+  gstack:
+    - gstack-eng-review
+    - gstack-ship
+  skills:
+    - teknovo-security-review
+    - teknovo-rbac-architect
+    - teknovo-api-architect
+    - teknovo-database-architect
+    - teknovo-cloudflare-stack
+    - teknovo-devops-engineer

@@ -1,7 +1,18 @@
-# Teknovo AI SuperStack — Agent Skill Registry
+# Teknovo AI SuperStack — Agent Skill Registry (LEGACY COMPATIBILITY)
+# CANONICAL ORCHESTRATION: registry/skill-registry.yaml
+# Agents: registry/agent-registry.yaml | MCP: registry/mcp-registry.yaml
+# Governance: docs/ai/skill-governance.md | Loader: ai-agent/runtime/load-skills.py
 # Load autoload skills at session start; match triggers for on-demand skills.
 
-version: "1.3"
+version: "1.6"
+
+orchestration:
+  canonical: registry/skill-registry.yaml
+  agents: registry/agent-registry.yaml
+  mcp: registry/mcp-registry.yaml
+  governance: docs/ai/skill-governance.md
+  inventory: docs/ai/skill-inventory.md
+  skill_loader: ai-agent/runtime/load-skills.py
 
 # =============================================================================
 # THREE PILLARS — Primary Role Gates
@@ -20,6 +31,7 @@ autoload:
   - superpowers-executing-plans
   - superpowers-verification-before-completion
   - superpowers-test-driven-development
+  - quality-self-critique
   - gstack-eng-review
   - gstack-qa
   - teknovo-rbac-architect
@@ -33,6 +45,368 @@ autoload:
   - teknovo-backend-development
   - teknovo-domain-management
   - teknovo-landing-page
+  - taste-reviewer
+
+# =============================================================================
+# TASTE LAYER — judgement, restraint, removal (precedes quality)
+# Registry index: taste/taste-registry.yaml
+# Precedence: Taste > Impeccable Quality > default generation
+# =============================================================================
+taste:
+  taste-product-principles:
+    path: taste/product-principles.md
+    load_before: quality-product-principles
+    trigger:
+      - "new feature"
+      - "feature proposal"
+      - "PRD"
+      - "scope change"
+      - "brainstorm"
+
+  taste-ux-principles:
+    path: taste/ux-principles.md
+    load_before: quality-ux-principles
+    trigger:
+      - "before UI"
+      - "UX review"
+      - "navigation"
+      - "dashboard design"
+      - "information architecture"
+
+  taste-design-principles:
+    path: taste/design-principles.md
+    load_before: quality-design-taste
+    trigger:
+      - "dashboard"
+      - "UI design"
+      - "generic template"
+      - "AI dashboard"
+      - "design taste"
+
+  taste-architecture-principles:
+    path: taste/architecture-principles.md
+    load_before: quality-architecture-principles
+    trigger:
+      - "before migration"
+      - "new module"
+      - "before architecture"
+      - "architecture gate"
+      - "before backend implementation"
+
+  taste-copywriting-principles:
+    path: taste/copywriting-principles.md
+    trigger:
+      - "copy review"
+      - "i18n"
+      - "labels"
+      - "UI strings"
+      - "error messages"
+
+  taste-checklist:
+    path: taste/taste-checklist.md
+    trigger:
+      - "taste review"
+      - "simplify"
+      - "scope review"
+      - "before implementation"
+
+  taste-gates:
+    path: taste/taste-gates.md
+    load_before: quality-gates
+    trigger:
+      - "taste gate"
+      - "before ship"
+      - "deploy"
+      - "feature complete"
+      - "eng-review"
+
+  taste-reviewer:
+    path: agents/taste-reviewer.md
+    load_before: impeccable-reviewer
+    trigger:
+      - "taste review"
+      - "taste"
+      - "simplify"
+      - "remove feature"
+      - "scope cut"
+      - "too complex"
+
+# =============================================================================
+# ASSURANCE ENGINEERING — validate, challenge, verify before implementation
+# Registry index: assurance/assurance-registry.yaml
+# Precedence: Taste → Assurance → Security → Implementation → Quality → Ship
+# =============================================================================
+assurance:
+  assurance-principles:
+    path: assurance/assurance-principles.md
+    load_after: taste-gates
+    load_before: security-principles
+    trigger:
+      - "assurance"
+      - "assurance review"
+      - "before implementation"
+      - "validate requirements"
+
+  assurance-review-workflow:
+    path: assurance/review-workflow.md
+    trigger:
+      - "assurance workflow"
+      - "assurance gate"
+      - "before planning complete"
+      - "before implementation"
+
+  assurance-risk-analysis:
+    path: assurance/risk-analysis.md
+    trigger:
+      - "risk analysis"
+      - "risk register"
+      - "before implementation"
+
+  assurance-decision-validation:
+    path: assurance/decision-validation.md
+    trigger:
+      - "decision validation"
+      - "assumptions"
+      - "before planning complete"
+
+  assurance-sharp-edges:
+    path: assurance/sharp-edges.md
+    trigger:
+      - "sharp edges"
+      - "dangerous API"
+      - "before implementation"
+
+  assurance-insecure-defaults:
+    path: assurance/insecure-defaults.md
+    load_before: security-principles
+    trigger:
+      - "insecure defaults"
+      - "before security gate"
+      - "pre-implementation"
+
+  assurance-dependency-review:
+    path: assurance/dependency-review.md
+    trigger:
+      - "new dependency"
+      - "lockfile"
+      - "supply chain"
+      - "github action"
+      - "MCP integration"
+
+  assurance-static-analysis:
+    path: assurance/static-analysis.md
+    trigger:
+      - "static analysis"
+      - "semgrep"
+      - "codeql"
+      - "before PR"
+
+  requirement-clarifier:
+    path: agents/requirement-clarifier.md
+    trigger:
+      - "unclear requirements"
+      - "clarify requirements"
+      - "ambiguous"
+      - "what does"
+      - "before planning complete"
+      - "underspecified"
+
+  context-builder:
+    path: agents/context-builder.md
+    trigger:
+      - "context build"
+      - "read ADR"
+      - "load standards"
+      - "before implementation"
+      - "audit context"
+
+  differential-reviewer:
+    path: agents/differential-reviewer.md
+    load_before: gstack-eng-review
+    trigger:
+      - "pull request"
+      - "PR"
+      - "diff review"
+      - "on diff"
+      - "differential review"
+      - "review changes"
+      - "merge request"
+
+  second-opinion-reviewer:
+    path: agents/second-opinion-reviewer.md
+    trigger:
+      - "second opinion"
+      - "challenge plan"
+      - "disagree"
+      - "stress test"
+      - "before deploy"
+      - "pre-deploy review"
+      - "high risk"
+
+# =============================================================================
+# IMPECCABLE QUALITY — product, UX, architecture, engineering excellence
+# Registry index: quality/quality-registry.yaml
+# =============================================================================
+quality:
+  quality-self-critique:
+    path: quality/self-critique.md
+    trigger:
+      - "done"
+      - "complete"
+      - "finish task"
+      - "ready to ship"
+      - "final output"
+
+  quality-product-principles:
+    path: quality/product-principles.md
+    trigger:
+      - "new feature"
+      - "feature proposal"
+      - "PRD"
+      - "scope change"
+
+  quality-ux-principles:
+    path: quality/ux-principles.md
+    trigger:
+      - "before UI"
+      - "UX review"
+      - "navigation"
+      - "dashboard design"
+
+  quality-design-taste:
+    path: quality/design-taste.md
+    trigger:
+      - "dashboard"
+      - "AI dashboard"
+      - "generic template"
+      - "design taste"
+
+  quality-architecture-principles:
+    path: quality/architecture-principles.md
+    trigger:
+      - "before migration"
+      - "new module"
+      - "before backend implementation"
+      - "architecture gate"
+
+  quality-engineering-principles:
+    path: quality/engineering-principles.md
+    trigger:
+      - "before code generation"
+      - "implement feature"
+      - "refactor"
+
+  quality-review-checklist:
+    path: quality/review-checklist.md
+    trigger:
+      - "before PR"
+      - "before merge"
+      - "before ship"
+      - "review checklist"
+
+  quality-gates:
+    path: quality/quality-gates.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "feature complete"
+      - "quality gate"
+
+  impeccable-reviewer:
+    path: agents/impeccable-reviewer.md
+    trigger:
+      - "review"
+      - "audit"
+      - "quality check"
+      - "impeccable"
+      - "code review"
+      - "pre-release review"
+    load_after: taste-reviewer
+
+# =============================================================================
+# SECURITY ARCHITECT — least privilege, defense in depth, secure defaults
+# Registry index: security/security-registry.yaml
+# Load after taste planning; before implementation
+# =============================================================================
+security:
+  security-principles:
+    path: security/security-principles.md
+    load_after: assurance-insecure-defaults
+    trigger:
+      - "security review"
+      - "new feature"
+      - "architecture gate"
+      - "before implementation"
+
+  security-rbac:
+    path: security/rbac-security.md
+    trigger:
+      - "RBAC"
+      - "permission"
+      - "role"
+      - "route guard"
+      - "before RBAC changes"
+
+  security-api:
+    path: security/api-security.md
+    trigger:
+      - "REST API"
+      - "endpoint"
+      - "before API"
+      - "webhook"
+
+  security-database:
+    path: security/database-security.md
+    trigger:
+      - "migration"
+      - "schema"
+      - "before DB"
+      - "before database migration"
+
+  security-cloudflare:
+    path: security/cloudflare-security.md
+    trigger:
+      - "cloudflare"
+      - "deploy"
+      - "tunnel"
+      - "R2"
+      - "DNS"
+      - "before deploy"
+
+  security-ai-agent:
+    path: security/ai-agent-security.md
+    trigger:
+      - "agent session"
+      - "MCP"
+      - "automation"
+      - "cursor agent"
+
+  security-review-checklist:
+    path: security/review-checklist.md
+    trigger:
+      - "security audit"
+      - "before PR"
+      - "security check"
+      - "OWASP"
+
+  security-gates:
+    path: security/security-gates.md
+    trigger:
+      - "deploy"
+      - "release"
+      - "ship"
+      - "security gate"
+
+  security-reviewer:
+    path: agents/security-reviewer.md
+    load_after: security-gates
+    trigger:
+      - "security review"
+      - "security audit"
+      - "vulnerability"
+      - "pre-deploy security"
+      - "pen test"
 
 # =============================================================================
 # PLANNING SKILLS — requirements, design, consultation
@@ -816,3 +1190,188 @@ skills:
     path: .agents/skills/teknovo-incident-response/SKILL.md
     category: cross-cutting
     autoload: false
+
+  quality-self-critique:
+    path: quality/self-critique.md
+    category: quality
+    autoload: true
+
+  quality-product-principles:
+    path: quality/product-principles.md
+    category: quality
+    autoload: false
+
+  quality-ux-principles:
+    path: quality/ux-principles.md
+    category: quality
+    autoload: false
+
+  quality-architecture-principles:
+    path: quality/architecture-principles.md
+    category: quality
+    autoload: false
+
+  quality-engineering-principles:
+    path: quality/engineering-principles.md
+    category: quality
+    autoload: false
+
+  quality-review-checklist:
+    path: quality/review-checklist.md
+    category: quality
+    autoload: false
+
+  quality-gates:
+    path: quality/quality-gates.md
+    category: quality
+    autoload: false
+
+  impeccable-reviewer:
+    path: agents/impeccable-reviewer.md
+    category: quality
+    autoload: false
+
+  assurance-principles:
+    path: assurance/assurance-principles.md
+    category: assurance
+    autoload: true
+
+  assurance-review-workflow:
+    path: assurance/review-workflow.md
+    category: assurance
+    autoload: false
+
+  assurance-risk-analysis:
+    path: assurance/risk-analysis.md
+    category: assurance
+    autoload: false
+
+  assurance-decision-validation:
+    path: assurance/decision-validation.md
+    category: assurance
+    autoload: false
+
+  assurance-sharp-edges:
+    path: assurance/sharp-edges.md
+    category: assurance
+    autoload: false
+
+  assurance-insecure-defaults:
+    path: assurance/insecure-defaults.md
+    category: assurance
+    autoload: false
+
+  assurance-dependency-review:
+    path: assurance/dependency-review.md
+    category: assurance
+    autoload: false
+
+  assurance-static-analysis:
+    path: assurance/static-analysis.md
+    category: assurance
+    autoload: false
+
+  requirement-clarifier:
+    path: agents/requirement-clarifier.md
+    category: assurance
+    autoload: false
+
+  context-builder:
+    path: agents/context-builder.md
+    category: assurance
+    autoload: false
+
+  differential-reviewer:
+    path: agents/differential-reviewer.md
+    category: assurance
+    autoload: false
+
+  second-opinion-reviewer:
+    path: agents/second-opinion-reviewer.md
+    category: assurance
+    autoload: false
+
+  security-principles:
+    path: security/security-principles.md
+    category: security
+    autoload: false
+
+  security-rbac:
+    path: security/rbac-security.md
+    category: security
+    autoload: false
+
+  security-api:
+    path: security/api-security.md
+    category: security
+    autoload: false
+
+  security-database:
+    path: security/database-security.md
+    category: security
+    autoload: false
+
+  security-cloudflare:
+    path: security/cloudflare-security.md
+    category: security
+    autoload: false
+
+  security-ai-agent:
+    path: security/ai-agent-security.md
+    category: security
+    autoload: false
+
+  security-review-checklist:
+    path: security/review-checklist.md
+    category: security
+    autoload: false
+
+  security-gates:
+    path: security/security-gates.md
+    category: security
+    autoload: false
+
+  security-reviewer:
+    path: agents/security-reviewer.md
+    category: security
+    autoload: false
+
+  taste-product-principles:
+    path: taste/product-principles.md
+    category: taste
+    autoload: false
+
+  taste-ux-principles:
+    path: taste/ux-principles.md
+    category: taste
+    autoload: false
+
+  taste-design-principles:
+    path: taste/design-principles.md
+    category: taste
+    autoload: false
+
+  taste-architecture-principles:
+    path: taste/architecture-principles.md
+    category: taste
+    autoload: false
+
+  taste-copywriting-principles:
+    path: taste/copywriting-principles.md
+    category: taste
+    autoload: false
+
+  taste-checklist:
+    path: taste/taste-checklist.md
+    category: taste
+    autoload: false
+
+  taste-gates:
+    path: taste/taste-gates.md
+    category: taste
+    autoload: false
+
+  taste-reviewer:
+    path: agents/taste-reviewer.md
+    category: taste
+    autoload: true

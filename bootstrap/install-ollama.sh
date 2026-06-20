@@ -6,8 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-OLLAMA_PID_FILE="${STATE_DIR}/ollama.pid"
-
 trap 'on_phase_error ${LINENO}' ERR
 
 install_ollama() {
@@ -19,44 +17,6 @@ install_ollama() {
   info "Installing Ollama..."
   run_bash_script "https://ollama.com/install.sh"
   success "Ollama installed"
-}
-
-start_ollama_systemd() {
-  ${SUDO} systemctl enable ollama 2>/dev/null || true
-  ${SUDO} systemctl start ollama 2>/dev/null || true
-}
-
-start_ollama_nohup() {
-  if [[ -f "${OLLAMA_PID_FILE}" ]]; then
-    local old_pid
-    old_pid="$(cat "${OLLAMA_PID_FILE}" 2>/dev/null || true)"
-    if [[ -n "${old_pid}" ]] && kill -0 "${old_pid}" 2>/dev/null; then
-      info "Ollama already running (PID ${old_pid})"
-      return 0
-    fi
-  fi
-
-  warn "systemd unavailable — starting ollama serve in background (nohup)"
-  nohup ollama serve > "${LOG_DIR}/ollama-serve.log" 2>&1 &
-  echo $! > "${OLLAMA_PID_FILE}"
-  info "Ollama serve PID: $(cat "${OLLAMA_PID_FILE}")"
-  sleep 3
-}
-
-start_ollama_service() {
-  if curl -sf "${OLLAMA_HOST}/api/tags" >/dev/null 2>&1; then
-    success "Ollama API already responding at ${OLLAMA_HOST}"
-    return 0
-  fi
-
-  info "Starting Ollama service..."
-  if command_exists systemctl && [[ -d /run/systemd/system ]] && systemctl list-unit-files ollama.service >/dev/null 2>&1; then
-    start_ollama_systemd
-  else
-    start_ollama_nohup
-  fi
-
-  ensure_ollama_healthy
 }
 
 verify_ollama() {
@@ -71,7 +31,7 @@ main() {
   require_linux
   init_state
   install_ollama
-  start_ollama_service
+  start_ollama_service || die "Ollama service failed to start"
   verify_ollama
   success "Ollama installation complete"
 }

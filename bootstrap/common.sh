@@ -50,6 +50,8 @@ source "${BOOTSTRAP_DIR}/lib/state.sh"
 source "${BOOTSTRAP_DIR}/lib/gpu.sh"
 # shellcheck source=lib/ollama.sh
 source "${BOOTSTRAP_DIR}/lib/ollama.sh"
+# shellcheck source=lib/ollama-start.sh
+source "${BOOTSTRAP_DIR}/lib/ollama-start.sh"
 
 apply_env_overrides() {
   # Priority: install.lock.yaml > env vars > defaults (lock applied in load_install_lock first)

@@ -17,7 +17,7 @@ install_apt_packages() {
   local pkgs=(
     git curl wget ca-certificates gnupg lsb-release
     build-essential python3 python3-pip python3-venv python3-yaml
-    jq tree zstd nano
+    jq tree zstd nano tmux screen
   )
 
   info "Updating apt package index..."

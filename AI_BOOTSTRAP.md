@@ -35,7 +35,7 @@ INSTALL_BROWSER_DEV=1 bash bootstrap/install.sh --browser-dev
 |-------|--------|---------|
 | 0 | `bootstrap/preflight.sh` | OS, RAM, disk, internet, container, GPU, Python, Node, Docker — writes `docs/ai/compatibility-report.md` |
 | 1 | `bootstrap/install-runtime.sh` | Git, curl, wget, Node 22+, Python 3.10+, PyYAML |
-| 2 | `bootstrap/install-ollama.sh` | Ollama server (systemd or nohup fallback) + API health wait (360s) |
+| 2 | `bootstrap/install-ollama.sh` | Ollama server (systemd → tmux → screen → nohup) + API health wait (360s) |
 | 3 | `bootstrap/install-model.sh` | `qwen2.5-coder:32b` pull + verify via `/api/tags` and `/v1/models` |
 | 4 | `bootstrap/install-opencode.sh` | OpenCode CLI + Ollama provider config + `opencode models` validation |
 | 5 | `bootstrap/install-skills.sh` | Verify skills, memory, taste, quality, security layers |
@@ -87,7 +87,7 @@ Preflight detects:
 
 - Docker (`/.dockerenv`, cgroup)
 - Clore / Vast / RunPod environment hints
-- systemd absence → Ollama uses `nohup ollama serve`
+- systemd absence → Ollama uses priority chain: tmux session → screen session → nohup (`bash bootstrap/start-ollama.sh`)
 - root user → `${SUDO}` disabled (no broken `sudo -E | bash` pipes)
 
 ---
@@ -100,6 +100,8 @@ Each script is independently runnable:
 bash bootstrap/preflight.sh
 bash bootstrap/install-runtime.sh
 bash bootstrap/install-ollama.sh
+bash bootstrap/start-ollama.sh          # manual Ollama restart (systemd/tmux/screen/nohup)
+tmux attach -t ollama                   # inspect Ollama tmux session (containers)
 bash bootstrap/install-model.sh
 bash bootstrap/install-opencode.sh
 bash bootstrap/install-skills.sh
@@ -117,11 +119,12 @@ bash bootstrap/install-browser-dev.sh   # optional
 | Path | Purpose |
 |------|---------|
 | `.bootstrap/logs/install-YYYYMMDD-HHMMSS.log` | Timestamped install log (all phases) |
+| `.bootstrap/logs/ollama.log` | Ollama serve log (non-root); `/root/ollama.log` on root/Clore |
 | `.bootstrap/reports/final-report.md` | Verification results after Phase 10 |
 | `.bootstrap/state.json` | Checkpoint for recovery mode |
 | `docs/ai/compatibility-report.md` | Preflight compatibility report |
 
-Shared libraries: `bootstrap/lib/` (`privilege.sh`, `yaml.sh`, `logging.sh`, `prereqs.sh`, `state.sh`, `gpu.sh`, `ollama.sh`)
+Shared libraries: `bootstrap/lib/` (`privilege.sh`, `yaml.sh`, `logging.sh`, `prereqs.sh`, `state.sh`, `gpu.sh`, `ollama.sh`, `ollama-start.sh`)
 
 ---
 

@@ -65,8 +65,13 @@ verify_runtime_tools() {
 
 verify_ollama() {
   step "Verify Ollama"
-  check "Ollama CLI" "command -v ollama"
-  check "Ollama API /api/tags" "curl -sf ${OLLAMA_HOST}/api/tags"
+  if ! check "Ollama CLI" "command -v ollama"; then
+    return 1
+  fi
+  if ! check "Ollama API /api/tags" "curl -sf ${OLLAMA_HOST}/api/tags"; then
+    warn "Ollama API down — try: bash bootstrap/start-ollama.sh (or tmux attach -t ollama)"
+    return 1
+  fi
 }
 
 verify_model() {
@@ -153,7 +158,7 @@ verify_recovery() {
   check "install.sh executable" "test -x ${REPO_ROOT}/bootstrap/install.sh"
   check "recover.sh executable" "test -x ${REPO_ROOT}/bootstrap/recover.sh"
   check "state checkpoint dir" "test -d ${REPO_ROOT}/.bootstrap"
-  for script in preflight.sh compatibility.sh install-runtime.sh install-ollama.sh install-model.sh \
+  for script in preflight.sh compatibility.sh install-runtime.sh install-ollama.sh start-ollama.sh install-model.sh \
                 install-opencode.sh install-skills.sh build-memory.sh build-registries.sh; do
     check "bootstrap/${script}" "test -f ${REPO_ROOT}/bootstrap/${script}"
   done
@@ -208,6 +213,13 @@ write_final_report() {
     echo ""
     echo "\`\`\`bash"
     echo "bash bootstrap/recover.sh"
+    echo "\`\`\`"
+    echo ""
+    echo "If Ollama API is down (common in containers without systemd):"
+    echo ""
+    echo "\`\`\`bash"
+    echo "bash bootstrap/start-ollama.sh"
+    echo "tmux attach -t ollama    # inspect tmux session if used"
     echo "\`\`\`"
   } > "${FINAL_REPORT}"
 

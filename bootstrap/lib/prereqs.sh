@@ -65,3 +65,25 @@ run_bash_script() {
   shift
   curl -fsSL "${url}" "$@" | bash -
 }
+
+ensure_session_tools() {
+  # tmux/screen keep Ollama alive in containers without systemd.
+  if ! command_exists apt-get; then
+    return 0
+  fi
+
+  local pkgs=()
+  for cmd_pkg in tmux:tmux screen:screen; do
+    local cmd="${cmd_pkg%%:*}"
+    local pkg="${cmd_pkg##*:}"
+    if ! command_exists "${cmd}"; then
+      pkgs+=("${pkg}")
+    fi
+  done
+
+  if [[ ${#pkgs[@]} -gt 0 ]]; then
+    info "Installing session tools for Ollama persistence: ${pkgs[*]}"
+    ${SUDO} apt-get update -qq
+    ${SUDO} DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${pkgs[@]}"
+  fi
+}

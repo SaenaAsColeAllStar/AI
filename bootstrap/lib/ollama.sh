@@ -66,5 +66,5 @@ ensure_ollama_healthy() {
     success "Ollama API ready at ${OLLAMA_HOST:-http://127.0.0.1:11434}"
     return 0
   fi
-  die "Ollama API unavailable after 360s wait — check ${LOG_DIR}/ollama-serve.log or systemctl status ollama"
+  die "Ollama API unavailable after 360s wait — run: bash bootstrap/start-ollama.sh (or tmux attach -t ollama, or systemctl status ollama)"
 }

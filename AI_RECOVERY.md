@@ -28,7 +28,7 @@ All bootstrap scripts check before installing:
 |-----------|---------------------|
 | apt packages | Skip if installed |
 | Ollama | Skip if binary exists |
-| Ollama service | systemd or nohup fallback if systemd absent |
+| Ollama service | systemd, or tmux/screen/nohup via `bootstrap/start-ollama.sh` when systemd absent |
 | Model | Skip if in `ollama list`, `/api/tags`, or `/v1/models` |
 | OpenCode | Skip if CLI exists |
 | OpenCode config | Skip if file exists (use `INSTALL_FORCE_OPENCODE_CONFIG=1` to overwrite) |
@@ -67,12 +67,27 @@ Or run individual phases (see [AI_BOOTSTRAP.md](AI_BOOTSTRAP.md)).
 
 ## Partial Recovery
 
+Quick Ollama restart (containers / no systemd):
+
+```bash
+bash bootstrap/start-ollama.sh
+```
+
+Inspect the tmux session (when Ollama runs in tmux):
+
+```bash
+tmux attach -t ollama
+# Detach without stopping Ollama: Ctrl+b then d
+```
+
+Expect `OLLAMA READY` on success or `OLLAMA FAILED` after ~6 minutes.
+
 | Failure point | Fix |
 |---------------|-----|
 | Any phase | `bash bootstrap/recover.sh` (resumes from checkpoint) |
 | Preflight / compatibility | Fix RAM/disk/OS/internet, re-run `bash bootstrap/preflight.sh` |
 | Runtime deps | `bash bootstrap/install-runtime.sh` |
-| Ollama down | `bash bootstrap/install-ollama.sh` (waits up to 360s for API) |
+| Ollama down | `bash bootstrap/start-ollama.sh` (systemd/tmux/screen/nohup + health wait), `tmux attach -t ollama`, or `bash bootstrap/install-ollama.sh` (full phase) |
 | Model missing | `bash bootstrap/install-model.sh` |
 | OpenCode broken | `bash bootstrap/install-opencode.sh` |
 | Memory stale | `bash bootstrap/build-memory.sh` |
@@ -82,7 +97,7 @@ Or run individual phases (see [AI_BOOTSTRAP.md](AI_BOOTSTRAP.md)).
 
 ## Container / Cloud Notes
 
-- **Docker / Clore / Vast / RunPod**: Preflight detects container environment; no systemd or desktop assumed.
+- **Docker / Clore / Vast / RunPod**: Preflight detects container environment; no systemd or desktop assumed. Ollama persists via tmux (preferred) or screen when systemd is unavailable.
 - **Root user**: Installer runs without `${SUDO}` when uid=0 (common in GPU containers).
 - **No GPU**: Install continues with CPU fallback; preflight warns in `docs/ai/compatibility-report.md`.
 

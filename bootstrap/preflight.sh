@@ -84,7 +84,7 @@ finalize_report() {
 
 | Topic | Value |
 |-------|-------|
-| systemd | $(command_exists systemctl && echo "available" || echo "absent — Ollama uses nohup fallback") |
+| systemd | $(command_exists systemctl && echo "available" || echo "absent — Ollama uses tmux/screen/nohup fallback") |
 | sudo | $(command_exists sudo && echo "available" || echo "absent — running as $(id -u)") |
 | Docker | $(command_exists docker && echo "available" || echo "not installed (optional)") |
 | Container | ${CONTAINER_ENV} |

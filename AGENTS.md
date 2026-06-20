@@ -2,7 +2,8 @@
 
 This document defines the identity, rules, and development lifecycle for all agentic sessions in the **Teknovo AI SuperStack Workstation**.
 
-> **Bootstrap**: Read `.agents/AGENTS.md` for the full agent contract and Teknovo-V2 document paths.
+> **Bootstrap**: Read `.agents/AGENTS.md` for the full agent contract and Teknovo-V2 document paths.  
+> **Execution**: Read `.agents/EXECUTION.md` when implementing or deploying (see § 3.6).
 
 ---
 
@@ -16,7 +17,8 @@ This document defines the identity, rules, and development lifecycle for all age
 6. **Load assurance context when applicable** — from `assurance/assurance-registry.yaml` (see § 3.2) — **before implementation**
 7. **Load security context when applicable** — from `security/security-registry.yaml` (see § 3.5) — **after assurance**
 8. **Load quality context when applicable** — from `quality/quality-registry.yaml` (see § 3.4)
-9. **Never skip planning** — no code before analysis completes
+9. **Load execution context when implementing or deploying** — `.agents/EXECUTION.md`, `execution/execution-registry.yaml` (see § 3.6); **branch safety before first edit**
+10. **Never skip planning** — no code before analysis completes (unless Principal Architect requests execution-only mode per § 3.6)
 
 > **Registry**: `registry/README.md` · **Inventory**: `docs/ai/skill-inventory.md` · **Governance**: `docs/ai/skill-governance.md` · **Agents**: `registry/agent-registry.yaml` · **MCP**: `registry/mcp-registry.yaml`
 
@@ -197,6 +199,27 @@ The **Security Architect** system (`security/`, `docs/ai/AI_SECURITY_SYSTEM.md`)
 
 Runtime: `python ai-agent/runtime/load-memory.py --include-security` or `--security-bundle pre-api`
 
+### 3.6 Execution System V2 — Implementation & Deploy Gate
+
+The **Execution System** (`execution/`, `docs/ai/AI_EXECUTION_SYSTEM.md`) enforces tool-first execution, failure recovery, branch safety, and deployment verification for workstation and MCP work.
+
+**Precedence**: For execution-only sessions (Principal Architect directive), **Execution V2 overrides planning output** — agents execute with tools, not instructions.
+
+| When | Load |
+|------|------|
+| Before first code edit | `.agents/EXECUTION.md`, `execution/branch-policy.md` |
+| Implementation session | `execution/failure-recovery.md`, `execution/execution-registry.yaml` |
+| Deploy / Cloudflare | `execution/deployment-mode.md`, `teknovo-cloudflare-stack` |
+
+**Hard rules**:
+- **Model**: `qwen3:32b` only (see `bootstrap/install.lock.yaml`); warn and stop if mismatch
+- **Branch safety**: Check branch before implementation; never commit user projects to `main`
+- **Failure recovery**: Max 10 automatic retries; do not stop on first command failure
+- **Secrets**: Host secret store only (`docs/SECRET_STORE.md`); never commit credentials
+- **Completion**: Build + tests + validation pass before "done"
+
+Runtime: `execution/execution-registry.yaml` bundles `pre-implementation-execution`, `pre-deploy-execution`
+
 ---
 
 ## 4. Autonomous Engineering Workflow
@@ -262,6 +285,8 @@ Discovery → Planning → Taste → Assurance Review → [Pillar 1] → Archite
 - Load **teknovo-testing-architect** and **superpowers-test-driven-development** skills
 
 ### Step 7: Code Implementation
+- **Branch safety** — verify not on `main`; create `feature/<scope>` if needed (`execution/branch-policy.md`)
+- Load **`.agents/EXECUTION.md`** and **failure-recovery** rules
 - Layer-by-layer: Database → Repository → Service → Controller → UI
 - Load **teknovo-feature-implementation** skill
 - Enforce Red-Green-Refactor for business logic
@@ -292,6 +317,7 @@ Discovery → Planning → Taste → Assurance Review → [Pillar 1] → Archite
 
 ```text
 Teknovo AI SuperStack
+├── Execution Layer V2 (EXECUTION.md, branch-policy, failure-recovery, deployment-mode, qwen3:32b lock)
 ├── Taste Layer (taste-reviewer, taste-gates, design/product/ux/architecture/copy principles)
 ├── Assurance Layer (requirement-clarifier, context-builder, differential-reviewer, second-opinion)
 ├── Three Pillars (chief-product-designer, chief-architect, devops-engineer)
@@ -321,6 +347,8 @@ Teknovo AI SuperStack
 | Assurance System | `docs/ai/AI_ASSURANCE_SYSTEM.md` |
 | Quality System | `docs/ai/AI_QUALITY_SYSTEM.md` |
 | Security System | `docs/ai/AI_SECURITY_SYSTEM.md` |
+| Execution System V2 | `docs/ai/AI_EXECUTION_SYSTEM.md` |
+| Execution Bootstrap | `.agents/EXECUTION.md` |
 | Skill Registry | `registry/skill-registry.yaml` |
 | Skill Inventory | `docs/ai/skill-inventory.md` |
 | Skill Governance | `docs/ai/skill-governance.md` |

@@ -7,7 +7,9 @@ description: Configure and manage Cloudflare Tunnels, DNS records, R2 Storage bu
 
 Use this skill when managing domain routing, tunnel configuration, asset storage, Pages deployments, or edge security.
 
-**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`, `docs/SECRET_STORE.md`, `mcp/cloudflare/README.md`
+**Reference**: `docs/infrastructure/cloudflare-setup-guide.md`, `docs/infrastructure/deployment-standard.md`, `docs/SECRET_STORE.md`, `execution/deployment-mode.md`, `mcp/cloudflare/README.md`
+
+**Execution mode**: When deploy is requested, run the full pipeline in `execution/deployment-mode.md` — build, test, self-heal failures (max 10 retries), deploy, verify DNS/HTTPS. **Execute with MCP and shell tools; do not respond with instructions-only mode** when credentials exist.
 
 **MCP Server**: `teknovo-cloudflare-mcp` at `mcp/cloudflare/` — invoke tools directly when credentials exist in Teknovo secret store.
 

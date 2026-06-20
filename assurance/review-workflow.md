@@ -25,6 +25,8 @@ Assurance Review (this workflow)         ← assurance/* + second-opinion-review
     ↓
 Security Review                          ← security/security-gates.md
     ↓
+Execution branch check                   ← execution/branch-policy.md (feature branch, not main)
+    ↓
 Pillar 1 — Product Design Analysis
     ↓
 Pillar 2 — Architecture Impact Analysis

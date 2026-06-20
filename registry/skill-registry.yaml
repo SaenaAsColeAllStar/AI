@@ -18,6 +18,9 @@ metadata:
   inventory_doc: docs/ai/skill-inventory.md
 
 layers:
+  execution:
+    order: 0
+    description: Execution mode, failure recovery, branch safety, deployment execution (V2)
   foundation:
     order: 1
     description: Master contracts, AGENTS.md, workstation bootstrap
@@ -191,8 +194,81 @@ bundles:
       - gstack-qa
       - gstack-eng-review
       - impeccable-reviewer
+  pre-implementation-execution:
+    description: Branch safety + execution mode before coding
+    skills:
+      - execution-bootstrap
+      - execution-branch-policy
+      - execution-failure-recovery
+  pre-deploy-execution:
+    description: Deployment execution workflow with self-healing
+    skills:
+      - execution-bootstrap
+      - execution-deployment-mode
+      - execution-failure-recovery
 
 skills:
+
+  # ─── EXECUTION V2 ─────────────────────────────────────────────────────────
+  execution-bootstrap:
+    id: execution-bootstrap
+    layer: execution
+    priority: critical
+    source: execution
+    path: .agents/EXECUTION.md
+    depends_on: [agents-md]
+    activate_when: [execution, execution mode, implement directly, before implementation, deploy]
+    conflicts: []
+    description: Execution bootstrap — qwen3:32b, execute not plan, branch safety
+    autoload: false
+
+  execution-spec:
+    id: execution-spec
+    layer: execution
+    priority: high
+    source: execution
+    path: docs/ai/AI_EXECUTION_SYSTEM.md
+    depends_on: [execution-bootstrap]
+    activate_when: [execution system, execution v2]
+    conflicts: []
+    description: Full TEKNOVO AI Execution System V2 specification
+    autoload: false
+
+  execution-failure-recovery:
+    id: execution-failure-recovery
+    layer: execution
+    priority: critical
+    source: execution
+    path: execution/failure-recovery.md
+    depends_on: [execution-bootstrap]
+    activate_when: [command failed, build failed, test failed, tsc failed, failure recovery]
+    conflicts: []
+    description: Node/TS/test recovery — max 10 retries, self-healing
+    autoload: false
+
+  execution-branch-policy:
+    id: execution-branch-policy
+    layer: execution
+    priority: critical
+    source: execution
+    path: execution/branch-policy.md
+    depends_on: [execution-bootstrap]
+    activate_when: [branch safety, feature branch, before implementation, git commit, worktree]
+    conflicts: []
+    description: Main protected, feature branches, worktree strategy
+    autoload: false
+
+  execution-deployment-mode:
+    id: execution-deployment-mode
+    layer: execution
+    priority: high
+    source: execution
+    path: execution/deployment-mode.md
+    depends_on: [execution-bootstrap, teknovo-cloudflare-stack]
+    activate_when: [deploy, cloudflare deploy, pages deploy, deployment mode]
+    conflicts: []
+    description: Build → test → fix → deploy → verify DNS/HTTPS
+    autoload: false
 
   # ─── FOUNDATION ───────────────────────────────────────────────────────────
   agents-md:

@@ -1375,3 +1375,54 @@ skills:
     path: agents/taste-reviewer.md
     category: taste
     autoload: true
+
+# =============================================================================
+# EXECUTION SYSTEM V2 — tool-first execution, failure recovery, branch safety
+# Registry index: execution/execution-registry.yaml
+# Spec: docs/ai/AI_EXECUTION_SYSTEM.md | Bootstrap: .agents/EXECUTION.md
+# =============================================================================
+execution:
+  execution-bootstrap:
+    path: .agents/EXECUTION.md
+    load_after: agents-md
+    trigger:
+      - "execution"
+      - "execution mode"
+      - "implement directly"
+      - "before implementation"
+      - "deploy"
+      - "build and deploy"
+
+  execution-spec:
+    path: docs/ai/AI_EXECUTION_SYSTEM.md
+    trigger:
+      - "execution system"
+      - "execution v2"
+
+  execution-failure-recovery:
+    path: execution/failure-recovery.md
+    trigger:
+      - "command failed"
+      - "npm install failed"
+      - "build failed"
+      - "test failed"
+      - "tsc failed"
+      - "failure recovery"
+
+  execution-branch-policy:
+    path: execution/branch-policy.md
+    trigger:
+      - "branch safety"
+      - "feature branch"
+      - "before implementation"
+      - "git commit"
+      - "worktree"
+
+  execution-deployment-mode:
+    path: execution/deployment-mode.md
+    trigger:
+      - "deploy"
+      - "cloudflare deploy"
+      - "pages deploy"
+      - "deployment mode"
+      - "deploy ke cloudflare"

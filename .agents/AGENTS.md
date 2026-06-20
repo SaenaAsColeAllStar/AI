@@ -2,6 +2,8 @@
 
 This document is the **canonical agent contract** for all autonomous sessions operating against Teknovo V2. The root `AGENTS.md` bootstraps this file. Read it before any task.
 
+For **implementation and deployment** sessions, read **`.agents/EXECUTION.md`** immediately after this file.
+
 ---
 
 ## 1. Identity

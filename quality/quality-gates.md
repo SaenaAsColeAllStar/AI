@@ -9,7 +9,7 @@
 
 Gates run in sequence. Skipping a gate blocks ship.
 
-**Prerequisite**: Taste gates (`taste/taste-gates.md`), **Assurance Review** (`assurance/review-workflow.md`), and **Security pre-implementation review** (`security/security-gates.md`) must pass before implementation.
+**Prerequisite**: Taste gates (`taste/taste-gates.md`), **Assurance Review** (`assurance/review-workflow.md`), **Execution branch safety** (`execution/branch-policy.md` — verify feature branch before code), and **Security pre-implementation review** (`security/security-gates.md`) must pass before implementation.
 
 ```text
 ┌─────────────────────┐
@@ -265,5 +265,6 @@ Invoke `teknovo-incident-response` for SEV-1 path.
 | Testing | ☐ | CI run URL |
 | Documentation | ☐ | doc paths |
 | Deployment | ☐ | deploy analysis |
+| Execution completion | ☐ | build + test + lint evidence (`execution/execution-registry.yaml`) |
 | Self-critique | ☐ | completed |
 ```

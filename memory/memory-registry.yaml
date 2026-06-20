@@ -9,6 +9,7 @@ last_updated: "2026-06-20"
 integrations:
   skill_registry: registry/skill-registry.yaml
   agent_registry: registry/agent-registry.yaml
+  execution_registry: execution/execution-registry.yaml
   governance: docs/ai/skill-governance.md
   skill_loader: ai-agent/runtime/load-skills.py
 
@@ -82,6 +83,24 @@ artifacts:
     refresh_policy: append
     priority: 8
     autoload: true
+
+  execution-system:
+    path: docs/ai/AI_EXECUTION_SYSTEM.md
+    description: Execution System V2 — model lock, failure recovery, branch safety, deployment mode
+    category: execution
+    refresh_policy: manual
+    priority: 9
+    autoload: false
+    trigger: [execution, before implementation, deploy]
+
+  execution-bootstrap:
+    path: .agents/EXECUTION.md
+    description: Condensed execution bootstrap for agents
+    category: execution
+    refresh_policy: manual
+    priority: 10
+    autoload: false
+    trigger: [execution, before implementation, deploy]
 
   # Taste Layer artifacts — full index in taste/taste-registry.yaml
   # Precedence: Taste > Quality. Loader layer=2 (after memory, before quality).
@@ -432,6 +451,8 @@ sources:
     - quality/quality-registry.yaml
     - security/security-registry.yaml
     - assurance/assurance-registry.yaml
+    - execution/execution-registry.yaml
+    - docs/ai/AI_EXECUTION_SYSTEM.md
   teknovo_v2_reference:
     - docs/adr/
     - docs/prd/master/master-prd.md

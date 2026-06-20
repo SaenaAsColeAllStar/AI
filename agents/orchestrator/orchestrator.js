@@ -8,7 +8,7 @@ import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
-import { WorkflowEngine } from '../../shared/workflow/index.js';
+import { WorkflowEngine, runStep } from '../../shared/workflow/index.js';
 import { createLogger } from '../../shared/logging/index.js';
 import { validateOrThrow, taskSchema } from '../../shared/validation/index.js';
 
@@ -17,6 +17,42 @@ const REPO_ROOT = join(__dirname, '..', '..');
 const logger = createLogger('orchestrator');
 
 const DEFAULT_MAX_RETRIES = 10;
+
+/** @type {Record<string, string>} */
+export const AGENT_DIRS = {
+  orchestrator: 'orchestrator',
+  'platform-orchestrator': 'orchestrator',
+  'platform-frontend': 'frontend',
+  'platform-backend': 'backend',
+  'platform-devops': 'devops',
+  'platform-testing': 'testing',
+  'platform-cloudflare': 'cloudflare',
+  'platform-github': 'github',
+  'chief-architect': 'orchestrator',
+  frontend: 'frontend',
+  backend: 'backend',
+  devops: 'devops',
+  testing: 'testing',
+  cloudflare: 'cloudflare',
+  github: 'github',
+};
+
+/** Domain keyword buckets for task decomposition */
+const DOMAIN_KEYWORDS = {
+  frontend: ['next.js', 'react', 'ui', 'tailwind', 'frontend', 'landing', 'seo', 'a11y', 'component'],
+  backend: ['api', 'backend', 'database', 'rbac', 'migration', 'auth', 'nestjs', 'drizzle', 'rest'],
+  testing: ['test', 'e2e', 'jest', 'vitest', 'playwright', 'coverage', 'lighthouse', 'qa'],
+  cloudflare: ['cloudflare', 'pages', 'dns', 'workers', 'ssl', 'domain', 'tunnel'],
+  github: ['github', 'pr', 'pull request', 'branch', 'release', 'issue', 'merge'],
+  devops: ['deploy', 'docker', 'ci', 'cd', 'rollback', 'pipeline', 'release'],
+};
+
+/**
+ * @param {string} agentId
+ */
+export function resolveAgentDir(agentId) {
+  return AGENT_DIRS[agentId] ?? agentId.replace(/^platform-/, '');
+}
 
 /**
  * @param {string} filePath
@@ -86,7 +122,7 @@ export function discoverSkills(root = REPO_ROOT) {
  */
 export function discoverMcpServers(root = REPO_ROOT) {
   const mcpDir = join(root, 'mcp');
-  if (!existsSync(mcpDir)) return [];
+  if (!mcpDir || !existsSync(mcpDir)) return [];
 
   return readdirSync(mcpDir)
     .filter((name) => {
@@ -145,7 +181,7 @@ export function routeTask(task, root = REPO_ROOT) {
   ];
 
   const platformAgents = Object.values(agents).filter(
-    (a) => a.type === 'platform' || a.type === 'specialist' || a.type === 'review'
+    (a) => a.type === 'platform' || a.type === 'meta' || a.type === 'specialist' || a.type === 'review'
   );
 
   const scored = platformAgents
@@ -165,6 +201,70 @@ export function routeTask(task, root = REPO_ROOT) {
 
   const [primary, ...alternates] = scored;
   return { task: validated, primary, alternates, keywords };
+}
+
+/**
+ * Decompose a compound task into domain-scoped subtasks.
+ * @param {{ description: string, keywords?: string[], domain?: string }} task
+ * @param {string} [root]
+ */
+export function decomposeTask(task, root = REPO_ROOT) {
+  const validated = validateOrThrow(taskSchema, task);
+  const route = routeTask(validated, root);
+  const keywords = route.keywords.map((k) => k.toLowerCase());
+
+  /** @type {{ domain: string, agentId: string, keywords: string[], description: string }[]} */
+  const subtasks = [];
+
+  for (const [domain, domainKeys] of Object.entries(DOMAIN_KEYWORDS)) {
+    const matched = domainKeys.filter((dk) =>
+      keywords.some((k) => k.includes(dk) || dk.includes(k))
+    );
+    if (matched.length > 0) {
+      const agentId = `platform-${domain === 'devops' ? 'devops' : domain}`;
+      subtasks.push({
+        domain,
+        agentId,
+        keywords: matched,
+        description: `${validated.description} [${domain}]`,
+      });
+    }
+  }
+
+  if (subtasks.length === 0) {
+    const primaryId = route.primary?.agentId ?? 'orchestrator';
+    subtasks.push({
+      domain: 'general',
+      agentId: primaryId,
+      keywords: route.keywords,
+      description: validated.description,
+    });
+  }
+
+  return { task: validated, subtasks, route };
+}
+
+/**
+ * Select agents for subtasks with dependency hints.
+ * @param {ReturnType<typeof decomposeTask>} decomposition
+ * @param {string} [root]
+ */
+export function selectAgents(decomposition, root = REPO_ROOT) {
+  const registry = loadAgentRegistry(root);
+  const agents = registry.agents ?? {};
+
+  return decomposition.subtasks.map((sub) => {
+    const agent = agents[sub.agentId] ?? agents[sub.agentId.replace(/^platform-/, 'platform-')];
+    const config = loadAgentConfig(sub.agentId, root);
+    const contract = loadAgentContract(sub.agentId, root);
+    return {
+      ...sub,
+      agent: agent ?? null,
+      config,
+      contract,
+      mcps: resolveMcpsForTask(sub.keywords, root),
+    };
+  });
 }
 
 /**
@@ -198,22 +298,213 @@ export function resolveMcpsForTask(keywords, root = REPO_ROOT) {
  * @param {string} [root]
  */
 export function loadAgentConfig(agentId, root = REPO_ROOT) {
-  const agentDirs = {
-    orchestrator: 'orchestrator',
-    'platform-frontend': 'frontend',
-    'platform-backend': 'backend',
-    'platform-devops': 'devops',
-    'platform-testing': 'testing',
-    frontend: 'frontend',
-    backend: 'backend',
-    devops: 'devops',
-    testing: 'testing',
-  };
-
-  const dirName = agentDirs[agentId] ?? agentId.replace(/^platform-/, '');
+  const dirName = resolveAgentDir(agentId);
   const configPath = join(root, 'agents', dirName, 'config.yaml');
   if (!existsSync(configPath)) return null;
   return loadYamlFile(configPath);
+}
+
+/**
+ * Load agent contract from agents/<name>/agent.yaml (falls back to config.yaml).
+ * @param {string} agentId
+ * @param {string} [root]
+ */
+export function loadAgentContract(agentId, root = REPO_ROOT) {
+  const dirName = resolveAgentDir(agentId);
+  const contractPath = join(root, 'agents', dirName, 'agent.yaml');
+  if (existsSync(contractPath)) return loadYamlFile(contractPath);
+  return loadAgentConfig(agentId, root);
+}
+
+/**
+ * Execute a single agent with retry and failure isolation.
+ * @param {string} agentId
+ * @param {{ description: string, keywords?: string[] }} task
+ * @param {{ handlers?: Record<string, Function>, root?: string, maxRetries?: number, onFailure?: Function }} [options]
+ */
+export async function executeAgent(agentId, task, options = {}) {
+  const root = options.root ?? REPO_ROOT;
+  const config = loadAgentConfig(agentId, root);
+  const handler = options.handlers?.[agentId];
+  const mcps = resolveMcpsForTask(task.keywords ?? [], root);
+  const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
+
+  const step = {
+    id: agentId,
+    name: `Execute ${agentId}`,
+    action: async () => {
+      if (handler) {
+        return handler({ task, config, mcps, agentId });
+      }
+      return {
+        agentId,
+        status: 'routed',
+        config: config ? { skills: config.skills, mcps: config.mcps } : null,
+        mcpRecommendations: mcps.map((m) => m.id),
+      };
+    },
+  };
+
+  const result = await runStep(step, { maxRetries });
+
+  if (!result.success) {
+    const failureResult = await onAgentFailure(
+      { agentId, task, error: result.error ?? 'Unknown error', attempts: result.attempts },
+      options
+    );
+    return { agentId, ...failureResult, attempts: result.attempts };
+  }
+
+  return { agentId, success: true, isolated: false, result: result.result, attempts: result.attempts };
+}
+
+/**
+ * Handle agent failure: isolate, retry up to maxRetries, allow unaffected agents to continue.
+ * @param {{ agentId: string, task: object, error: string, attempts: number }} ctx
+ * @param {{ maxRetries?: number, onFailure?: Function, handlers?: Record<string, Function>, root?: string }} [options]
+ */
+export async function onAgentFailure(ctx, options = {}) {
+  const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
+  options.onFailure?.(ctx);
+
+  logger.warn('Agent failure isolated', {
+    agentId: ctx.agentId,
+    error: ctx.error,
+    attempts: ctx.attempts,
+  });
+
+  if (ctx.attempts < maxRetries) {
+    const retry = await executeAgent(ctx.agentId, ctx.task, {
+      ...options,
+      maxRetries: maxRetries - ctx.attempts,
+    });
+    if (retry.success) {
+      return { success: true, isolated: false, recovered: true, result: retry.result, error: null };
+    }
+  }
+
+  return {
+    success: false,
+    isolated: true,
+    recovered: false,
+    result: null,
+    error: ctx.error,
+    partial: { agentId: ctx.agentId, status: 'failed', message: ctx.error },
+  };
+}
+
+/**
+ * Aggregate partial results from parallel/sequential runs.
+ * @param {Array<{ agentId: string, success?: boolean, result?: unknown, error?: string, isolated?: boolean }>} results
+ */
+export function aggregateResults(results) {
+  const succeeded = results.filter((r) => r.success !== false);
+  const failed = results.filter((r) => r.success === false || r.isolated);
+  return {
+    success: failed.length === 0,
+    total: results.length,
+    succeeded: succeeded.length,
+    failed: failed.length,
+    results,
+    partialResults: succeeded.map((r) => r.result ?? r.partial),
+    failures: failed.map((r) => ({ agentId: r.agentId, error: r.error ?? 'failed' })),
+  };
+}
+
+/**
+ * Run agents in parallel with failure isolation.
+ * @param {Array<{ agentId: string, task: { description: string, keywords?: string[] }, id?: string }>} specs
+ * @param {{ handlers?: Record<string, Function>, root?: string, maxRetries?: number }} [options]
+ */
+export async function runParallel(specs, options = {}) {
+  const settled = await Promise.allSettled(
+    specs.map((spec) => executeAgent(spec.agentId, spec.task, options))
+  );
+
+  /** @type {Array<{ agentId: string, success?: boolean, result?: unknown, error?: string, isolated?: boolean }>} */
+  const results = settled.map((outcome, i) => {
+    const spec = specs[i];
+    if (outcome.status === 'fulfilled') return outcome.value;
+    return {
+      agentId: spec.agentId,
+      success: false,
+      isolated: true,
+      error: outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason),
+    };
+  });
+
+  return aggregateResults(results);
+}
+
+/**
+ * Run agents sequentially respecting dependencies.
+ * @param {Array<{ agentId: string, task: { description: string, keywords?: string[] }, id: string, dependsOn?: string[] }>} phases
+ * @param {{ handlers?: Record<string, Function>, root?: string, maxRetries?: number, continueOnFailure?: boolean }} [options]
+ */
+export async function runSequential(phases, options = {}) {
+  /** @type {Map<string, { success: boolean }>} */
+  const completed = new Map();
+  /** @type {Array<{ agentId: string, success?: boolean, result?: unknown, error?: string, isolated?: boolean }>} */
+  const results = [];
+
+  for (const phase of phases) {
+    const deps = phase.dependsOn ?? [];
+    const unmet = deps.filter((d) => !completed.get(d)?.success);
+    if (unmet.length > 0) {
+      results.push({
+        agentId: phase.agentId,
+        success: false,
+        isolated: true,
+        error: `Unmet dependencies: ${unmet.join(', ')}`,
+      });
+      if (!options.continueOnFailure) break;
+      continue;
+    }
+
+    const result = await executeAgent(phase.agentId, phase.task, options);
+    results.push(result);
+    completed.set(phase.id, { success: result.success !== false });
+
+    if (result.success === false && !options.continueOnFailure) break;
+  }
+
+  return aggregateResults(results);
+}
+
+/**
+ * Run conditional workflow branch.
+ * @param {{ condition: (ctx: object) => boolean | Promise<boolean>, then: Array<{ agentId: string, task: object, id: string, dependsOn?: string[] }>, else?: Array<{ agentId: string, task: object, id: string, dependsOn?: string[] }> }} spec
+ * @param {{ handlers?: Record<string, Function>, root?: string, maxRetries?: number, context?: object }} [options]
+ */
+export async function runConditional(spec, options = {}) {
+  const ctx = options.context ?? {};
+  const branch = (await spec.condition(ctx)) ? spec.then : (spec.else ?? []);
+  return runSequential(branch, options);
+}
+
+/**
+ * Execute a declarative workflow (parallel, sequential, or conditional).
+ * @param {{ type: 'parallel' | 'sequential' | 'conditional', steps?: object[], condition?: Function, then?: object[], else?: object[] }} workflow
+ * @param {{ handlers?: Record<string, Function>, root?: string, maxRetries?: number, context?: object }} [options]
+ */
+export async function executeWorkflow(workflow, options = {}) {
+  switch (workflow.type) {
+    case 'parallel':
+      return runParallel(workflow.steps ?? [], options);
+    case 'sequential':
+      return runSequential(workflow.steps ?? [], options);
+    case 'conditional':
+      return runConditional(
+        {
+          condition: workflow.condition ?? (() => true),
+          then: workflow.then ?? [],
+          else: workflow.else,
+        },
+        options
+      );
+    default:
+      throw new Error(`Unknown workflow type: ${workflow.type}`);
+  }
 }
 
 /**
@@ -296,6 +587,16 @@ export const Orchestrator = {
   routeTask,
   dispatchTask,
   dispatchParallel,
+  decomposeTask,
+  selectAgents,
+  runParallel,
+  runSequential,
+  runConditional,
+  executeWorkflow,
+  onAgentFailure,
+  aggregateResults,
+  executeAgent,
   discoverSkills,
   discoverMcpServers,
+  loadAgentContract,
 };

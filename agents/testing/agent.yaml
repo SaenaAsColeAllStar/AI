@@ -1,0 +1,41 @@
+id: platform-testing
+name: Platform Testing Agent
+type: platform
+contract_version: "1.0"
+description: Unit, integration, E2E, Lighthouse, and verification workflows.
+path: agents/testing/AGENT.md
+entry: agents/testing/index.js
+config: agents/testing/config.yaml
+priority: high
+
+dependencies:
+  agents:
+    - orchestrator
+  shared: []
+
+required_mcps:
+  required:
+    - filesystem-mcp
+    - shell-mcp
+  recommended:
+    - git-mcp
+    - postgres-mcp
+
+skills:
+  required:
+    - path: .agents/skills/teknovo-testing-architect/SKILL.md
+      id: teknovo-testing-architect
+  recommended:
+    - path: .agents/skills/gstack/qa/SKILL.md
+      id: gstack-qa
+
+routing_keywords:
+  - test
+  - unit test
+  - integration test
+  - e2e
+  - playwright
+  - jest
+  - vitest
+  - lighthouse
+  - coverage

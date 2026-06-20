@@ -12,21 +12,26 @@ The Multi-Agent Platform routes tasks from a single orchestrator to domain speci
 ### Orchestrator (`agents/orchestrator/`)
 
 - Loads `registry/agents.yaml` and `registry/mcp.yaml`
+- Decomposes compound tasks via `decomposeTask()` and `selectAgents()`
 - Routes by keywords/domain to platform agents
-- Dispatches with parallel coordination via `shared/workflow`
-- Failure recovery: 10 retries per execution system policy
+- Executes parallel (`runParallel`), sequential (`runSequential`), and conditional (`runConditional`) workflows
+- Failure recovery: isolate failures, retry max 10, aggregate partial results via `onAgentFailure()`
 
 ### Platform Agents
 
 | Agent | Path | Domain |
 |-------|------|--------|
-| Orchestrator | `agents/orchestrator/` | Routing, dispatch, discovery |
+| Orchestrator | `agents/orchestrator/` | Routing, decomposition, parallel coordination |
 | Frontend | `agents/frontend/` | Next.js, React, Tailwind, UI, SEO, a11y |
 | Backend | `agents/backend/` | Node/TS, REST, DB, RBAC |
-| DevOps | `agents/devops/` | Docker, CI/CD, Cloudflare, deploy |
+| DevOps | `agents/devops/` | Docker, CI/CD, pipelines, deploy verify |
 | Testing | `agents/testing/` | Unit, integration, E2E, Lighthouse |
+| Cloudflare | `agents/cloudflare/` | Pages, DNS, SSL, production deploy |
+| GitHub | `agents/github/` | PR, releases, issues, repo automation |
 
-Each agent has `AGENT.md` (spec), `config.yaml` (skills, MCPs, triggers), and optional `index.js`.
+Each agent exposes a **5-file contract**: `agent.yaml`, `capabilities.yaml`, `workflow.yaml`, `system-prompt.md`, `README.md` — plus legacy `AGENT.md`, `config.yaml`, and `index.js`.
+
+**Chief Architect** (`chief-architect` in `registry/agents.yaml`) serves as meta/routing entry to the orchestrator.
 
 ### Shared Platform Libraries (`shared/`)
 
@@ -50,17 +55,31 @@ Legacy registries (`agent-registry.yaml`, `mcp-registry.yaml`, `skill-registry.y
 ## Usage
 
 ```js
-import { dispatchTask, routeTask } from './agents/orchestrator/orchestrator.js';
+import {
+  dispatchTask,
+  routeTask,
+  runParallel,
+  runSequential,
+} from './agents/orchestrator/orchestrator.js';
 
-const route = routeTask({
-  description: 'Add RBAC permission for finance billing',
-  keywords: ['rbac', 'api', 'backend'],
-});
-
+// Single dispatch
 const result = await dispatchTask({
   description: 'Run E2E tests for login page',
   keywords: ['e2e', 'playwright', 'test'],
 });
+
+// Parallel: Frontend + Backend
+await runParallel([
+  { agentId: 'platform-frontend', task: { description: 'Build UI' } },
+  { agentId: 'platform-backend', task: { description: 'Build API' } },
+]);
+
+// Sequential: Frontend → Testing → Cloudflare
+await runSequential([
+  { id: 'ui', agentId: 'platform-frontend', task: { description: 'UI' } },
+  { id: 'test', agentId: 'platform-testing', task: { description: 'E2E' }, dependsOn: ['ui'] },
+  { id: 'deploy', agentId: 'platform-cloudflare', task: { description: 'Deploy' }, dependsOn: ['test'] },
+]);
 ```
 
 ## Integration Points

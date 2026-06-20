@@ -1,0 +1,39 @@
+id: platform-backend
+name: Platform Backend Agent
+
+capabilities:
+  - id: rest-api
+    description: REST endpoints with Zod validation and standard envelopes
+  - id: database
+    description: PostgreSQL schemas, Drizzle migrations, soft deletes
+  - id: rbac
+    description: Permission mapping for routes and actions
+  - id: auth
+    description: JWT/session auth integration
+  - id: service-layer
+    description: Business logic in services, repositories for data access
+
+skills:
+  required:
+    - id: teknovo-backend-development
+      path: .agents/skills/teknovo-backend-development/SKILL.md
+    - id: teknovo-api-architect
+      path: .agents/skills/teknovo-api-architect/SKILL.md
+    - id: teknovo-database-architect
+      path: .agents/skills/teknovo-database-architect/SKILL.md
+    - id: teknovo-rbac-architect
+      path: .agents/skills/teknovo-rbac-architect/SKILL.md
+  recommended:
+    - id: teknovo-chief-architect
+      path: .agents/skills/teknovo-chief-architect/SKILL.md
+
+dependencies:
+  agents:
+    - orchestrator
+  mcps:
+    required:
+      - filesystem-mcp
+      - git-mcp
+    recommended:
+      - postgres-mcp
+      - github-mcp

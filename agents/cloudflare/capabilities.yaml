@@ -1,0 +1,44 @@
+id: platform-cloudflare
+name: Platform Cloudflare Agent
+
+capabilities:
+  - id: pages-deploy
+    description: Cloudflare Pages build and deploy
+  - id: dns-management
+    description: DNS records and subdomain routing
+  - id: domain-attach
+    description: Custom domain binding and CNAME setup
+  - id: ssl-verify
+    description: Certificate verification and HTTPS enforcement
+  - id: workers-d1-r2
+    description: Edge workers, D1 database, R2 storage
+  - id: tunnel-config
+    description: Cloudflare Tunnel setup
+  - id: deploy-verify
+    description: Post-deploy health and SSL checks
+
+skills:
+  required:
+    - id: teknovo-cloudflare-stack
+      path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+  recommended:
+    - id: teknovo-devops-engineer
+      path: .agents/skills/teknovo-devops-engineer/SKILL.md
+    - id: gstack-ship
+      path: .agents/skills/gstack/ship/SKILL.md
+
+dependencies:
+  agents:
+    - orchestrator
+    - platform-testing
+  mcps:
+    required:
+      - cloudflare-mcp
+      - filesystem-mcp
+    recommended:
+      - shell-mcp
+      - git-mcp
+
+mcp_integration:
+  server: mcp/cloudflare/server.js
+  registry: registry/mcp.yaml

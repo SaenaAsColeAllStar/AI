@@ -1,0 +1,35 @@
+id: platform-devops
+name: Platform DevOps Agent Workflows
+
+patterns:
+  deploy:
+    description: Full deploy with verification
+    type: sequential
+    steps:
+      - id: testing
+        agent: platform-testing
+      - id: security
+        action: security_pre_deploy_review
+        depends_on: [testing]
+      - id: cloudflare
+        agent: platform-cloudflare
+        depends_on: [security]
+      - id: verify
+        action: post_deploy_verification
+        depends_on: [cloudflare]
+
+  ci_pipeline:
+    description: CI pipeline with GitHub integration
+    type: sequential
+    steps:
+      - id: github
+        agent: platform-github
+      - id: build
+        action: run_ci_build
+        depends_on: [github]
+
+handoffs:
+  - to: platform-cloudflare
+    when: deploy_to_cloudflare
+  - to: platform-github
+    when: pr_or_release

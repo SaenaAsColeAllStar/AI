@@ -1,0 +1,40 @@
+id: platform-devops
+name: Platform DevOps Agent
+
+capabilities:
+  - id: docker
+    description: Container builds and compose orchestration
+  - id: cicd
+    description: GitHub Actions pipeline configuration
+  - id: deploy-verify
+    description: Post-deploy smoke tests and health checks
+  - id: rollback
+    description: Safe rollback procedures
+  - id: pipeline-orchestration
+    description: Coordinate cloudflare and github agents
+
+skills:
+  required:
+    - id: teknovo-devops-engineer
+      path: .agents/skills/teknovo-devops-engineer/SKILL.md
+    - id: gstack-ship
+      path: .agents/skills/gstack/ship/SKILL.md
+  recommended:
+    - id: teknovo-cloudflare-stack
+      path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+    - id: teknovo-observability
+      path: .agents/skills/teknovo-observability/SKILL.md
+
+dependencies:
+  agents:
+    - orchestrator
+    - platform-cloudflare
+    - platform-github
+  mcps:
+    required:
+      - filesystem-mcp
+      - git-mcp
+      - shell-mcp
+    recommended:
+      - cloudflare-mcp
+      - github-mcp

@@ -1,0 +1,33 @@
+id: platform-frontend
+name: Platform Frontend Agent Workflows
+
+patterns:
+  ui_implementation:
+    description: Standard UI feature delivery
+    type: sequential
+    steps:
+      - id: design-gate
+        action: load_product_design_analysis
+      - id: implement
+        action: build_ui_components
+      - id: handoff
+        agent: platform-testing
+        depends_on: [implement]
+
+  landing_page:
+    description: Public landing page delivery
+    type: sequential
+    steps:
+      - id: landing
+        action: implement_landing_page
+        skill: teknovo-landing-page
+      - id: seo
+        action: verify_seo_meta
+      - id: handoff
+        agent: platform-testing
+
+handoffs:
+  - to: platform-testing
+    when: ui_complete
+  - to: platform-backend
+    when: api_contract_needed

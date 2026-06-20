@@ -1,0 +1,39 @@
+id: platform-testing
+name: Platform Testing Agent Workflows
+
+patterns:
+  verify_feature:
+    description: Full verification after implementation
+    type: sequential
+    steps:
+      - id: unit
+        action: run_unit_tests
+      - id: integration
+        action: run_integration_tests
+        depends_on: [unit]
+      - id: e2e
+        action: run_e2e_tests
+        depends_on: [integration]
+      - id: report
+        action: generate_coverage_report
+        depends_on: [e2e]
+
+  pre_deploy_gate:
+    description: Testing gate before deploy
+    type: sequential
+    steps:
+      - id: build
+        action: verify_build
+      - id: tests
+        action: run_all_tests
+        depends_on: [build]
+      - id: handoff
+        agent: platform-cloudflare
+        depends_on: [tests]
+        condition: all_pass
+
+handoffs:
+  - to: platform-cloudflare
+    when: tests_pass
+  - to: platform-github
+    when: pr_ready

@@ -56,9 +56,10 @@ describe('orchestrator extended', () => {
   });
 
   it('platform agent dirs exist', () => {
-    for (const dir of ['frontend', 'backend', 'devops', 'testing', 'orchestrator']) {
+    for (const dir of ['frontend', 'backend', 'devops', 'testing', 'orchestrator', 'cloudflare', 'github']) {
       expect(existsSync(join(REPO_ROOT, 'agents', dir, 'AGENT.md'))).toBe(true);
       expect(existsSync(join(REPO_ROOT, 'agents', dir, 'config.yaml'))).toBe(true);
+      expect(existsSync(join(REPO_ROOT, 'agents', dir, 'agent.yaml'))).toBe(true);
     }
   });
 });

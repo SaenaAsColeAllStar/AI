@@ -1,0 +1,42 @@
+id: platform-cloudflare
+name: Platform Cloudflare Agent
+type: platform
+contract_version: "1.0"
+description: Cloudflare Pages, DNS, domain attach, SSL verify, and production deploy.
+path: agents/cloudflare/AGENT.md
+entry: agents/cloudflare/index.js
+config: agents/cloudflare/config.yaml
+priority: high
+
+dependencies:
+  agents:
+    - orchestrator
+    - platform-testing
+  shared: []
+
+required_mcps:
+  required:
+    - cloudflare-mcp
+    - filesystem-mcp
+  recommended:
+    - shell-mcp
+    - git-mcp
+
+skills:
+  required:
+    - path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+      id: teknovo-cloudflare-stack
+  recommended:
+    - path: .agents/skills/teknovo-devops-engineer/SKILL.md
+      id: teknovo-devops-engineer
+
+routing_keywords:
+  - cloudflare
+  - pages
+  - dns
+  - domain
+  - ssl
+  - workers
+  - tunnel
+  - deploy
+  - production

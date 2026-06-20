@@ -1,0 +1,30 @@
+id: platform-backend
+name: Platform Backend Agent Workflows
+
+patterns:
+  api_feature:
+    description: Standard API feature delivery
+    type: sequential
+    steps:
+      - id: architecture
+        action: architecture_impact_analysis
+      - id: migration
+        action: database_migration
+      - id: repository
+        action: implement_repository
+        depends_on: [migration]
+      - id: service
+        action: implement_service
+        depends_on: [repository]
+      - id: controller
+        action: implement_controller
+        depends_on: [service]
+      - id: handoff
+        agent: platform-testing
+        depends_on: [controller]
+
+handoffs:
+  - to: platform-testing
+    when: api_complete
+  - to: platform-frontend
+    when: api_contract_ready

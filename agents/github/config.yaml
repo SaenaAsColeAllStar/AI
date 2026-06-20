@@ -1,0 +1,44 @@
+id: platform-github
+name: Platform GitHub Agent
+type: platform
+priority: high
+path: agents/github/AGENT.md
+
+skills:
+  required:
+    - teknovo-devops-engineer
+    - agents-md
+  recommended:
+    - gstack-ship
+    - superpowers-requesting-code-review
+    - superpowers-finishing-development-branch
+
+mcps:
+  required:
+    - github-mcp
+    - filesystem-mcp
+  recommended:
+    - git-mcp
+
+triggers:
+  - github
+  - pull request
+  - pr
+  - branch
+  - release
+  - issue
+  - merge
+  - repository
+  - project board
+
+keywords:
+  - github
+  - pr
+  - pull request
+  - branch
+  - release
+  - issue
+  - merge
+  - repository
+  - actions
+  - workflow

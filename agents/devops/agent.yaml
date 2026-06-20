@@ -1,0 +1,41 @@
+id: platform-devops
+name: Platform DevOps Agent
+type: platform
+contract_version: "1.0"
+description: Docker, CI/CD, deployment verification, rollback, and pipeline orchestration.
+path: agents/devops/AGENT.md
+entry: agents/devops/index.js
+config: agents/devops/config.yaml
+priority: high
+
+dependencies:
+  agents:
+    - orchestrator
+    - platform-cloudflare
+    - platform-github
+  shared: []
+
+required_mcps:
+  required:
+    - filesystem-mcp
+    - git-mcp
+    - shell-mcp
+  recommended:
+    - cloudflare-mcp
+    - github-mcp
+
+skills:
+  required:
+    - path: .agents/skills/teknovo-devops-engineer/SKILL.md
+      id: teknovo-devops-engineer
+  recommended:
+    - path: .agents/skills/teknovo-cloudflare-stack/SKILL.md
+      id: teknovo-cloudflare-stack
+
+routing_keywords:
+  - deploy
+  - docker
+  - ci/cd
+  - rollback
+  - release
+  - pipeline

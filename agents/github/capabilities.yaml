@@ -1,0 +1,43 @@
+id: platform-github
+name: Platform GitHub Agent
+
+capabilities:
+  - id: repository
+    description: Repository clone, branch, and remote management
+  - id: pull-requests
+    description: PR create, update, review, merge
+  - id: releases
+    description: Tag, changelog, release notes
+  - id: issues
+    description: Issue create, label, assign, close
+  - id: projects
+    description: Project board and milestone automation
+  - id: actions
+    description: GitHub Actions workflow monitoring
+
+skills:
+  required:
+    - id: teknovo-devops-engineer
+      path: .agents/skills/teknovo-devops-engineer/SKILL.md
+  recommended:
+    - id: gstack-ship
+      path: .agents/skills/gstack/ship/SKILL.md
+    - id: superpowers-requesting-code-review
+      path: .agents/skills/superpowers/requesting-code-review/SKILL.md
+    - id: superpowers-finishing-development-branch
+      path: .agents/skills/superpowers/finishing-development-branch/SKILL.md
+
+dependencies:
+  agents:
+    - orchestrator
+    - platform-testing
+  mcps:
+    required:
+      - github-mcp
+      - filesystem-mcp
+    recommended:
+      - git-mcp
+
+mcp_integration:
+  server: mcp/github/server.js
+  registry: registry/mcp.yaml

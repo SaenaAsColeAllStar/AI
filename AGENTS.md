@@ -30,11 +30,13 @@ The **Teknovo Multi-Agent Platform** (`agents/orchestrator/`, `platform/`) route
 
 | Agent | Path | Domain |
 |-------|------|--------|
-| Orchestrator | `agents/orchestrator/` | Task routing, dispatch, parallel coordination |
+| Orchestrator | `agents/orchestrator/` | Task decomposition, routing, parallel coordination |
 | Frontend | `agents/frontend/` | Next.js, React, Tailwind, UI, SEO, a11y |
 | Backend | `agents/backend/` | Node/TS, REST, DB, auth, RBAC |
-| DevOps | `agents/devops/` | Docker, CI/CD, Cloudflare, deploy verify |
+| DevOps | `agents/devops/` | Docker, CI/CD, pipelines, deploy verify |
 | Testing | `agents/testing/` | Unit, integration, E2E, Lighthouse |
+| Cloudflare | `agents/cloudflare/` | Pages, DNS, SSL, production deploy |
+| GitHub | `agents/github/` | PR, releases, issues, repo automation |
 
 **Registries (split)**:
 - `registry/agents.yaml` — platform + reviewer agents
@@ -43,7 +45,9 @@ The **Teknovo Multi-Agent Platform** (`agents/orchestrator/`, `platform/`) route
 
 **Shared libraries**: `shared/secret-store/`, `shared/logging/`, `shared/validation/`, `shared/workflow/`
 
-**Orchestrator API**: `agents/orchestrator/orchestrator.js` — `routeTask()`, `dispatchTask()`, `dispatchParallel()`
+**Orchestrator API**: `agents/orchestrator/orchestrator.js` — `routeTask()`, `dispatchTask()`, `decomposeTask()`, `runParallel()`, `runSequential()`, `runConditional()`, `onAgentFailure()`
+
+**Agent contracts**: Each platform agent has `agent.yaml`, `capabilities.yaml`, `workflow.yaml`, `system-prompt.md`, `README.md` under `agents/<name>/`.
 
 **Failure recovery**: 10 retries via `shared/workflow` (aligned with `execution/execution-registry.yaml`)
 
